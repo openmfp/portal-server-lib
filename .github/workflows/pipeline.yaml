@@ -9,5 +9,3 @@ jobs:
       cancel-in-progress: false
     uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@main
     secrets: inherit
-    with:
-
