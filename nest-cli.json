@@ -1,0 +1,6 @@
+{
+  "type": "library",
+  "root": ".",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src"
+}
