@@ -1,9 +1,9 @@
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
-import { FrameModule } from '../src';
+import { PortalModule } from '../src';
 
 function integrationTestModule(): TestingModuleBuilder {
   const moduleFixture: TestingModuleBuilder = Test.createTestingModule({
-    imports: [FrameModule.create({})],
+    imports: [PortalModule.create({})],
   });
   return moduleFixture;
 }

@@ -1,4 +1,3 @@
-// import '../src/bootstrapEnv';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { integrationTestModule } from './integration-test-module';
@@ -7,7 +6,6 @@ describe('Health (integration)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    // process.env['OIDC_CLIENT_SECRET_SAP'] = 'fakeSecretForTesting';
     const moduleFixture = await integrationTestModule().compile();
 
     app = moduleFixture.createNestApplication();

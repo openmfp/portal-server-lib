@@ -1,22 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EnvService } from './env.service';
-import { FRAME_OPTIONS_INJECTION_TOKEN } from '../injectionTokens';
 import { mock } from 'jest-mock-extended';
-import { FrameModuleOptions } from '../frame.module';
+import { PortalModuleOptions } from '../portal.module';
 
 describe('EnvService', () => {
   let service: EnvService;
 
   beforeEach(async () => {
-    const frameModuleOptions = mock<FrameModuleOptions>();
+    const frameModuleOptions = mock<PortalModuleOptions>();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        EnvService,
-        {
-          provide: FRAME_OPTIONS_INJECTION_TOKEN,
-          useValue: frameModuleOptions,
-        },
-      ],
+      providers: [EnvService],
     }).compile();
 
     service = module.get<EnvService>(EnvService);

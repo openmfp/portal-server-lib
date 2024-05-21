@@ -1,16 +1,13 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { EnvService } from './env/env.service';
-import {
-  FRAME_OPTIONS_INJECTION_TOKEN,
-  HEALTH_CHECKER_INJECTION_TOKEN,
-} from './injectionTokens';
+import { HEALTH_CHECKER_INJECTION_TOKEN } from './injectionTokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
 import { EmptyHealthChecker, HealthChecker } from './health/healthChecker';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
 
-export interface FrameModuleOptions {
+export interface PortalModuleOptions {
   /**
    * Providers that need to be known to this module, to create an instance of the other providers, that are added here.
    */
@@ -24,15 +21,11 @@ export interface FrameModuleOptions {
 }
 
 @Module({})
-export class FrameModule {
-  static create(options: FrameModuleOptions): DynamicModule {
+export class PortalModule {
+  static create(options: PortalModuleOptions): DynamicModule {
     const controllers: any[] = [HealthController];
 
     let providers: Provider[] = [
-      {
-        provide: FRAME_OPTIONS_INJECTION_TOKEN,
-        useValue: options,
-      },
       EnvService,
       Logger,
       {
@@ -50,7 +43,7 @@ export class FrameModule {
     > = [HttpModule.register({})];
 
     return {
-      module: FrameModule,
+      module: PortalModule,
       imports: moduleImports,
       controllers,
       providers,

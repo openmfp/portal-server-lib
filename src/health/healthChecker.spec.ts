@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmptyHealthChecker, HealthChecker } from './healthChecker';
+
 describe('EmptyHealthChecker', () => {
   let sut: HealthChecker;
 
