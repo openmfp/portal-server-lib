@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
@@ -24,7 +24,14 @@
   },
   "dependencies": {
     "@nestjs/axios": "3.0.1",
+    "@nestjs/common": "10.3.0"
+  },
+  "peerDependencies": {
+    "@nestjs/axios": "3.0.1",
     "@nestjs/common": "10.3.0",
+    "@nestjs/core": "10.3.0",
+    "@nestjs/platform-express": "10.3.0",
+    "@nestjs/serve-static": "4.0.0",
     "axios": "1.6.3",
     "express": "4.19.2",
     "rxjs": "7.8.1"
