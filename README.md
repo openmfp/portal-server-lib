@@ -1,4 +1,4 @@
-# Portal server - library
+# Portal server library
 
 This library help you to set up a [Nest.js](https://nestjs.com/) server to serve a dynamic luigi configuration.
 It is closely related to the [portal ui library](https://github.com/openmfp/portal-ui-lib).
@@ -14,8 +14,8 @@ Main features of this library are:
 The library exposes a Nest module as an api.
 
 ```ts
-import {NestFactory} from '@nestjs/core';
-import {FrameModule} from '@portal/server-lib';
+import { NestFactory } from '@nestjs/core';
+import { FrameModule } from '@portal/server-lib';
 
 const app = await NestFactory.create(
   FrameModule.create({

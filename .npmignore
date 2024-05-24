@@ -1,0 +1,5 @@
+.pipeline
+src
+test-run-reports
+metadata.yaml
+renovate.json
