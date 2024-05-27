@@ -18,7 +18,7 @@ describe('AuthController', () => {
   beforeEach(async () => {
     iasServiceMock = mock<IasService>();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PortalModule.create({})],
+      imports: [PortalModule.create({ additionalProviders: [] })],
     })
       .overrideProvider(IasService)
       .useValue(iasServiceMock)

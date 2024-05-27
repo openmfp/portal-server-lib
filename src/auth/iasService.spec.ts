@@ -105,7 +105,7 @@ describe('IasService', () => {
       );
     }
 
-    describe('refresh token - refresh_token flow', () => {
+    describe('token for refresh token - refresh_token flow', () => {
       const refreshToken = 'refresh me';
 
       it('should set the cookies', async () => {
@@ -127,6 +127,27 @@ describe('IasService', () => {
         // Assert
         assertResponseAndCookies(iasResponse);
       });
+
+      it('should not set the cookies, authorization exception', async () => {
+        // Arrange
+        nock(envService.getCurrentAuthEnv(requestMock).oauthServerUrl)
+          .post('/oauth2/token/', {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+          })
+          .reply(206, serverResponse);
+
+        // Act
+        // Assert
+        await expect(
+          service.exchangeTokenForRefreshToken(
+            requestMock,
+            responseMock,
+            refreshToken
+          )
+        ).rejects.toThrowError('Unexpected response code from ias: 206, null');
+        expect(authCallbackMock.setCookies).not.toHaveBeenCalled();
+      });
     });
 
     describe('token for code - authorization_code flow', () => {
@@ -140,6 +161,32 @@ describe('IasService', () => {
             client_id: env.clientId,
             grant_type: 'authorization_code',
             redirect_uri: `http://localhost:4300/callback?storageType=none`,
+            code: code,
+          })
+          .reply(200, serverResponse);
+
+        // Act
+        const iasResponse = await service.exchangeTokenForCode(
+          requestMock,
+          responseMock,
+          code
+        );
+
+        // Assert
+        assertResponseAndCookies(iasResponse);
+      });
+
+      it('should set the cookies for none local env', async () => {
+        // Arrange
+        process.env['ENVIRONMENT'] = 'prod';
+        const env = envService.getCurrentAuthEnv(requestMock);
+        const code = 'secret code';
+
+        nock(env.oauthServerUrl)
+          .post('/oauth2/token/', {
+            client_id: env.clientId,
+            grant_type: 'authorization_code',
+            redirect_uri: `https://example.com/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
