@@ -50,11 +50,9 @@ FRONTEND_PORT=4301
 
 ## Consuming the library
 
-This library needs a main project to run.
+This library exposes a Nest module as an api and needs a main project to run.
 
-### Import the module 
-
-The library exposes a Nest module as an api.
+### Import the module
 
 ```ts
 import { NestFactory } from '@nestjs/core';
