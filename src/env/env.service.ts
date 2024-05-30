@@ -1,16 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ServerAuthEnvironment } from '../model/clientEnvironment';
+import { ServerAuthEnvironment } from '../model/auth';
 import { Request } from 'express';
-
-export interface EnvVariables extends ServerEnv {
-  healthCheckInterval?: number;
-}
-
-interface ServerEnv {
-  idpNames: string[];
-  isLocal?: boolean;
-  frontendPort?: string;
-}
+import { EnvVariables } from '../model/clientEnvironment';
 
 interface BaseDomainsToIdp {
   idpName: string;
@@ -20,11 +11,20 @@ interface BaseDomainsToIdp {
 @Injectable()
 export class EnvService {
   public getEnv(): EnvVariables {
+    const validWebcomponentUrls = process.env.VALID_WEBCOMPONENT_URLS || '';
+    const minimalPluginVersion =
+      parseInt(process.env.MINIMAL_PLUGIN_VERSION) || 2;
+
     return {
       idpNames: this.getIdpNames(),
       healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL, 10),
       isLocal: process.env.ENVIRONMENT === 'local',
       frontendPort: process.env.FRONTEND_PORT || '4300',
+      developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
+      qualtricsSiteInterceptUrl: process.env.QUALTRICS_SITE_INTERCEPT_URL,
+      qualtricsId: process.env.QUALTRICS_ID,
+      validWebcomponentUrls: validWebcomponentUrls.split(','),
+      minimalPluginVersion,
     };
   }
 

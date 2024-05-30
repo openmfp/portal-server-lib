@@ -1,14 +1,20 @@
-export interface AuthEnvironment {
-  authData?: IasAuthData;
-  oauthServerUrl: string;
-  clientId: string;
+import { ServerAuthEnvironment } from './auth';
+
+export interface EnvironmentBase {
+  developmentInstance?: boolean;
+  qualtricsSiteInterceptUrl?: string;
+  qualtricsId?: string;
+  validWebcomponentUrls?: string[];
+  minimalPluginVersion?: number;
 }
 
-export interface ServerAuthEnvironment extends AuthEnvironment {
-  clientSecret: string;
-}
+export interface ClientEnvironment
+  extends ServerAuthEnvironment,
+    EnvironmentBase {}
 
-export interface IasAuthData {
-  expires_in: string;
-  access_token: string;
+export interface EnvVariables extends EnvironmentBase {
+  idpNames: string[];
+  healthCheckInterval?: number;
+  isLocal?: boolean;
+  frontendPort?: string;
 }

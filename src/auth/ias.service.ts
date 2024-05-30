@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EnvService } from '../env/env.service';
 import { Request, Response } from 'express';
 import { HttpService } from '@nestjs/axios';
-import { IasAuthData, ServerAuthEnvironment } from '../model/clientEnvironment';
+import { AuthData, ServerAuthEnvironment } from '../model/auth';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { AuthCallback } from './authCallback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injectionTokens';
 
-export interface IasResponse extends IasAuthData {
+export interface IasResponse extends AuthData {
   refresh_token: string;
   id_token: string;
 }

@@ -13,6 +13,7 @@ import { AuthController } from './auth/auth.controller';
 import { AuthDataService } from './auth/auth-data.service';
 import { AuthCallback, NoopAuthCallback } from './auth/authCallback';
 import { IasService } from './auth/ias.service';
+import { EnvController } from './env/env.controller';
 
 export interface PortalModuleOptions {
   authCallbackProvider?: Type<AuthCallback>;
@@ -32,7 +33,11 @@ export interface PortalModuleOptions {
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
-    const controllers: any[] = [AuthController, HealthController];
+    const controllers: any[] = [
+      AuthController,
+      EnvController,
+      HealthController,
+    ];
 
     let providers: Provider[] = [
       EnvService,
