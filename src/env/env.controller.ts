@@ -28,10 +28,7 @@ export class EnvController {
       oauthServerUrl: authEnv.oauthServerUrl,
       clientId: authEnv.clientId,
       developmentInstance: env.developmentInstance,
-      qualtricsSiteInterceptUrl: env.qualtricsSiteInterceptUrl,
-      qualtricsId: env.qualtricsId,
       validWebcomponentUrls: env.validWebcomponentUrls,
-      minimalPluginVersion: env.minimalPluginVersion,
     };
 
     if (authData) {

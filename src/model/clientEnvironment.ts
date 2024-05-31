@@ -2,10 +2,7 @@ import { ServerAuthEnvironment } from './auth';
 
 export interface EnvironmentBase {
   developmentInstance?: boolean;
-  qualtricsSiteInterceptUrl?: string;
-  qualtricsId?: string;
   validWebcomponentUrls?: string[];
-  minimalPluginVersion?: number;
 }
 
 export interface ClientEnvironment
