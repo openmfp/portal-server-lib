@@ -38,9 +38,6 @@ describe('EnvController', () => {
       jest.spyOn(envService, 'getEnv').mockReturnValue({
         validWebcomponentUrls: ['ab', 'cd'],
         developmentInstance: false,
-        qualtricsSiteInterceptUrl: '',
-        qualtricsId: '',
-        minimalPluginVersion: 0,
         isLocal: false,
         idpNames: [],
         frontendPort: '',
