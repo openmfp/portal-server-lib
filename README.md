@@ -31,7 +31,7 @@ In order to be able to use the library following environment properties have to 
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HEALTH_CHECK_INTERVAL   | The interval in *milliseconds* at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                         |
 | ENVIRONMENT             | This property indicates the environment in which the application is running, *local* indicates development environment.                                                                                     |
-| DEVELOPMENT_INSTANCE    | This property indicates if the server runs in development mode.                                                                                                                                              |
+| DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
 | FRONTEND_PORT           | Set the port number on which the frontend of the application will run in *local* environment.                                                                                                               |
 | VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
 
@@ -48,7 +48,7 @@ OIDC_CLIENT_SECRET_APP=app_client_secret
 HEALTH_CHECK_INTERVAL=
 ENVIRONMENT=local
 DEVELOPMENT_INSTANCE=true
-FRONTEND_PORT=4301
+FRONTEND_PORT=4300
 VALID_WEBCOMPONENT_URLS=".?"
 ```
 
