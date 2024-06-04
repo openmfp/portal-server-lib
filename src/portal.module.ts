@@ -6,6 +6,7 @@ import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
 import { EmptyHealthChecker, HealthChecker } from './health/healthChecker';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
+import { EnvController } from './env/env.controller';
 
 export interface PortalModuleOptions {
   /**
@@ -23,7 +24,7 @@ export interface PortalModuleOptions {
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
-    const controllers: any[] = [HealthController];
+    const controllers: any[] = [HealthController, EnvController];
 
     let providers: Provider[] = [
       EnvService,
