@@ -15,8 +15,6 @@ export class EnvController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<Record<string, any>> {
-    return this.envVariablesProvider.getEnv({
-      requestHostName: request.hostname,
-    });
+    return this.envVariablesProvider.getEnv(request, response);
   }
 }
