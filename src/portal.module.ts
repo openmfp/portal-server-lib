@@ -1,12 +1,19 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { EnvService } from './env/env.service';
-import { HEALTH_CHECKER_INJECTION_TOKEN } from './injectionTokens';
+import {
+  ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
+  HEALTH_CHECKER_INJECTION_TOKEN,
+} from './injectionTokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
 import { EmptyHealthChecker, HealthChecker } from './health/healthChecker';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
 import { EnvController } from './env/env.controller';
+import {
+  EmptyEnvVariablesProvider,
+  EnvVariablesProvider,
+} from './env/envVariablesProvider';
 
 export interface PortalModuleOptions {
   /**
@@ -19,6 +26,11 @@ export interface PortalModuleOptions {
    * health is not successful
    */
   healthChecker?: Type<HealthChecker>;
+
+  /**
+   * Service providing environment variables required to be sent to the clients.
+   */
+  envVariablesProvider?: Type<EnvVariablesProvider>;
 }
 
 @Module({})
@@ -32,6 +44,10 @@ export class PortalModule {
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
         useClass: options.healthChecker || EmptyHealthChecker,
+      },
+      {
+        provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
+        useClass: options.envVariablesProvider || EmptyEnvVariablesProvider,
       },
     ];
 

@@ -43,7 +43,6 @@ describe('HealthController', () => {
     beforeEach(function () {
       jest.spyOn(envService, 'getEnv').mockReturnValue({
         healthCheckInterval: 0,
-        idpNames: [],
       });
     });
 

@@ -1,16 +1,20 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
-import { EnvService } from './env.service';
+import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { EnvVariablesProvider } from './envVariablesProvider';
+import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injectionTokens';
 
 @Controller('/rest/envconfig')
 export class EnvController {
-  constructor(private envService: EnvService) {}
+  constructor(
+    @Inject(ENV_VARIABLES_PROVIDER_INJECTION_TOKEN)
+    private envVariablesProvider: EnvVariablesProvider
+  ) {}
 
   @Get()
-  getEnv(
+  async getEnv(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Record<string, any> {
-    return this.envService.getCurrentAuthEnv(request.hostname);
+  ): Promise<Record<string, any>> {
+    return this.envVariablesProvider.getEnv(request.hostname);
   }
 }
