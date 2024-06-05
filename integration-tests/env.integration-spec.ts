@@ -1,25 +1,24 @@
 import { INestApplication, Type } from '@nestjs/common';
 import request from 'supertest';
 import { integrationTestModule } from './integration-test-module';
-import { mock } from 'jest-mock-extended';
 import { EnvVariablesProvider } from '../src';
 
 describe('AppController (integration)', () => {
+  const env = {
+    idpNames: ['idp_1'],
+    healthCheckInterval: null,
+    isLocal: false,
+    frontendPort: '4300',
+    developmentInstance: false,
+    validWebcomponentUrls: ['.?'],
+    oauthServerUrl: 'https://oauth.com',
+    clientId: '1fd3f7a6-d506-4289-9fcf-fed52eeb4c16',
+  };
   let app: INestApplication;
 
   beforeEach(async () => {
     const envVariablesProvider = {
-      getEnv: (hostname: string) =>
-        Promise.resolve({
-          idpNames: ['sap'],
-          healthCheckInterval: null,
-          isLocal: false,
-          frontendPort: '4300',
-          developmentInstance: false,
-          validWebcomponentUrls: ['.?'],
-          oauthServerUrl: 'https://ametqb0em.accounts400.ondemand.com',
-          clientId: '1fd3f7a6-d506-4289-9fcf-fed52eeb4c16',
-        }),
+      getEnv: (hostname: string) => Promise.resolve(env),
     } as unknown as Type<EnvVariablesProvider>;
 
     const moduleFixture = await integrationTestModule({
@@ -38,16 +37,7 @@ describe('AppController (integration)', () => {
     return request(app.getHttpServer())
       .get('/rest/envconfig')
       .expect(200)
-      .expect({
-        idpNames: ['sap'],
-        healthCheckInterval: null,
-        isLocal: false,
-        frontendPort: '4300',
-        developmentInstance: false,
-        validWebcomponentUrls: ['.?'],
-        oauthServerUrl: 'https://ametqb0em.accounts400.ondemand.com',
-        clientId: '1fd3f7a6-d506-4289-9fcf-fed52eeb4c16',
-      });
+      .expect(env);
   });
 
   it('should implement integration-test', () => {
