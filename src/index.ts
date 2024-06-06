@@ -1,5 +1,5 @@
-export * from './injectionTokens';
+export * from './injection-tokens';
 export * from './portal.module';
 export { EnvService } from './env/env.service';
-export { EnvVariablesProvider } from './env/envVariablesProvider';
-export { HealthChecker } from './health/healthChecker';
+export { EnvVariablesService } from './env/env-variables.service';
+export { HealthChecker } from './health/health-checker';

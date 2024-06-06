@@ -1,7 +1,7 @@
 import { INestApplication, Type } from '@nestjs/common';
 import request from 'supertest';
 import { integrationTestModule } from './integration-test-module';
-import { EnvVariablesProvider } from '../src';
+import { EnvVariablesService } from '../src';
 
 describe('AppController (integration)', () => {
   const env = {
@@ -19,7 +19,7 @@ describe('AppController (integration)', () => {
   beforeEach(async () => {
     const envVariablesProvider = {
       getEnv: (hostname: string) => Promise.resolve(env),
-    } as unknown as Type<EnvVariablesProvider>;
+    } as unknown as Type<EnvVariablesService>;
 
     const moduleFixture = await integrationTestModule({
       envVariablesProvider,

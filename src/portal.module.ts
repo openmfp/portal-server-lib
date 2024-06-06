@@ -4,16 +4,16 @@ import { EnvService } from './env/env.service';
 import {
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
-} from './injectionTokens';
+} from './injection-tokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
-import { EmptyHealthChecker, HealthChecker } from './health/healthChecker';
+import { EmptyHealthChecker, HealthChecker } from './health/health-checker';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
 import { EnvController } from './env/env.controller';
 import {
-  EmptyEnvVariablesProvider,
-  EnvVariablesProvider,
-} from './env/envVariablesProvider';
+  EmptyEnvVariablesService,
+  EnvVariablesService,
+} from './env/env-variables.service';
 
 export interface PortalModuleOptions {
   /**
@@ -30,7 +30,7 @@ export interface PortalModuleOptions {
   /**
    * Service providing environment variables required to be sent to the clients.
    */
-  envVariablesProvider?: Type<EnvVariablesProvider>;
+  envVariablesProvider?: Type<EnvVariablesService>;
 }
 
 @Module({})
@@ -47,7 +47,7 @@ export class PortalModule {
       },
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
-        useClass: options.envVariablesProvider || EmptyEnvVariablesProvider,
+        useClass: options.envVariablesProvider || EmptyEnvVariablesService,
       },
     ];
 
