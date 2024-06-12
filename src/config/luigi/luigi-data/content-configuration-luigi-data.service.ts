@@ -1,51 +1,43 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call*/
 import {
-  LuigiNode,
   CrossNavigationInbounds,
   LuigiIntent,
+  LuigiNode,
 } from '../../model/luigi.node';
 import * as URI from 'uri-js';
 import { URIComponents } from 'uri-js';
-import { CDM, CDMExtendedData } from './cdm';
 import { LuigiAppConfig, LuigiNavConfig } from '../../model/luigi-app-config';
+import {
+  CDM,
+  ContentConfiguration,
+  Dictionary,
+  ExtendedData,
+  LuigiConfigData,
+} from '../../model/configuration';
+import { Injectable } from '@nestjs/common';
 
-export class CdmLuigiDataServiceBase {
-  constructor(protected httpService: any) {
-    this.httpService = httpService;
-  }
-
-  async getLuigiDataFromCDM(
-    cdm: CDM[],
+@Injectable()
+export class ContentConfigurationLuigiDataService {
+  public async processContentConfiguration(
+    contentConfiguration: ContentConfiguration[],
     language: string,
-    cdmExtendedData?: CDMExtendedData
+    cdmExtendedData?: ExtendedData
   ): Promise<LuigiNode[]> {
-    const nodeArrays = await Promise.allSettled(
-      cdm.map(async (c) => {
-        let data: Record<any, any>;
-        if (c.data) {
-          data = c.data;
-        } else {
-          const response = await this.httpService.get(c.url).toPromise();
-          data = response.data || response;
-        }
+    const nodeArrays = contentConfiguration.map((contentConfiguration) =>
+      contentConfiguration.luigiConfigFragment.flatMap((configFragment) => {
+        let data = configFragment.data;
 
         if (data.texts) {
-          data = this.translateTextsFromCDM(data, language);
+          data = this.localizeDataWithLanguage(data, language);
         }
 
-        return this.processCdmJson(data, c.url);
+        return this.createNodesFromContentConfiguration(data);
       })
     );
 
     const nodes: LuigiNode[] = [];
     for (const nodeArray of nodeArrays) {
-      if (nodeArray.status == 'rejected') {
-        let error = nodeArray.reason;
-        error = error.message || error;
-        console.warn('failed to load luigi config', error);
-        continue;
-      }
-      const checkedNodes = nodeArray.value.map((node) => {
+      const checkedNodes = nodeArray.map((node) => {
         const isMissingMandatoryData =
           cdmExtendedData?.isMissingMandatoryData || undefined;
         const helpContext = cdmExtendedData?.helpContext || undefined;
@@ -69,133 +61,57 @@ export class CdmLuigiDataServiceBase {
     return nodes;
   }
 
-  // Only add the extension class name to a node if it's missing mandatory data
-  // because we need it for navigation purposes
-  private getExtensionClassNameForNode(
-    cdmExtendedData: CDMExtendedData
-  ): string | undefined {
-    if (
-      cdmExtendedData?.isMissingMandatoryData &&
-      cdmExtendedData?.extensionClassName
-    ) {
-      return cdmExtendedData?.extensionClassName;
-    }
-
-    return undefined;
-  }
-
-  translateTextsFromCDM(data, language: string): Record<string, any> {
-    let cdmString = JSON.stringify(data);
-    const { textDictionary } = this.findMatchedDictionary(data.texts, language);
-
-    textDictionary &&
-      Object.entries(textDictionary).forEach(([key, value]) => {
-        const searchRegExp = new RegExp(`{{${key}}}`, 'g');
-        cdmString = cdmString.replace(searchRegExp, value.toString());
-      });
-
-    return JSON.parse(cdmString) as Record<string, any>;
-  }
-
-  findMatchedDictionary(textsObject, language: string): Record<string, string> {
-    const defaultDict = textsObject.find((obj) => obj.locale === '') as Record<
-      string,
-      string
-    >;
-    const matchedDict = textsObject.find((obj) => {
-      const locale = obj.locale;
-      const isNotEmpty = locale !== '' && language !== '';
-
-      if (isNotEmpty && locale === language) {
-        return true;
-      } else if (isNotEmpty && locale.startsWith(language)) {
-        return true;
-      }
-
-      return false;
-    }) as Record<string, string>;
-
-    return matchedDict || defaultDict;
-  }
-
-  private processCdmJson(data, cdmUri: string | undefined): LuigiNode[] {
-    if (
-      data.payload &&
-      data.payload.visualizations &&
-      data.payload.visualizations.LuigiNavConfig &&
-      data.payload.targetAppConfig
-    ) {
-      const luigiVisConf = data.payload.visualizations
-        .LuigiNavConfig as LuigiNavConfig;
-      const luigiAppConfig: LuigiAppConfig =
-        data.payload.targetAppConfig['sap.integration'];
-      const luigiIntentInboundList: CrossNavigationInbounds =
-        data.payload.targetAppConfig['sap.app']?.crossNavigation?.inbounds;
-      return this._createNodes(
-        luigiVisConf,
-        luigiAppConfig,
-        luigiIntentInboundList,
-        cdmUri != undefined ? URI.parse(cdmUri) : undefined
-      );
-    } else {
-      throw new Error(
-        'Ignoring data model because data is missing. Make sure that visualization and targetAppConfig properties are set properly.'
-      );
-    }
-  }
-
-  _createNodes(
-    cfg: LuigiNavConfig,
-    appConfig: LuigiAppConfig,
-    luigiIntentInboundList: CrossNavigationInbounds,
-    cdmUri: URIComponents | undefined
+  private createNodesFromContentConfiguration(
+    luigiConfigData: LuigiConfigData
   ): LuigiNode[] {
-    if (cfg && cfg.vizConfig && cfg.vizConfig.nodes) {
+    if (luigiConfigData && luigiConfigData.nodes) {
       const nodes: LuigiNode[] = [];
+      // todo gkr check how to get the templating
       let urlTemplateUrl = '';
-      if (cdmUri != undefined) {
-        const schemeAndHost = `${cdmUri.scheme}://${cdmUri.host}`;
-        const localUrl = cdmUri.port
-          ? `${schemeAndHost}:${cdmUri.port}`
-          : schemeAndHost;
-        urlTemplateUrl = appConfig.urlTemplateParams.url || localUrl;
-      }
 
-      cfg.vizConfig.nodes.forEach((node) => {
-        nodes.push(this._createNode(node, cfg, appConfig, urlTemplateUrl));
+      luigiConfigData.nodes.forEach((node) => {
+        nodes.push(
+          this.createNodeFromContentConfiguration(
+            node,
+            luigiConfigData,
+            urlTemplateUrl
+          )
+        );
       });
 
-      if (nodes.length > 0) {
-        const configTransferNode = nodes[0];
-
-        if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
-          configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
-        }
-        configTransferNode._requiredIFramePermissionsForViewGroup =
-          cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
-
-        configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
-        if (configTransferNode._dxpUserSettingsConfig?.groups) {
-          Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
-            (key) => {
-              const group =
-                configTransferNode._dxpUserSettingsConfig.groups[key];
-              if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
-                group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
-              }
-            }
-          );
-        }
-
-        // Resolve intentMapping information and pass through with the config transfer node
-        const intentData = this.resolveIntentTargetsAndEntityPath(
-          nodes,
-          luigiIntentInboundList
-        );
-        configTransferNode._intentMappings = intentData?.intentMappings;
-        configTransferNode._entityRelativePaths =
-          intentData?.entityRelativePaths;
-      }
+      //vizConfig is the couterpart of the LuigiConfigData
+      // if (nodes.length > 0) {
+      //   const configTransferNode = nodes[0];
+      //
+      //   if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
+      //     configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
+      //   }
+      //
+      //   configTransferNode._requiredIFramePermissionsForViewGroup =
+      //     cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
+      //
+      //   configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
+      //   if (configTransferNode._dxpUserSettingsConfig?.groups) {
+      //     Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
+      //       (key) => {
+      //         const group =
+      //           configTransferNode._dxpUserSettingsConfig.groups[key];
+      //         if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
+      //           group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
+      //         }
+      //       }
+      //     );
+      //   }
+      //
+      //   // Resolve intentMapping information and pass through with the config transfer node
+      //   const intentData = this.resolveIntentTargetsAndEntityPath(
+      //     nodes,
+      //     luigiIntentInboundList
+      //   );
+      //   configTransferNode._intentMappings = intentData?.intentMappings;
+      //   configTransferNode._entityRelativePaths =
+      //     intentData?.entityRelativePaths;
+      // }
 
       return nodes;
     } else {
@@ -203,74 +119,16 @@ export class CdmLuigiDataServiceBase {
     }
   }
 
-  private isAbsoluteUrl(url: string) {
-    const testBase = 'http://test.url.tld';
-    return (
-      url.trim().startsWith(testBase) ||
-      new URL(testBase).origin !== new URL(url, testBase).origin
-    );
-  }
-
-  private _createNode(
-    nodeCfg,
-    cfg,
-    appConfig,
+  private createNodeFromContentConfiguration(
+    luigiNode: LuigiNode,
+    luigiConfigData: LuigiConfigData,
     urlTemplateUrl: string
-  ): LuigiNode {
-    const nodeDefaults = cfg.vizConfig.nodeDefaults || {};
+  ) {
+    const nodeDefaults = luigiConfigData.nodeDefaults || {};
     const node: LuigiNode = {
       ...nodeDefaults,
-      ...nodeCfg,
+      ...luigiNode,
     };
-
-    const {
-      pathSegment,
-      externalLink,
-      icon,
-      testId,
-      link,
-      hideFromNav,
-      useHashRouting,
-      visibleForFeatureToggles,
-      visibleForEntityContext,
-      visibleForContext,
-      visibleForPlugin,
-      isolateView,
-      networkVisibility,
-      virtualTree,
-      hideFromBreadcrumb,
-      hideSideNav,
-      tabNav,
-      loadingIndicator,
-      requiredPolicies,
-      category,
-      dxpOrder,
-      entityType,
-      label,
-      context,
-      keepSelectedForChildren,
-      requiredIFramePermissions,
-      userSettingsGroup,
-      defineEntity,
-      webcomponent,
-      navigationContext,
-      compound,
-      layoutConfig,
-      navHeader,
-      titleResolver,
-      clientPermissions,
-      showBreadcrumbs,
-      target,
-      ignoreInDocumentTitle,
-      navSlot,
-      defineSlot,
-      decodeViewUrl,
-      statusBadge,
-
-      configurationMissing,
-      configurationHint,
-      configurationLink,
-    } = node;
 
     let viewGroup: string,
       viewUrl: string,
@@ -303,64 +161,83 @@ export class CdmLuigiDataServiceBase {
     if (node.children) {
       const directChildren = node.children as LuigiNode[];
       children = directChildren.map((child) => {
-        return this._createNode(child, cfg, appConfig, urlTemplateUrl);
+        return this.createNodeFromContentConfiguration(
+          child,
+          luigiConfigData,
+          urlTemplateUrl
+        );
       });
     }
 
     return {
-      label,
+      ...node,
       children,
       viewGroup,
-      icon,
-      testId,
-      link,
-      userSettingsGroup,
-      pathSegment,
-      externalLink,
-      hideFromNav,
-      useHashRouting,
-      visibleForFeatureToggles,
-      visibleForEntityContext,
-      visibleForContext,
-      visibleForPlugin,
-      isolateView,
-      networkVisibility,
-      virtualTree,
-      hideFromBreadcrumb,
-      hideSideNav,
-      tabNav,
-      loadingIndicator,
-      requiredPolicies,
       viewUrl,
-      context,
-      category,
-      dxpOrder,
-      entityType,
-      keepSelectedForChildren,
-      requiredIFramePermissions,
-      defineEntity,
-      webcomponent,
-      navigationContext,
-      compound,
-      layoutConfig,
-      navHeader,
-      titleResolver,
-      clientPermissions,
-      showBreadcrumbs,
-      target,
-      ignoreInDocumentTitle,
-      navSlot,
-      defineSlot,
-      decodeViewUrl,
-      statusBadge,
-
-      configurationMissing,
-      configurationHint,
-      configurationLink,
     };
   }
 
-  processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
+  // Only add the extension class name to a node if it's missing mandatory data
+  // because we need it for navigation purposes
+  private getExtensionClassNameForNode(
+    extendedData: ExtendedData
+  ): string | undefined {
+    if (
+      extendedData?.isMissingMandatoryData &&
+      extendedData?.extensionClassName
+    ) {
+      return extendedData?.extensionClassName;
+    }
+
+    return undefined;
+  }
+
+  private localizeDataWithLanguage<T extends { texts: Dictionary[] }>(
+    data: T,
+    language: string
+  ): T {
+    let dataAsString = JSON.stringify(data);
+    const { textDictionary } = this.findMatchedDictionary(data.texts, language);
+
+    textDictionary &&
+      Object.entries(textDictionary).forEach(([key, value]) => {
+        const searchRegExp = new RegExp(`{{${key}}}`, 'g');
+        dataAsString = dataAsString.replace(searchRegExp, value.toString());
+      });
+
+    return JSON.parse(dataAsString) as T;
+  }
+
+  private findMatchedDictionary(
+    textsObject: Dictionary[],
+    language: string
+  ): Dictionary {
+    const defaultDict = textsObject.find((obj) => obj.locale === '');
+    const matchedDict = textsObject.find((obj) => {
+      const locale = obj.locale;
+      const isNotEmpty = locale !== '' && language !== '';
+
+      if (isNotEmpty && locale === language) {
+        return true;
+      } else if (isNotEmpty && locale.startsWith(language)) {
+        return true;
+      }
+
+      return false;
+    });
+
+    return matchedDict || defaultDict;
+  }
+
+  private isAbsoluteUrl(url: string) {
+    const testBase = 'http://test.url.tld';
+    return (
+      url.trim().startsWith(testBase) ||
+      new URL(testBase).origin !== new URL(url, testBase).origin
+    );
+  }
+
+  private processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
     compound?.children?.forEach((element) => {
       if (element.url) {
         element.viewUrl = element.url;
@@ -377,7 +254,7 @@ export class CdmLuigiDataServiceBase {
    * @param inbounds list of semanticObject + action coming as an input from the CDM ["crossNavigation.inbounds"] configuration
    * @returns a list of LuigiIntents (intentMappings) and 'entityRelativePaths' built after the nodes recursive traversal.
    */
-  resolveIntentTargetsAndEntityPath(
+  private resolveIntentTargetsAndEntityPath(
     nodes: LuigiNode[],
     inbounds: CrossNavigationInbounds
   ): {
@@ -423,7 +300,7 @@ export class CdmLuigiDataServiceBase {
    * @param targetParentEntity the parentEntity data saved upon each recursive traversal to build the target intents parent entity id
    * @param intentKnowledge the knowledge object, whose properties are modified by reference
    */
-  prebuildIntentTargetsRecursively(
+  private prebuildIntentTargetsRecursively(
     node: LuigiNode,
     inbounds,
     parentEntity,

@@ -44,4 +44,39 @@ describe('EnvService', () => {
       delete process.env[envVarName];
     });
   });
+
+  describe('getFeatureToggles', function () {
+    [
+      {
+        featureString: '',
+        expectedObject: {},
+      },
+      {
+        featureString: 'a=true',
+        expectedObject: {
+          a: true,
+        },
+      },
+      {
+        featureString: 'b=foo,a=TrUe',
+        expectedObject: {
+          a: true,
+          b: false,
+        },
+      },
+      {
+        featureString: 'b = foo, a=TrUe ',
+        expectedObject: {
+          a: true,
+          b: false,
+        },
+      },
+    ].forEach((testCase) => {
+      it(`should parse features fo '${testCase.featureString}'`, () => {
+        process.env.FEATURE_TOGGLES = testCase.featureString;
+        const features = service.getFeatureToggles();
+        expect(features).toEqual(testCase.expectedObject);
+      });
+    });
+  });
 });

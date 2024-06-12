@@ -5,17 +5,17 @@ import request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigController } from './config.controller';
 import { PortalModule } from '../portal.module';
-import { LuigiConfigNodesService } from '../luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { TenantService } from '../auth/tenant.service';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FRAME_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
-import { FrameContextProvider } from './frameContextProvider';
-import { FeatureTogglesProvider } from '../feature-toggles/featureTogglesProvider';
+import { FeatureTogglesRovider } from './context/feature-toggles-rovider';
 import { HeaderParserService } from '../request-helper/header-parser.service';
-import { ServiceProvider } from '../model/luigi.node';
+import { ServiceProvider } from './model/luigi.node';
+import { FrameContextProvider } from './context/frame-context-provider';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -32,7 +32,7 @@ describe('ConfigController', () => {
   let tenantProvider: TenantService;
   let contextValuesProvider: FrameContextProvider;
   let headerParserService: HeaderParserService;
-  let featureTogglesProvider: FeatureTogglesProvider;
+  let featureTogglesProvider: FeatureTogglesRovider;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
@@ -57,7 +57,7 @@ describe('ConfigController', () => {
     controller = module.get<ConfigController>(ConfigController);
     nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
-    featureTogglesProvider = module.get<FeatureTogglesProvider>(
+    featureTogglesProvider = module.get<FeatureTogglesRovider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);

@@ -193,7 +193,7 @@ export interface ServiceProvider {
   creationTimestamp: string;
 }
 
-export interface FrameConfig {
+export interface PortalConfig {
   providers: ServiceProvider[];
   tenantId: string;
   frameContext: Record<string, any>;

@@ -10,7 +10,7 @@ import {
   ForbiddenException,
   HttpStatus,
 } from '@nestjs/common';
-import { LuigiConfigNodesService } from '../luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
 import { HeaderParserService } from '../request-helper/header-parser.service';
 import {
@@ -20,23 +20,23 @@ import {
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { TenantService } from '../auth/tenant.service';
-import { FrameContextProvider } from './frameContextProvider';
-import { EntityParams } from './dto/entity';
-import { FeatureTogglesProvider } from '../feature-toggles/featureTogglesProvider';
+import { FrameContextProvider } from './context/frame-context-provider';
+import { EntityParams } from './model/entity';
+import { FeatureTogglesRovider } from './context/feature-toggles-rovider';
 import {
   EntityContextProvider,
   EntityContextProviders,
   EntityNotFoundException,
-} from './entityContextProvider';
+} from './context/entity-context-provider';
 import { ModuleRef } from '@nestjs/core';
-import { FrameConfig, ServiceProvider } from '../model/luigi.node';
+import { PortalConfig, ServiceProvider } from './model/luigi.node';
 
 @Controller('/rest/config')
 export class ConfigController {
   private entityContextProviders: Record<string, EntityContextProvider> = {};
 
   constructor(
-    private luigiConfigNodes: LuigiConfigNodesService,
+    private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
     @Inject(TENANT_PROVIDER_INJECTION_TOKEN)
     private tenantProvider: TenantService,
@@ -45,7 +45,7 @@ export class ConfigController {
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
-    private featureTogglesProvider: FeatureTogglesProvider,
+    private featureTogglesProvider: FeatureTogglesRovider,
     moduleRef: ModuleRef
   ) {
     for (const [entity, eCP] of Object.entries(entityContextProviders)) {
@@ -58,7 +58,7 @@ export class ConfigController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
-  ): Promise<FrameConfig> {
+  ): Promise<PortalConfig> {
     // start async processes
     const providersAndTenantPromise = this.getProvidersAndTenant(
       request,
@@ -121,7 +121,7 @@ export class ConfigController {
     const token = this.headerParser.extractBearerToken(request);
     const tenantId = await this.tenantProvider.provideTenant(request);
 
-    const providers = await this.luigiConfigNodes.getNodes(
+    const providers = await this.luigiConfigNodesService.getNodes(
       token,
       ['GLOBAL', 'TENANT'],
       acceptLanguage,
@@ -139,7 +139,7 @@ export class ConfigController {
   ) {
     const token = this.headerParser.extractBearerToken(request);
 
-    const providersPromise = this.luigiConfigNodes
+    const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [params.entity], acceptLanguage, request.query)
       .catch((e: Error) => e);
 

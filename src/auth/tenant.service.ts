@@ -14,7 +14,7 @@ export class LocalTenantService implements TenantService {
     this.tenantId = envService.getEnv().tenantId;
   }
 
-  provideTenant(): Promise<string> {
+  provideTenant(request: Request): Promise<string> {
     return Promise.resolve(this.tenantId);
   }
 }

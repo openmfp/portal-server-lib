@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service';
-import { PortalModule } from '../../portal.module';
+import { PortalModule } from '../../../portal.module';
 import {
   RawServiceProvider,
   ServiceProviderService,
 } from '../../service-providers/service-provider.interfaces';
-import { CdmLuigiDataService } from '../cdm-luigi-data/cdm-luigi-data.service';
+import { LuigiDataService } from '../luigi-data/luigi-data.service';
 import { mock } from 'jest-mock-extended';
-import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../injection-tokens';
+import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
 import { LuigiNode } from '../../model/luigi.node';
 
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;
   let serviceProviderService: ServiceProviderService;
-  let cdmLuigiDataService: CdmLuigiDataService;
+  let cdmLuigiDataService: LuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,7 +27,7 @@ describe('LuigiConfigNodesService', () => {
     serviceProviderService = module.get<ServiceProviderService>(
       SERVICE_PROVIDER_INJECTION_TOKEN
     );
-    cdmLuigiDataService = module.get<CdmLuigiDataService>(CdmLuigiDataService);
+    cdmLuigiDataService = module.get<LuigiDataService>(LuigiDataService);
   });
 
   it('should be defined', () => {
@@ -37,7 +37,7 @@ describe('LuigiConfigNodesService', () => {
   it('should return a service provider for each request', async () => {
     const nodes: LuigiNode[] = [];
     jest
-      .spyOn(cdmLuigiDataService, 'getLuigiDataFromCDM')
+      .spyOn(cdmLuigiDataService, 'getLuigiData')
       .mockReturnValue(Promise.resolve(nodes));
     const rawServiceProviders: RawServiceProvider[] = [
       {

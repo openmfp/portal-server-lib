@@ -15,6 +15,7 @@ interface VizConfig {
   viewGroup?: ViewGroup;
   nodes?: LuigiNode[];
   userSettings: LuigiUserSettingsConfig;
+  nodeDefaults: any;
 }
 
 export interface LuigiNavConfig {

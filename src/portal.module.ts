@@ -20,16 +20,17 @@ import {
   EnvVariablesService,
 } from './env/env-variables.service';
 import { ConfigController } from './config/config.controller';
-import { FrameContextProvider } from './config/frameContextProvider';
-import { EntityContextProviders } from './config/entityContextProvider';
-import { EmptyFrameContextProvider } from './config/emptyFrameContextProvider';
+import { FrameContextProvider } from './config/context/frame-context-provider';
+import { EntityContextProviders } from './config/context/entity-context-provider';
+import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
 import { LocalTenantService, TenantService } from './auth/tenant.service';
-import { EnvFeatureTogglesProvider } from './feature-toggles/featureTogglesProvider';
-import { ServiceProviderService } from './service-providers/service-provider.interfaces';
-import { EmptyServiceProviderService } from './service-providers/empty-service-provider.service';
-import { CdmLuigiDataService } from './luigi/cdm-luigi-data/cdm-luigi-data.service';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-rovider';
+import { ServiceProviderService } from './config/service-providers/service-provider.interfaces';
+import { EmptyServiceProviderService } from './config/service-providers/empty-service-provider.service';
+import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
+import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { HeaderParserService } from './request-helper/header-parser.service';
+import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
 
 export interface PortalModuleOptions {
   /**
@@ -86,8 +87,9 @@ export class PortalModule {
     let providers: Provider[] = [
       EnvService,
       Logger,
-      CdmLuigiDataService,
+      LuigiDataService,
       LuigiConfigNodesService,
+      ContentConfigurationLuigiDataService,
       HeaderParserService,
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,

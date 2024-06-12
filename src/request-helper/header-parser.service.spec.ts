@@ -23,4 +23,10 @@ describe('HeaderParserService', () => {
     const tenantId = service.extractBearerToken(requestMock);
     expect(tenantId).toBe(token);
   });
+
+  it('should return undefined when no bearer token', () => {
+    requestMock.headers.authorization = '';
+
+    expect(service.extractBearerToken(requestMock)).toBeUndefined();
+  });
 });

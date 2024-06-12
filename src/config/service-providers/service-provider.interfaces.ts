@@ -1,11 +1,18 @@
-import { HelpCenterData } from './models/help-center-data';
-import { CDM } from '../luigi/cdm-luigi-data/cdm';
 import { BreadcrumbBadge } from '../model/breadcrumb-badge';
+import { CDM, ContentConfiguration } from '../model/configuration';
+import { StackSearch } from '../model/luigi.node';
+
+export interface HelpCenterData {
+  stackSearch?: StackSearch;
+  issueTracker?: URL;
+  feedbackTracker?: URL;
+}
 
 export interface RawServiceProvider {
   name: string;
   displayName: string;
-  cdm: CDM[];
+  contentConfiguration?: ContentConfiguration[];
+  cdm?: CDM[];
   config: Record<string, string>;
   creationTimestamp: string;
   installationData?: Record<string, string>;
