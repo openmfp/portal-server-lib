@@ -22,7 +22,7 @@ import {
 import { TenantService } from '../auth/tenant.service';
 import { FrameContextProvider } from './context/frame-context-provider';
 import { EntityParams } from './model/entity';
-import { FeatureTogglesRovider } from './context/feature-toggles-rovider';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
   EntityContextProvider,
   EntityContextProviders,
@@ -45,7 +45,7 @@ export class ConfigController {
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
-    private featureTogglesProvider: FeatureTogglesRovider,
+    private featureTogglesProvider: FeatureTogglesProvider,
     moduleRef: ModuleRef
   ) {
     for (const [entity, eCP] of Object.entries(entityContextProviders)) {
@@ -156,7 +156,7 @@ export class ConfigController {
       };
     } catch (e) {
       if (e instanceof NotFoundException) {
-        response.status(404);
+        response.status(HttpStatus.NOT_FOUND);
         return undefined;
       }
       throw e;

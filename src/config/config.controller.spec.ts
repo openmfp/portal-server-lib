@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigController } from './config.controller';
 import { PortalModule } from '../portal.module';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
@@ -11,10 +10,15 @@ import {
   FRAME_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
-import { FeatureTogglesRovider } from './context/feature-toggles-rovider';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import { HeaderParserService } from '../request-helper/header-parser.service';
 import { ServiceProvider } from './model/luigi.node';
 import { FrameContextProvider } from './context/frame-context-provider';
+import {
+  EntityContextProviders,
+  EntityNotFoundException,
+} from './context/entity-context-provider';
+import { ForbiddenException, HttpStatus } from '@nestjs/common';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -22,16 +26,16 @@ const entityContext = { abc: 'def' };
 const token = 'token';
 
 describe('ConfigController', () => {
-  let app: INestApplication;
   let controller: ConfigController;
-  let nodesService: LuigiConfigNodesService;
+  let luigiConfigNodesService: LuigiConfigNodesService;
   let getEntityContextMock: jest.Mock;
   let requestMock: Request;
   let responseMock: Response;
   let tenantProvider: TenantService;
-  let contextValuesProvider: FrameContextProvider;
+  let frameContextProvider: FrameContextProvider;
   let headerParserService: HeaderParserService;
-  let featureTogglesProvider: FeatureTogglesRovider;
+  let featureTogglesProvider: FeatureTogglesProvider;
+  let entityContextProviders: EntityContextProviders;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
@@ -54,13 +58,15 @@ describe('ConfigController', () => {
       ],
     }).compile();
     controller = module.get<ConfigController>(ConfigController);
-    nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
+    luigiConfigNodesService = module.get<LuigiConfigNodesService>(
+      LuigiConfigNodesService
+    );
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
-    featureTogglesProvider = module.get<FeatureTogglesRovider>(
+    featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    contextValuesProvider = module.get<FrameContextProvider>(
+    frameContextProvider = module.get<FrameContextProvider>(
       FRAME_CONTEXT_INJECTION_TOKEN
     );
 
@@ -80,100 +86,215 @@ describe('ConfigController', () => {
     requestMock.query = { key: 'val' };
     requestMock.hostname = 'lokal.horst';
     responseMock = mock<Response>();
-
-    app = module.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should get the config for tenant', async () => {
-    const resultingNodes: ServiceProvider[] = [];
-    const getNodesMock = jest
-      .spyOn(nodesService, 'getNodes')
-      .mockReturnValue(Promise.resolve(resultingNodes));
-    const config = await controller.getConfig(
-      requestMock,
-      responseMock,
-      acceptLanguage
-    );
-    expect(config.providers).toBe(resultingNodes);
-    expect(getNodesMock).toHaveBeenCalledWith(
-      token,
-      ['GLOBAL', 'TENANT'],
-      acceptLanguage,
-      { tenant: mockTenant }
-    );
-  });
+  describe('getConfig', () => {
+    it('should get the config for tenant', async () => {
+      const resultingNodes: ServiceProvider[] = [];
+      const getNodesMock = jest
+        .spyOn(luigiConfigNodesService, 'getNodes')
+        .mockReturnValue(Promise.resolve(resultingNodes));
 
-  it('should add additionalValuesToTheContext', async () => {
-    // Arrange
-    const expectedObject = {
-      foo: 'bar',
-    };
-    jest.spyOn(nodesService, 'getNodes').mockResolvedValue([
-      {
-        nodes: [
-          {
-            context: {
-              providesMissingMandatoryDataUrl: true,
+      const config = await controller.getConfig(
+        requestMock,
+        responseMock,
+        acceptLanguage
+      );
+
+      expect(config.providers).toBe(resultingNodes);
+      expect(getNodesMock).toHaveBeenCalledWith(
+        token,
+        ['GLOBAL', 'TENANT'],
+        acceptLanguage,
+        { tenant: mockTenant }
+      );
+    });
+
+    it('should add additionalValuesToTheContext', async () => {
+      // Arrange
+      const expectedObject = {
+        foo: 'bar',
+      };
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([
+        {
+          nodes: [
+            {
+              context: {
+                providesMissingMandatoryDataUrl: true,
+              },
+              viewUrl: 'foo-url',
             },
-            viewUrl: 'foo-url',
-          },
-        ],
-        config: {},
-        creationTimestamp: 'baz',
-      },
-    ]);
-    jest
-      .spyOn(contextValuesProvider, 'getContextValues')
-      .mockResolvedValue({ ...expectedObject });
+          ],
+          config: {},
+          creationTimestamp: 'baz',
+        },
+      ]);
+      jest
+        .spyOn(frameContextProvider, 'getContextValues')
+        .mockResolvedValue({ ...expectedObject });
 
-    // Act
-    const config = await controller.getConfig(
-      requestMock,
-      responseMock,
-      acceptLanguage
-    );
+      // Act
+      const config = await controller.getConfig(
+        requestMock,
+        responseMock,
+        acceptLanguage
+      );
 
-    // Assert
-    expect(config.frameContext).toStrictEqual({
-      ...expectedObject,
-      extensionManagerMissingMandatoryDataUrl: 'foo-url',
+      // Assert
+      expect(config.frameContext).toStrictEqual({
+        ...expectedObject,
+        extensionManagerMissingMandatoryDataUrl: 'foo-url',
+      });
+    });
+
+    it('should handle frameContextProvider error', async () => {
+      // Arrange
+      const error = new Error('this is a test error');
+
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+
+      jest
+        .spyOn(featureTogglesProvider, 'getFeatureToggles')
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 0))
+        );
+
+      jest
+        .spyOn(frameContextProvider, 'getContextValues')
+        .mockRejectedValue(error);
+
+      // Act
+      const result = controller.getConfig(
+        requestMock,
+        responseMock,
+        acceptLanguage
+      );
+
+      // Assert
+      await expect(result).rejects.toEqual(error);
+    });
+
+    it('should handle featureTogglesProvider error', async () => {
+      // Arrange
+      const error = new Error('this is a test error');
+
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+
+      jest
+        .spyOn(featureTogglesProvider, 'getFeatureToggles')
+        .mockImplementation(
+          () =>
+            new Promise((resolve, reject) =>
+              setTimeout(reject.bind(reject, error), 0)
+            )
+        );
+
+      jest
+        .spyOn(frameContextProvider, 'getContextValues')
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 0))
+        );
+
+      // Act
+      const result = controller.getConfig(
+        requestMock,
+        responseMock,
+        acceptLanguage
+      );
+
+      // Assert
+      await expect(result).rejects.toEqual(error);
+    });
+
+    it('should handle tenantProvider error', async () => {
+      // Arrange
+      const forbiddenException = new ForbiddenException('you shall not pass');
+
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+
+      jest
+        .spyOn(tenantProvider, 'provideTenant')
+        .mockImplementation(
+          () =>
+            new Promise((resolve, reject) =>
+              setTimeout(reject.bind(reject, forbiddenException), 0)
+            )
+        );
+
+      jest
+        .spyOn(featureTogglesProvider, 'getFeatureToggles')
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 0))
+        );
+
+      jest
+        .spyOn(frameContextProvider, 'getContextValues')
+        .mockImplementation(
+          () => new Promise((resolve) => setTimeout(resolve, 0))
+        );
+
+      // Act
+      const result = controller.getConfig(
+        requestMock,
+        responseMock,
+        acceptLanguage
+      );
+
+      // Assert
+      await expect(result).resolves.toBeUndefined();
+      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
     });
   });
 
-  it('should handle error', async () => {
-    // Arrange
-    const error = new Error('this is a test error');
+  describe('getEntityConfig', () => {
+    it('should handle getNodes error', async () => {
+      // Arrange
+      const error = new Error('this is a test error');
 
-    jest.spyOn(nodesService, 'getNodes').mockResolvedValue([]);
+      jest
+        .spyOn(luigiConfigNodesService, 'getNodes')
+        .mockImplementation(
+          () =>
+            new Promise((resolve, reject) =>
+              setTimeout(reject.bind(reject, error), 0)
+            )
+        );
 
-    jest
-      .spyOn(featureTogglesProvider, 'getFeatureToggles')
-      .mockImplementation(
-        () => new Promise((resolve) => setTimeout(resolve, 0))
+      // Act
+      const result = controller.getEntityConfig(
+        requestMock,
+        responseMock,
+        { entity: 'project' },
+        acceptLanguage
       );
 
-    jest
-      .spyOn(contextValuesProvider, 'getContextValues')
-      .mockRejectedValue(error);
+      // Assert
+      await expect(result).rejects.toEqual(error);
+    });
 
-    // Act
-    const result = controller.getConfig(
-      requestMock,
-      responseMock,
-      acceptLanguage
-    );
+    it('should handle EntityNotFoundException', async () => {
+      // Arrange
+      const entity = 'project';
+      const entityNotFoundException = new EntityNotFoundException(entity, 'id');
+      getEntityContextMock.mockRejectedValue(entityNotFoundException);
 
-    // Assert
-    await expect(result).rejects.toEqual(error);
-  });
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
-  afterAll(async () => {
-    await app.close();
+      // Act
+      const result = controller.getEntityConfig(
+        requestMock,
+        responseMock,
+        { entity },
+        acceptLanguage
+      );
+
+      // Assert
+      await expect(result).resolves.toBeUndefined();
+      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+    });
   });
 });

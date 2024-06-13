@@ -24,7 +24,7 @@ import { FrameContextProvider } from './config/context/frame-context-provider';
 import { EntityContextProviders } from './config/context/entity-context-provider';
 import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
 import { LocalTenantService, TenantService } from './auth/tenant.service';
-import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-rovider';
+import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
 import { ServiceProviderService } from './config/service-providers/service-provider.interfaces';
 import { EmptyServiceProviderService } from './config/service-providers/empty-service-provider.service';
 import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';

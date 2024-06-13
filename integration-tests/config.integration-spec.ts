@@ -8,7 +8,7 @@ import { LuigiConfigNodesService } from '../src/config/luigi/luigi-config-nodes/
 import { TenantService } from '../src/auth/tenant.service';
 import { FrameContextProvider } from '../src/config/context/frame-context-provider';
 import { HeaderParserService } from '../src/request-helper/header-parser.service';
-import { FeatureTogglesRovider } from '../src/config/context/feature-toggles-rovider';
+import { FeatureTogglesProvider } from '../src/config/context/feature-toggles-provider';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FRAME_CONTEXT_INJECTION_TOKEN,
@@ -32,7 +32,7 @@ describe('ConfigController', () => {
   let tenantProvider: TenantService;
   let contextValuesProvider: FrameContextProvider;
   let headerParserService: HeaderParserService;
-  let featureTogglesProvider: FeatureTogglesRovider;
+  let featureTogglesProvider: FeatureTogglesProvider;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
@@ -57,7 +57,7 @@ describe('ConfigController', () => {
     controller = module.get<ConfigController>(ConfigController);
     nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
-    featureTogglesProvider = module.get<FeatureTogglesRovider>(
+    featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
