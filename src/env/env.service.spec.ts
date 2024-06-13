@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EnvService } from './env.service';
-import { mock } from 'jest-mock-extended';
-import { PortalModuleOptions } from '../portal.module';
 
 describe('EnvService', () => {
   let service: EnvService;
 
   beforeEach(async () => {
-    const frameModuleOptions = mock<PortalModuleOptions>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [EnvService],
     }).compile();
@@ -42,9 +39,9 @@ describe('EnvService', () => {
     it('should get ' + resultName, () => {
       process.env[envVarName] = value;
 
-      expect(service.getEnv()[resultName]).toBe(expected);
+      expect(service.getEnv()[resultName]).toStrictEqual(expected);
 
-      process.env[envVarName] = undefined;
+      delete process.env[envVarName];
     });
   });
 });

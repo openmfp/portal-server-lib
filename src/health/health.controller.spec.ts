@@ -3,8 +3,8 @@ import { HealthController } from './health.controller';
 import { EnvService } from '../env/env.service';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from '@nestjs/common';
-import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injectionTokens';
-import { HealthChecker } from './healthChecker';
+import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
+import { HealthChecker } from './health-checker';
 
 describe('HealthController', () => {
   let controller: HealthController;

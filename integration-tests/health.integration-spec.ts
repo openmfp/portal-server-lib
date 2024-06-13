@@ -6,7 +6,7 @@ describe('Health (integration)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
-    const moduleFixture = await integrationTestModule().compile();
+    const moduleFixture = await integrationTestModule({}).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
