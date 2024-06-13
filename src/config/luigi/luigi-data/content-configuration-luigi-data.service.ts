@@ -68,6 +68,14 @@ export class ContentConfigurationLuigiDataService {
       const nodes: LuigiNode[] = [];
       // todo gkr check how to get the templating
       let urlTemplateUrl = '';
+      // if (cdmUri != undefined) {
+      //   // cdmUri-> cdm.url
+      //   const schemeAndHost = `${cdmUri.scheme}://${cdmUri.host}`;
+      //   const localUrl = cdmUri.port
+      //     ? `${schemeAndHost}:${cdmUri.port}`
+      //     : schemeAndHost;
+      //   urlTemplateUrl = appConfig.urlTemplateParams.url || localUrl;
+      // }
 
       luigiConfigData.nodes.forEach((node) => {
         nodes.push(

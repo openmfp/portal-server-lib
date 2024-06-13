@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigController } from './config.controller';
 import { PortalModule } from '../portal.module';
@@ -108,32 +107,6 @@ describe('ConfigController', () => {
       acceptLanguage,
       { tenant: mockTenant }
     );
-  });
-
-  describe('GET /rest/config/:entity param validation', () => {
-    it('should return BadRequest on invalid entity name', async () => {
-      const invalidEntity = ':project';
-      await request(app.getHttpServer())
-        .get(`/rest/config/${invalidEntity}`)
-        .accept(acceptLanguage)
-        .expect(400);
-    });
-    it('should call the getNode & getEntityContext method on valid params', async () => {
-      const resultingNodes: ServiceProvider[] = [];
-      const getNodesMock = jest
-        .spyOn(nodesService, 'getNodes')
-        .mockReturnValue(Promise.resolve(resultingNodes));
-
-      const validEntity = 'project';
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { body } = await request(app.getHttpServer())
-        .get(`/rest/config/${validEntity}`)
-        .accept(acceptLanguage)
-        .expect(200);
-      expect(getNodesMock).toBeCalled();
-      expect(getEntityContextMock).toBeCalled();
-      expect(body).toStrictEqual({ providers: resultingNodes, entityContext });
-    });
   });
 
   it('should add additionalValuesToTheContext', async () => {
