@@ -21,7 +21,7 @@ export class ContentConfigurationLuigiDataService {
   public async processContentConfiguration(
     contentConfiguration: ContentConfiguration[],
     language: string,
-    cdmExtendedData?: ExtendedData
+    extendedData?: ExtendedData
   ): Promise<LuigiNode[]> {
     const nodeArrays = contentConfiguration.map((contentConfiguration) =>
       contentConfiguration.luigiConfigFragment.flatMap((configFragment) => {
@@ -31,7 +31,7 @@ export class ContentConfigurationLuigiDataService {
           data = this.localizeDataWithLanguage(data, language);
         }
 
-        return this.createNodesFromContentConfiguration(data);
+        return this.createNodesFromContentConfiguration(data, undefined);
       })
     );
 
@@ -39,11 +39,11 @@ export class ContentConfigurationLuigiDataService {
     for (const nodeArray of nodeArrays) {
       const checkedNodes = nodeArray.map((node) => {
         const isMissingMandatoryData =
-          cdmExtendedData?.isMissingMandatoryData || undefined;
-        const helpContext = cdmExtendedData?.helpContext || undefined;
-        const breadcrumbBadge = cdmExtendedData?.breadcrumbBadge || undefined;
+          extendedData?.isMissingMandatoryData || undefined;
+        const helpContext = extendedData?.helpContext || undefined;
+        const breadcrumbBadge = extendedData?.breadcrumbBadge || undefined;
         const extensionClassName =
-          this.getExtensionClassNameForNode(cdmExtendedData);
+          this.getExtensionClassNameForNode(extendedData);
         const context =
           node.context || extensionClassName
             ? { ...node.context, extensionClassName }
@@ -62,20 +62,20 @@ export class ContentConfigurationLuigiDataService {
   }
 
   private createNodesFromContentConfiguration(
-    luigiConfigData: LuigiConfigData
+    luigiConfigData: LuigiConfigData,
+    templateUri: URIComponents | undefined
   ): LuigiNode[] {
     if (luigiConfigData && luigiConfigData.nodes) {
       const nodes: LuigiNode[] = [];
-      // todo gkr check how to get the templating
+
       let urlTemplateUrl = '';
-      // if (cdmUri != undefined) {
-      //   // cdmUri-> cdm.url
-      //   const schemeAndHost = `${cdmUri.scheme}://${cdmUri.host}`;
-      //   const localUrl = cdmUri.port
-      //     ? `${schemeAndHost}:${cdmUri.port}`
-      //     : schemeAndHost;
-      //   urlTemplateUrl = appConfig.urlTemplateParams.url || localUrl;
-      // }
+      if (templateUri != undefined) {
+        const schemeAndHost = `${templateUri.scheme}://${templateUri.host}`;
+        const localUrl = templateUri.port
+          ? `${schemeAndHost}:${templateUri.port}`
+          : schemeAndHost;
+        urlTemplateUrl = luigiConfigData['urlTemplateParams'].url || localUrl;
+      }
 
       luigiConfigData.nodes.forEach((node) => {
         nodes.push(
