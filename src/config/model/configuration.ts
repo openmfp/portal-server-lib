@@ -12,9 +12,9 @@ export interface Dictionary {
 }
 
 export interface LuigiConfigData {
-  nodeDefaults: LuigiNodeDefaults;
+  nodeDefaults?: LuigiNodeDefaults;
   nodes: LuigiNode[];
-  texts: Dictionary[];
+  texts?: Dictionary[];
 }
 
 export interface LuigiConfigFragment {

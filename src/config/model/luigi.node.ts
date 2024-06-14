@@ -5,6 +5,7 @@ export interface LuigiNodeCategory {
   collapsible?: boolean;
   dxpOrder?: number;
   id?: string;
+  icon?: string;
 }
 
 export interface LuigiNodeIFramePermissions {

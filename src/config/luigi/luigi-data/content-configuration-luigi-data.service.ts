@@ -58,73 +58,69 @@ export class ContentConfigurationLuigiDataService {
       });
       nodes.push(...checkedNodes);
     }
-    return nodes;
+    return Promise.resolve(nodes);
   }
 
   private createNodesFromContentConfiguration(
     luigiConfigData: LuigiConfigData,
     templateUri: URIComponents | undefined
   ): LuigiNode[] {
-    if (luigiConfigData && luigiConfigData.nodes) {
-      const nodes: LuigiNode[] = [];
+    const nodes: LuigiNode[] = [];
 
-      let urlTemplateUrl = '';
-      if (templateUri != undefined) {
-        const schemeAndHost = `${templateUri.scheme}://${templateUri.host}`;
-        const localUrl = templateUri.port
-          ? `${schemeAndHost}:${templateUri.port}`
-          : schemeAndHost;
-        urlTemplateUrl = luigiConfigData['urlTemplateParams'].url || localUrl;
-      }
+    let urlTemplateUrl = '';
+    // if (templateUri != undefined) {
+    //   const schemeAndHost = `${templateUri.scheme}://${templateUri.host}`;
+    //   const localUrl = templateUri.port
+    //     ? `${schemeAndHost}:${templateUri.port}`
+    //     : schemeAndHost;cls
+    //   urlTemplateUrl = luigiConfigData['urlTemplateParams'].url || localUrl;
+    // }
 
-      luigiConfigData.nodes.forEach((node) => {
-        nodes.push(
-          this.createNodeFromContentConfiguration(
-            node,
-            luigiConfigData,
-            urlTemplateUrl
-          )
-        );
-      });
+    luigiConfigData.nodes.forEach((node) => {
+      nodes.push(
+        this.createNodeFromContentConfiguration(
+          node,
+          luigiConfigData,
+          urlTemplateUrl
+        )
+      );
+    });
 
-      //vizConfig is the couterpart of the LuigiConfigData
-      // if (nodes.length > 0) {
-      //   const configTransferNode = nodes[0];
-      //
-      //   if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
-      //     configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
-      //   }
-      //
-      //   configTransferNode._requiredIFramePermissionsForViewGroup =
-      //     cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
-      //
-      //   configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
-      //   if (configTransferNode._dxpUserSettingsConfig?.groups) {
-      //     Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
-      //       (key) => {
-      //         const group =
-      //           configTransferNode._dxpUserSettingsConfig.groups[key];
-      //         if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
-      //           group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
-      //         }
-      //       }
-      //     );
-      //   }
-      //
-      //   // Resolve intentMapping information and pass through with the config transfer node
-      //   const intentData = this.resolveIntentTargetsAndEntityPath(
-      //     nodes,
-      //     luigiIntentInboundList
-      //   );
-      //   configTransferNode._intentMappings = intentData?.intentMappings;
-      //   configTransferNode._entityRelativePaths =
-      //     intentData?.entityRelativePaths;
-      // }
+    //vizConfig is the couterpart of the LuigiConfigData
+    // if (nodes.length > 0) {
+    //   const configTransferNode = nodes[0];
+    //
+    //   if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
+    //     configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
+    //   }
+    //
+    //   configTransferNode._requiredIFramePermissionsForViewGroup =
+    //     cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
+    //
+    //   configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
+    //   if (configTransferNode._dxpUserSettingsConfig?.groups) {
+    //     Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
+    //       (key) => {
+    //         const group =
+    //           configTransferNode._dxpUserSettingsConfig.groups[key];
+    //         if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
+    //           group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
+    //         }
+    //       }
+    //     );
+    //   }
+    //
+    //   // Resolve intentMapping information and pass through with the config transfer node
+    //   const intentData = this.resolveIntentTargetsAndEntityPath(
+    //     nodes,
+    //     luigiIntentInboundList
+    //   );
+    //   configTransferNode._intentMappings = intentData?.intentMappings;
+    //   configTransferNode._entityRelativePaths =
+    //     intentData?.entityRelativePaths;
+    // }
 
-      return nodes;
-    } else {
-      return [];
-    }
+    return nodes;
   }
 
   private createNodeFromContentConfiguration(
@@ -142,9 +138,11 @@ export class ContentConfigurationLuigiDataService {
       viewUrl: string,
       children = [];
 
-    if (urlTemplateUrl && node.urlSuffix && !node.isolateView) {
+    // todo right now we will never get here because we don;t have the urlTemplateUrl, set to undefined
+    /*if (urlTemplateUrl && node.urlSuffix && !node.isolateView) {
       viewGroup = urlTemplateUrl;
-    } else if (node.url && node.viewGroup) {
+    } else
+    if (node.url && node.viewGroup) {
       try {
         const nodeUrl = new URL(node.url);
         viewGroup =
@@ -160,7 +158,7 @@ export class ContentConfigurationLuigiDataService {
 
     if (node.compound && urlTemplateUrl) {
       this.processCompoundChildrenUrls(node.compound, urlTemplateUrl);
-    }
+    }*/
 
     if (node.url) {
       viewUrl = `${node.url}`;
@@ -200,7 +198,7 @@ export class ContentConfigurationLuigiDataService {
     return undefined;
   }
 
-  private localizeDataWithLanguage<T extends { texts: Dictionary[] }>(
+  private localizeDataWithLanguage<T extends { texts?: Dictionary[] }>(
     data: T,
     language: string
   ): T {
@@ -237,24 +235,24 @@ export class ContentConfigurationLuigiDataService {
     return matchedDict || defaultDict;
   }
 
-  private isAbsoluteUrl(url: string) {
-    const testBase = 'http://test.url.tld';
-    return (
-      url.trim().startsWith(testBase) ||
-      new URL(testBase).origin !== new URL(url, testBase).origin
-    );
-  }
+  // private isAbsoluteUrl(url: string) {
+  //   const testBase = 'http://test.url.tld';
+  //   return (
+  //     url.trim().startsWith(testBase) ||
+  //     new URL(testBase).origin !== new URL(url, testBase).origin
+  //   );
+  // }
 
-  private processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
-    compound?.children?.forEach((element) => {
-      if (element.url) {
-        element.viewUrl = element.url;
-      } else if (element.urlSuffix) {
-        const urlSuffix = element.urlSuffix as string;
-        element.viewUrl = `${urlTemplateUrl}${urlSuffix}`;
-      }
-    });
-  }
+  // private processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
+  //   compound?.children?.forEach((element) => {
+  //     if (element.url) {
+  //       element.viewUrl = element.url;
+  //     } else if (element.urlSuffix) {
+  //       const urlSuffix = element.urlSuffix as string;
+  //       element.viewUrl = `${urlTemplateUrl}${urlSuffix}`;
+  //     }
+  //   });
+  // }
 
   /**
    * Iterates over the given list of nodes and builds the intent target information recursively for each node.
@@ -262,38 +260,38 @@ export class ContentConfigurationLuigiDataService {
    * @param inbounds list of semanticObject + action coming as an input from the CDM ["crossNavigation.inbounds"] configuration
    * @returns a list of LuigiIntents (intentMappings) and 'entityRelativePaths' built after the nodes recursive traversal.
    */
-  private resolveIntentTargetsAndEntityPath(
-    nodes: LuigiNode[],
-    inbounds: CrossNavigationInbounds
-  ): {
-    intentMappings?: LuigiIntent[];
-    entityRelativePaths?: Record<string, any>;
-  } {
-    let listOfIntentMappings = [];
-    const listOfEntityPaths = {};
-    nodes.forEach((node) => {
-      // skip parent nodes with no entities defined
-      if (node.entityType) {
-        const tempListObject = { intentMappings: [], entityRelativePaths: {} };
-        this.prebuildIntentTargetsRecursively(
-          node,
-          inbounds,
-          node.entityType,
-          '',
-          node.entityType,
-          tempListObject
-        );
-        listOfIntentMappings = listOfIntentMappings.concat(
-          tempListObject.intentMappings
-        );
-        Object.assign(listOfEntityPaths, tempListObject.entityRelativePaths);
-      }
-    });
-    return {
-      intentMappings: listOfIntentMappings,
-      entityRelativePaths: listOfEntityPaths,
-    };
-  }
+  // private resolveIntentTargetsAndEntityPath(
+  //   nodes: LuigiNode[],
+  //   inbounds: CrossNavigationInbounds
+  // ): {
+  //   intentMappings?: LuigiIntent[];
+  //   entityRelativePaths?: Record<string, any>;
+  // } {
+  //   let listOfIntentMappings = [];
+  //   const listOfEntityPaths = {};
+  //   nodes.forEach((node) => {
+  //     // skip parent nodes with no entities defined
+  //     if (node.entityType) {
+  //       const tempListObject = { intentMappings: [], entityRelativePaths: {} };
+  //       this.prebuildIntentTargetsRecursively(
+  //         node,
+  //         inbounds,
+  //         node.entityType,
+  //         '',
+  //         node.entityType,
+  //         tempListObject
+  //       );
+  //       listOfIntentMappings = listOfIntentMappings.concat(
+  //         tempListObject.intentMappings
+  //       );
+  //       Object.assign(listOfEntityPaths, tempListObject.entityRelativePaths);
+  //     }
+  //   });
+  //   return {
+  //     intentMappings: listOfIntentMappings,
+  //     entityRelativePaths: listOfEntityPaths,
+  //   };
+  // }
 
   /**
    * Traverses the given node recursively in order to find all nodes which define a target.
@@ -308,73 +306,73 @@ export class ContentConfigurationLuigiDataService {
    * @param targetParentEntity the parentEntity data saved upon each recursive traversal to build the target intents parent entity id
    * @param intentKnowledge the knowledge object, whose properties are modified by reference
    */
-  private prebuildIntentTargetsRecursively(
-    node: LuigiNode,
-    inbounds,
-    parentEntity,
-    pathSegment = '',
-    targetParentEntity = '',
-    intentKnowledge: {
-      intentMappings: LuigiIntent[];
-      entityRelativePaths: Record<string, any>;
-    }
-  ) {
-    // parent entity for building 'entityRelativePaths' knowledge
-    let currentParentEntity = parentEntity;
-    let currentPathSegment = pathSegment;
-    // parent entity for building intentMappings' baseEntityId
-    let currentTargetParentEntity = targetParentEntity;
-    // predicate value checking whether a node has composition of both 'entityType' and 'defineEntity' defined
-    const isComposedEntityNode =
-      node.defineEntity?.id && node.entityType && node.entityType !== 'global';
-    const entityIdDefined = node.defineEntity?.id;
-
-    // if entity id is defined, build entity relative path knowledge
-    if (entityIdDefined) {
-      // update parent so it's inherited further down the tree levels of recursion
-      currentParentEntity = entityIdDefined;
-      intentKnowledge.entityRelativePaths[currentParentEntity] = {
-        pathSegment: currentPathSegment + '/' + node.pathSegment,
-        parentEntity,
-      };
-      // update parentEntity for entityRelativePaths & intentMappings knowledge
-      currentParentEntity = isComposedEntityNode
-        ? node.entityType + '.' + entityIdDefined
-        : currentParentEntity;
-      currentTargetParentEntity =
-        currentTargetParentEntity + '.' + entityIdDefined;
-    }
-    // concatenate the pathSegment depending on the entity definition.
-    currentPathSegment = entityIdDefined
-      ? ''
-      : currentPathSegment + '/' + node.pathSegment;
-
-    // find if target exists and add it to list of targets based on inbounds list, adjacent to relativePath to baseEntity
-    if (node.target && node.target.inboundId) {
-      const id = node.target.inboundId;
-      if (inbounds[id]) {
-        const semantic: LuigiIntent = inbounds[id];
-        intentKnowledge.intentMappings.push({
-          semanticObject: semantic.semanticObject,
-          baseEntityId: currentTargetParentEntity,
-          relativePath: currentPathSegment,
-          action: semantic.action,
-        });
-      }
-    }
-
-    // recursively iterate on children
-    if (node.children && Array.isArray(node.children)) {
-      for (const child of node.children) {
-        this.prebuildIntentTargetsRecursively(
-          child,
-          inbounds,
-          currentParentEntity,
-          currentPathSegment,
-          currentTargetParentEntity,
-          intentKnowledge
-        );
-      }
-    }
-  }
+  // private prebuildIntentTargetsRecursively(
+  //   node: LuigiNode,
+  //   inbounds,
+  //   parentEntity,
+  //   pathSegment = '',
+  //   targetParentEntity = '',
+  //   intentKnowledge: {
+  //     intentMappings: LuigiIntent[];
+  //     entityRelativePaths: Record<string, any>;
+  //   }
+  // ) {
+  //   // parent entity for building 'entityRelativePaths' knowledge
+  //   let currentParentEntity = parentEntity;
+  //   let currentPathSegment = pathSegment;
+  //   // parent entity for building intentMappings' baseEntityId
+  //   let currentTargetParentEntity = targetParentEntity;
+  //   // predicate value checking whether a node has composition of both 'entityType' and 'defineEntity' defined
+  //   const isComposedEntityNode =
+  //     node.defineEntity?.id && node.entityType && node.entityType !== 'global';
+  //   const entityIdDefined = node.defineEntity?.id;
+  //
+  //   // if entity id is defined, build entity relative path knowledge
+  //   if (entityIdDefined) {
+  //     // update parent so it's inherited further down the tree levels of recursion
+  //     currentParentEntity = entityIdDefined;
+  //     intentKnowledge.entityRelativePaths[currentParentEntity] = {
+  //       pathSegment: currentPathSegment + '/' + node.pathSegment,
+  //       parentEntity,
+  //     };
+  //     // update parentEntity for entityRelativePaths & intentMappings knowledge
+  //     currentParentEntity = isComposedEntityNode
+  //       ? node.entityType + '.' + entityIdDefined
+  //       : currentParentEntity;
+  //     currentTargetParentEntity =
+  //       currentTargetParentEntity + '.' + entityIdDefined;
+  //   }
+  //   // concatenate the pathSegment depending on the entity definition.
+  //   currentPathSegment = entityIdDefined
+  //     ? ''
+  //     : currentPathSegment + '/' + node.pathSegment;
+  //
+  //   // find if target exists and add it to list of targets based on inbounds list, adjacent to relativePath to baseEntity
+  //   if (node.target && node.target.inboundId) {
+  //     const id = node.target.inboundId;
+  //     if (inbounds[id]) {
+  //       const semantic: LuigiIntent = inbounds[id];
+  //       intentKnowledge.intentMappings.push({
+  //         semanticObject: semantic.semanticObject,
+  //         baseEntityId: currentTargetParentEntity,
+  //         relativePath: currentPathSegment,
+  //         action: semantic.action,
+  //       });
+  //     }
+  //   }
+  //
+  //   // recursively iterate on children
+  //   if (node.children && Array.isArray(node.children)) {
+  //     for (const child of node.children) {
+  //       this.prebuildIntentTargetsRecursively(
+  //         child,
+  //         inbounds,
+  //         currentParentEntity,
+  //         currentPathSegment,
+  //         currentTargetParentEntity,
+  //         intentKnowledge
+  //       );
+  //     }
+  //   }
+  // }
 }
