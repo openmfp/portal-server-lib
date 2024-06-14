@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceProviderService } from './service-provider.interfaces';
-import { EmptyServiceProviderService } from './empty-service-provider.service';
+import {
+  EmptyServiceProviderService,
+  ServiceProviderService,
+} from './service-provider';
 
 describe('EmptyServiceProviderService', () => {
   let service: ServiceProviderService;

@@ -25,12 +25,14 @@ import { EntityContextProviders } from './config/context/entity-context-provider
 import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
 import { LocalTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { ServiceProviderService } from './config/service-providers/service-provider.interfaces';
-import { EmptyServiceProviderService } from './config/service-providers/empty-service-provider.service';
 import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { HeaderParserService } from './request-helper/header-parser.service';
+import { HeaderParserService } from './services/header-parser.service';
 import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
+import {
+  EmptyServiceProviderService,
+  ServiceProviderService,
+} from './config/context/service-provider';
 
 export interface PortalModuleOptions {
   /**

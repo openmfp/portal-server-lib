@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
-import { HeaderParserService } from '../request-helper/header-parser.service';
+import { HeaderParserService } from '../services/header-parser.service';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,

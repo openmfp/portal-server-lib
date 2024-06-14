@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service';
 import { PortalModule } from '../../../portal.module';
-import {
-  RawServiceProvider,
-  ServiceProviderService,
-} from '../../service-providers/service-provider.interfaces';
 import { LuigiDataService } from '../luigi-data/luigi-data.service';
 import { mock } from 'jest-mock-extended';
 import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
 import { LuigiNode } from '../../model/luigi.node';
+import {
+  RawServiceProvider,
+  ServiceProviderService,
+} from '../../context/service-provider';
 
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;

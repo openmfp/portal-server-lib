@@ -28,6 +28,10 @@ export interface ServiceProviderResponse {
   serviceProviders: RawServiceProvider[];
 }
 
+export interface URL {
+  url: string;
+}
+
 export interface ServiceProviderService {
   getServiceProviders(
     token: string,
@@ -36,6 +40,10 @@ export interface ServiceProviderService {
   ): Promise<ServiceProviderResponse>;
 }
 
-export interface URL {
-  url: string;
+export class EmptyServiceProviderService implements ServiceProviderService {
+  getServiceProviders(): Promise<ServiceProviderResponse> {
+    return Promise.resolve({
+      serviceProviders: [],
+    });
+  }
 }

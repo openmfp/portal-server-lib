@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  ServiceProviderResponse,
-  ServiceProviderService,
-} from '../../service-providers/service-provider.interfaces';
 import { LuigiDataService } from '../luigi-data/luigi-data.service';
 import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
 import { ServiceProvider } from '../../model/luigi.node';
+import {
+  ServiceProviderResponse,
+  ServiceProviderService,
+} from '../../context/service-provider';
 
 @Injectable()
 export class LuigiConfigNodesService {

@@ -7,7 +7,7 @@ import { ConfigController } from '../src/config/config.controller';
 import { LuigiConfigNodesService } from '../src/config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { TenantService } from '../src/auth/tenant.service';
 import { FrameContextProvider } from '../src/config/context/frame-context-provider';
-import { HeaderParserService } from '../src/request-helper/header-parser.service';
+import { HeaderParserService } from '../src/services/header-parser.service';
 import { FeatureTogglesProvider } from '../src/config/context/feature-toggles-provider';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,

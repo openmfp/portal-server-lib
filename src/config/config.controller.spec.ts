@@ -11,7 +11,7 @@ import {
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
-import { HeaderParserService } from '../request-helper/header-parser.service';
+import { HeaderParserService } from '../services/header-parser.service';
 import { ServiceProvider } from './model/luigi.node';
 import { FrameContextProvider } from './context/frame-context-provider';
 import {
