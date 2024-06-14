@@ -33,6 +33,7 @@ import {
   EmptyServiceProviderService,
   ServiceProviderService,
 } from './config/context/service-provider';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 export interface PortalModuleOptions {
   /**
@@ -75,6 +76,12 @@ export interface PortalModuleOptions {
    * The micro-frontends need to specify a url.
    */
   serviceProviderService?: Type<ServiceProviderService>;
+
+  /**
+   * The path to the built sources of the frontend ui. They will be served statically, so the html site is on the same host.
+   * If it is not provided, no sources will be served.
+   */
+  frontendDistSources?: string;
 }
 
 @Module({})
@@ -130,6 +137,15 @@ export class PortalModule {
     const moduleImports: Array<
       Type | DynamicModule | Promise<DynamicModule> | ForwardReference
     > = [HttpModule.register({})];
+
+    if (options.frontendDistSources) {
+      moduleImports.push(
+        ServeStaticModule.forRoot({
+          rootPath: options.frontendDistSources,
+          exclude: ['/rest'],
+        })
+      );
+    }
 
     return {
       module: PortalModule,
