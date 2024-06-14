@@ -1,17 +1,14 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { ConfigController } from '../src/config/config.controller';
 import { LuigiConfigNodesService } from '../src/config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { TenantService } from '../src/auth/tenant.service';
-import { FrameContextProvider } from '../src/config/context/frame-context-provider';
 import { HeaderParserService } from '../src/services/header-parser.service';
 import { FeatureTogglesProvider } from '../src/config/context/feature-toggles-provider';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
   PortalModule,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../src';
@@ -24,13 +21,10 @@ const token = 'token';
 
 describe('ConfigController', () => {
   let app: INestApplication;
-  let controller: ConfigController;
   let nodesService: LuigiConfigNodesService;
   let getEntityContextMock: jest.Mock;
   let requestMock: Request;
-  let responseMock: Response;
   let tenantProvider: TenantService;
-  let contextValuesProvider: FrameContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
@@ -54,16 +48,13 @@ describe('ConfigController', () => {
         }),
       ],
     }).compile();
-    controller = module.get<ConfigController>(ConfigController);
+
     nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    contextValuesProvider = module.get<FrameContextProvider>(
-      FRAME_CONTEXT_INJECTION_TOKEN
-    );
 
     jest
       .spyOn(featureTogglesProvider, 'getFeatureToggles')
@@ -80,7 +71,6 @@ describe('ConfigController', () => {
     requestMock = mock<Request>();
     requestMock.query = { key: 'val' };
     requestMock.hostname = 'lokal.horst';
-    responseMock = mock<Response>();
 
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
