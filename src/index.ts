@@ -8,9 +8,13 @@ export {
   EntityContextProvider,
 } from './config/context/entity-context-provider';
 export { FrameContextProvider } from './config/context/frame-context-provider';
+export { FeatureTogglesProvider } from './config/context/feature-toggles-provider';
 export { TenantService } from './auth/tenant.service';
 export { HeaderParserService } from './services/header-parser.service';
 export {
   ServiceProviderResponse,
   ServiceProviderService,
+  HelpCenterData,
+  RawServiceProvider,
 } from './config/context/service-provider';
+export * from './config/model/configuration';
