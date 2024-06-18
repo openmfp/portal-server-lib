@@ -1,7 +1,15 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import {
+  AuthCallbackService,
+  AuthController,
+  AuthDataService,
+  IasService,
+  NoopAuthCallback,
+} from './auth';
 import { EnvService } from './env/env.service';
 import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -72,7 +80,7 @@ export interface PortalModuleOptions {
   entityContextProviders?: EntityContextProviders;
 
   /**
-   * A service provider service is responsible for fetching micro-service providers.
+   * A service provider service is responsible for fetching microservice providers.
    * The micro-frontends need to specify a url.
    */
   serviceProviderService?: Type<ServiceProviderService>;
@@ -82,12 +90,15 @@ export interface PortalModuleOptions {
    * If it is not provided, no sources will be served.
    */
   frontendDistSources?: string;
+
+  authCallbackProvider?: Type<AuthCallbackService>;
 }
 
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
     const controllers: any[] = [
+      AuthController,
       HealthController,
       EnvController,
       ConfigController,
@@ -100,6 +111,12 @@ export class PortalModule {
       LuigiConfigNodesService,
       ContentConfigurationLuigiDataService,
       HeaderParserService,
+      IasService,
+      AuthDataService,
+      {
+        provide: AUTH_CALLBACK_INJECTION_TOKEN,
+        useClass: options.authCallbackProvider || NoopAuthCallback,
+      },
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
         useClass: options.healthChecker || EmptyHealthChecker,
