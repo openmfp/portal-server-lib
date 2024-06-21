@@ -9,6 +9,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { CookiesService } from '../services/cookies.service';
 import { AuthCallbackService } from './auth-callback.service';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { IasService, IasResponse } from './ias.service';
@@ -17,7 +18,8 @@ import { IasService, IasResponse } from './ias.service';
 export class AuthController {
   constructor(
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
-    private authCallback: AuthCallbackService,
+    private authCallbackService: AuthCallbackService,
+    private cookiesService: CookiesService,
     private iasService: IasService,
     private logger: Logger
   ) {}
@@ -35,14 +37,22 @@ export class AuthController {
       );
     }
 
-    const iasResponse: IasResponse = await this.iasService.exchangeTokenForCode(
-      request,
-      response,
-      code.toString()
-    );
-
-    await this.authCallback.callback(iasResponse.id_token);
-    return this.filterIasResponseForFrontend(iasResponse);
+    try {
+      const iasResponse: IasResponse =
+        await this.iasService.exchangeTokenForCode(
+          request,
+          response,
+          code.toString()
+        );
+      this.logger.debug('retrieving token successful');
+      return await this.handleTokenRetrieval(request, response, iasResponse);
+    } catch (e: any) {
+      this.logger.error(`error while retrieving token, logging out: ${e}`);
+      // logout to trigger a fresh login flow
+      await this.authCallbackService.handleFailure(request, response);
+      this.cookiesService.removeAuthCookie(response);
+      throw e;
+    }
   }
 
   @Post('refresh')
@@ -50,7 +60,7 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<IasResponse> {
-    const dxpAuthCookie = this.iasService.getAuthCookie(request);
+    const dxpAuthCookie = this.cookiesService.getAuthCookie(request);
     if (!dxpAuthCookie) {
       throw new HttpException(
         'the user is not logged in',
@@ -65,20 +75,34 @@ export class AuthController {
           response,
           dxpAuthCookie
         );
-      await this.authCallback.callback(iasResponse.id_token);
-      this.logger.debug('refreshing auth successful');
-      return this.filterIasResponseForFrontend(iasResponse);
+      this.logger.debug('retrieving refreshing auth successful');
+      return await this.handleTokenRetrieval(request, response, iasResponse);
     } catch (e: any) {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       this.logger.error(`error while refreshing token, logging out: ${e}`);
       // logout to trigger a fresh login flow
-      await this.iasService.removeAuthCookies(response);
+      await this.authCallbackService.handleFailure(request, response);
+      this.cookiesService.removeAuthCookie(response);
       throw e;
     }
   }
 
+  private async handleTokenRetrieval(
+    request: Request,
+    response: Response,
+    iasResponse: IasResponse
+  ) {
+    this.cookiesService.setAuthCookie(response, iasResponse);
+    await this.authCallbackService.handleSuccess(
+      request,
+      response,
+      iasResponse.id_token
+    );
+    return this.filterIasResponseForFrontend(iasResponse);
+  }
+
   private filterIasResponseForFrontend(iasResponse: IasResponse): IasResponse {
     delete iasResponse.refresh_token;
+    delete iasResponse.refresh_expires_in;
     return iasResponse;
   }
 }

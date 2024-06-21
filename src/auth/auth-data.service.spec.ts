@@ -33,7 +33,7 @@ describe('AuthDataService', () => {
 
   it('call the ias service if there is a cookie', async () => {
     // arrange
-    iasServiceMock.getAuthCookie.mockReturnValue('foo');
+    // iasServiceMock.getAuthCookie.mockReturnValue('foo');
     const request = mock<Request>();
     const response = mock<Response>();
 
