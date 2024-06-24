@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CookiesService } from '../services/cookies.service';
 import { IasResponse, IasService } from './ias.service';

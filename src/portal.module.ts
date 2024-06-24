@@ -93,6 +93,11 @@ export interface PortalModuleOptions {
   frontendDistSources?: string;
 
   authCallbackProvider?: Type<AuthCallbackService>;
+
+  /**
+   * IAS service other than default keycloak providing oauth functionality
+   */
+  iasService?: Type<IasService>;
 }
 
 @Module({})
@@ -113,8 +118,8 @@ export class PortalModule {
       LuigiDataService,
       LuigiConfigNodesService,
       ContentConfigurationLuigiDataService,
-      IasService,
       AuthDataService,
+      IasService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,

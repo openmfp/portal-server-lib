@@ -5,6 +5,7 @@ export interface ServerAuthVariables {
   oauthServerUrl: string;
   clientId: string;
   clientSecret: string;
+  keycloakRealm?: string;
 }
 
 export interface EnvVariables {
@@ -91,6 +92,7 @@ export class EnvService {
 
     const idpEnvName = this.getIdpEnvName(idpName);
     const oauthServerUrl = process.env[`IAS_TENANT_URL_${idpEnvName}`];
+    const keycloakRealm = process.env[`IAS_KEYCLOAK_REALM_${idpEnvName}`];
     const clientId = process.env[`OIDC_CLIENT_ID_${idpEnvName}`];
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
     const clientSecret = process.env[clientSecretEnvVar];
@@ -108,6 +110,7 @@ export class EnvService {
       oauthServerUrl: oauthServerUrl,
       clientId: clientId,
       clientSecret: clientSecret,
+      keycloakRealm,
     };
   }
 

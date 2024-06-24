@@ -91,11 +91,10 @@ export class AuthController {
     response: Response,
     iasResponse: IasResponse
   ) {
-    this.cookiesService.setAuthCookie(response, iasResponse);
     await this.authCallbackService.handleSuccess(
       request,
       response,
-      iasResponse.id_token
+      iasResponse
     );
     return this.filterIasResponseForFrontend(iasResponse);
   }

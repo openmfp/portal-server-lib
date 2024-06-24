@@ -42,29 +42,6 @@ describe('IasService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should clear the cookies', async () => {
-    await service.removeAuthCookies(responseMock);
-
-    expect(responseMock.clearCookie).toHaveBeenCalledWith('auth_cookie');
-    expect(authCallbackMock.clearCookies).toHaveBeenCalled();
-  });
-
-  describe('get auth cookie', () => {
-    it('should return undefined if there are no cookies in the request', () => {
-      const authCookie = service.getAuthCookie(requestMock);
-
-      expect(authCookie).toBeUndefined();
-    });
-
-    it('should return a value if there is an auth cookie', () => {
-      requestMock.cookies = { auth_cookie: 'foo' };
-
-      const authCookie = service.getAuthCookie(requestMock);
-
-      expect(authCookie).toEqual('foo');
-    });
-  });
-
   describe('exchange', () => {
     const refreshTokenValue = 'refresh_token_value';
     const idTokenValue = 'id_token_value';
@@ -98,15 +75,34 @@ describe('IasService', () => {
           sameSite: 'strict',
         }
       );
-      expect(authCallbackMock.setCookies).toHaveBeenCalledWith(
-        requestMock,
-        responseMock,
-        idTokenValue
-      );
     }
 
     describe('token for refresh token - refresh_token flow', () => {
       const refreshToken = 'refresh me';
+
+      it('should set the cookies for keycloak services', async () => {
+        // Arrange
+        process.env['IAS_KEYCLOAK_REALM_SAP'] = 'openmfp';
+
+        nock(envService.getCurrentAuthEnv(requestMock).oauthServerUrl)
+          .post('/realms/openmfp/protocol/openid-connect/token/', {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+          })
+          .reply(200, serverResponse);
+
+        // Act
+        const iasResponse = await service.exchangeTokenForRefreshToken(
+          requestMock,
+          responseMock,
+          refreshToken
+        );
+
+        // Assert
+        assertResponseAndCookies(iasResponse);
+
+        delete process.env['IAS_KEYCLOAK_REALM_SAP'];
+      });
 
       it('should set the cookies', async () => {
         // Arrange
@@ -146,11 +142,37 @@ describe('IasService', () => {
             refreshToken
           )
         ).rejects.toThrowError('Unexpected response code from ias: 206, null');
-        expect(authCallbackMock.setCookies).not.toHaveBeenCalled();
       });
     });
 
     describe('token for code - authorization_code flow', () => {
+      it('should set the cookies for keycloak services', async () => {
+        // Arrange
+        process.env['IAS_KEYCLOAK_REALM_SAP'] = 'openmfp';
+        const env = envService.getCurrentAuthEnv(requestMock);
+        const code = 'secret code';
+
+        nock(env.oauthServerUrl)
+          .post('/realms/openmfp/protocol/openid-connect/token/', {
+            client_id: env.clientId,
+            grant_type: 'authorization_code',
+            redirect_uri: `http://localhost:4300/callback?storageType=none`,
+            code: code,
+          })
+          .reply(200, serverResponse);
+
+        // Act
+        const iasResponse = await service.exchangeTokenForCode(
+          requestMock,
+          responseMock,
+          code
+        );
+
+        // Assert
+        assertResponseAndCookies(iasResponse);
+        delete process.env['IAS_KEYCLOAK_REALM_SAP'];
+      });
+
       it('should set the cookies', async () => {
         // Arrange
         const env = envService.getCurrentAuthEnv(requestMock);

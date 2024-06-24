@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CookiesService } from '../services/cookies.service';
 import { AuthDataService } from './auth-data.service';
 import { PortalModule } from '../portal.module';
 import { mock, MockProxy } from 'jest-mock-extended';
@@ -8,14 +9,18 @@ import { Request, Response } from 'express';
 describe('AuthDataService', () => {
   let service: AuthDataService;
   let iasServiceMock: MockProxy<IasService>;
+  let cookiesService: MockProxy<CookiesService>;
 
   beforeEach(async () => {
     iasServiceMock = mock<IasService>();
+    cookiesService = mock<CookiesService>();
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     })
       .overrideProvider(IasService)
       .useValue(iasServiceMock)
+      .overrideProvider(CookiesService)
+      .useValue(cookiesService)
       .compile();
 
     service = module.get<AuthDataService>(AuthDataService);
@@ -36,6 +41,7 @@ describe('AuthDataService', () => {
     // iasServiceMock.getAuthCookie.mockReturnValue('foo');
     const request = mock<Request>();
     const response = mock<Response>();
+    cookiesService.getAuthCookie.mockReturnValue('foo');
 
     // act
     await service.provideAuthData(request, response);
