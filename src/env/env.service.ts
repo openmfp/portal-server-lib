@@ -3,9 +3,9 @@ import { Request } from 'express';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;
+  oauthTokenUrl: string;
   clientId: string;
   clientSecret: string;
-  keycloakRealm?: string;
 }
 
 export interface EnvVariables {
@@ -91,16 +91,16 @@ export class EnvService {
     }
 
     const idpEnvName = this.getIdpEnvName(idpName);
-    const oauthServerUrl = process.env[`IAS_TENANT_URL_${idpEnvName}`];
-    const keycloakRealm = process.env[`IAS_KEYCLOAK_REALM_${idpEnvName}`];
+    const oauthServerUrl = process.env[`AUTH_SERVER_URL_${idpEnvName}`];
+    const oauthTokenUrl = process.env[`TOKEN_URL_${idpEnvName}`];
     const clientId = process.env[`OIDC_CLIENT_ID_${idpEnvName}`];
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
     const clientSecret = process.env[clientSecretEnvVar];
 
-    if (!oauthServerUrl || !clientId || !clientSecret) {
+    if (!oauthServerUrl || !oauthTokenUrl || !clientId || !clientSecret) {
       const hasClientSecret = !!clientSecret;
       throw new Error(
-        `the idp ${idpName} is not properly configured. oauthServerUrl: '${oauthServerUrl}' clientId: '${clientId}', has client secret (${clientSecretEnvVar}): ${String(
+        `the idp ${idpName} is not properly configured. oauthServerUrl: '${oauthServerUrl}' oauthTokenUrl: '${oauthTokenUrl}' clientId: '${clientId}', has client secret (${clientSecretEnvVar}): ${String(
           hasClientSecret
         )}`
       );
@@ -110,7 +110,7 @@ export class EnvService {
       oauthServerUrl: oauthServerUrl,
       clientId: clientId,
       clientSecret: clientSecret,
-      keycloakRealm,
+      oauthTokenUrl: oauthTokenUrl,
     };
   }
 

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CookiesService } from '../services/cookies.service';
-import { AuthCallbackService } from './auth-callback.service';
+import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { IasService, IasResponse } from './ias.service';
 
@@ -18,7 +18,7 @@ import { IasService, IasResponse } from './ias.service';
 export class AuthController {
   constructor(
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
-    private authCallbackService: AuthCallbackService,
+    private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
     private iasService: IasService,
     private logger: Logger

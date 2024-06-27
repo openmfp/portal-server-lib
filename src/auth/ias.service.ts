@@ -8,9 +8,9 @@ import { CookiesService } from '../services/cookies.service';
 
 export interface IasResponse {
   access_token: string;
-  expires_in: number | string;
+  expires_in: string;
   refresh_token: string;
-  refresh_expires_in: number;
+  refresh_expires_in: string;
   id_token?: string;
   token_type: string;
   scope: string;
@@ -77,24 +77,15 @@ export class IasService {
       `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`
     ).toString('base64')}`;
 
-    let iasEndPoint = '/oauth2/token/';
-    if (currentAuthEnv.keycloakRealm) {
-      iasEndPoint = `/realms/${currentAuthEnv.keycloakRealm}/protocol/openid-connect/token/`;
-    }
-
     const tokenFetchResult = await firstValueFrom(
       this.httpService
-        .post<IasResponse>(
-          `${currentAuthEnv.oauthServerUrl}${iasEndPoint}`,
-          body,
-          {
-            headers: {
-              Authorization: `Basic ${authorization}`,
-              'content-type': 'application/x-www-form-urlencoded',
-              Accept: 'application/json',
-            },
-          }
-        )
+        .post<IasResponse>(currentAuthEnv.oauthTokenUrl, body, {
+          headers: {
+            Authorization: `Basic ${authorization}`,
+            'content-type': 'application/x-www-form-urlencoded',
+            Accept: 'application/json',
+          },
+        })
         .pipe(
           catchError((e: AxiosError) => {
             throw new Error(`Error response from ias: ${e.toString()}`);

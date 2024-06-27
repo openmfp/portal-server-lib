@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { IasResponse } from './ias.service';
 
-export interface AuthCallbackService {
+export interface AuthCallback {
   handleSuccess(
     request: Request,
     response: Response,
@@ -13,7 +13,7 @@ export interface AuthCallbackService {
 }
 
 @Injectable()
-export class NoopAuthCallback implements AuthCallbackService {
+export class NoopAuthCallback implements AuthCallback {
   handleSuccess(
     request: Request,
     response: Response,

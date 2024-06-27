@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 import nock from 'nock';
 import { EnvService } from '../env/env.service';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthCallbackService } from './auth-callback.service';
+import { AuthCallback } from './auth.callback';
 import { PortalModule } from '../portal.module';
 
 describe('IasService', () => {
@@ -13,18 +13,20 @@ describe('IasService', () => {
   let responseMock: Response;
   let requestMock: Request;
   let envService: EnvService;
-  let authCallbackMock: AuthCallbackService;
+  let authCallbackMock: AuthCallback;
 
   beforeEach(async () => {
     process.env['IDP_NAMES'] = 'sap';
     process.env['BASE_DOMAINS_SAP'] = 'example.com';
-    process.env['IAS_TENANT_URL_SAP'] =
-      'https://ametqb0em.accounts400.ondemand.com';
+    process.env['AUTH_SERVER_URL_SAP'] =
+      'https://ametqb0em.accounts400.ondemand.com/auth';
+    process.env['TOKEN_URL_SAP'] =
+      'https://ametqb0em.accounts400.ondemand.com/token';
     process.env['OIDC_CLIENT_ID_SAP'] = '1fd3f7a6-d506-4289-9fcf-fed52eeb4c16';
     process.env['OIDC_CLIENT_SECRET_SAP'] = 'test secret';
     process.env['ENVIRONMENT'] = 'local';
 
-    authCallbackMock = mock<AuthCallbackService>();
+    authCallbackMock = mock<AuthCallback>();
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     })
@@ -80,34 +82,10 @@ describe('IasService', () => {
     describe('token for refresh token - refresh_token flow', () => {
       const refreshToken = 'refresh me';
 
-      it('should set the cookies for keycloak services', async () => {
-        // Arrange
-        process.env['IAS_KEYCLOAK_REALM_SAP'] = 'openmfp';
-
-        nock(envService.getCurrentAuthEnv(requestMock).oauthServerUrl)
-          .post('/realms/openmfp/protocol/openid-connect/token/', {
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken,
-          })
-          .reply(200, serverResponse);
-
-        // Act
-        const iasResponse = await service.exchangeTokenForRefreshToken(
-          requestMock,
-          responseMock,
-          refreshToken
-        );
-
-        // Assert
-        assertResponseAndCookies(iasResponse);
-
-        delete process.env['IAS_KEYCLOAK_REALM_SAP'];
-      });
-
       it('should set the cookies', async () => {
         // Arrange
-        nock(envService.getCurrentAuthEnv(requestMock).oauthServerUrl)
-          .post('/oauth2/token/', {
+        nock(envService.getCurrentAuthEnv(requestMock).oauthTokenUrl)
+          .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
           })
@@ -126,8 +104,8 @@ describe('IasService', () => {
 
       it('should not set the cookies, authorization exception', async () => {
         // Arrange
-        nock(envService.getCurrentAuthEnv(requestMock).oauthServerUrl)
-          .post('/oauth2/token/', {
+        nock(envService.getCurrentAuthEnv(requestMock).oauthTokenUrl)
+          .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
           })
@@ -146,40 +124,13 @@ describe('IasService', () => {
     });
 
     describe('token for code - authorization_code flow', () => {
-      it('should set the cookies for keycloak services', async () => {
-        // Arrange
-        process.env['IAS_KEYCLOAK_REALM_SAP'] = 'openmfp';
-        const env = envService.getCurrentAuthEnv(requestMock);
-        const code = 'secret code';
-
-        nock(env.oauthServerUrl)
-          .post('/realms/openmfp/protocol/openid-connect/token/', {
-            client_id: env.clientId,
-            grant_type: 'authorization_code',
-            redirect_uri: `http://localhost:4300/callback?storageType=none`,
-            code: code,
-          })
-          .reply(200, serverResponse);
-
-        // Act
-        const iasResponse = await service.exchangeTokenForCode(
-          requestMock,
-          responseMock,
-          code
-        );
-
-        // Assert
-        assertResponseAndCookies(iasResponse);
-        delete process.env['IAS_KEYCLOAK_REALM_SAP'];
-      });
-
       it('should set the cookies', async () => {
         // Arrange
         const env = envService.getCurrentAuthEnv(requestMock);
         const code = 'secret code';
 
-        nock(env.oauthServerUrl)
-          .post('/oauth2/token/', {
+        nock(env.oauthTokenUrl)
+          .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
             redirect_uri: `http://localhost:4300/callback?storageType=none`,
@@ -204,8 +155,8 @@ describe('IasService', () => {
         const env = envService.getCurrentAuthEnv(requestMock);
         const code = 'secret code';
 
-        nock(env.oauthServerUrl)
-          .post('/oauth2/token/', {
+        nock(env.oauthTokenUrl)
+          .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
             redirect_uri: `https://example.com/callback?storageType=none`,
@@ -230,8 +181,8 @@ describe('IasService', () => {
       const env = envService.getCurrentAuthEnv(requestMock);
       const code = 'secret code';
 
-      nock(env.oauthServerUrl)
-        .post('/oauth2/token/', {
+      nock(env.oauthTokenUrl)
+        .post('', {
           client_id: env.clientId,
           grant_type: 'authorization_code',
           redirect_uri: `http://localhost:4300/callback?storageType=none`,

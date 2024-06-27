@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CookiesService } from '../services/cookies.service';
 import { AuthController } from './auth.controller';
 import { PortalModule } from '../portal.module';
-import { AuthCallbackService } from './auth-callback.service';
+import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { IasResponse, IasService } from './ias.service';
 import { HttpException } from '@nestjs/common';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authCallback: AuthCallbackService;
+  let authCallback: AuthCallback;
   let requestMock: Request;
   let responseMock: Response;
   let iasServiceMock: IasService;
@@ -29,9 +29,7 @@ describe('AuthController', () => {
       .useValue(cookiesService)
       .compile();
     controller = module.get<AuthController>(AuthController);
-    authCallback = module.get<AuthCallbackService>(
-      AUTH_CALLBACK_INJECTION_TOKEN
-    );
+    authCallback = module.get<AuthCallback>(AUTH_CALLBACK_INJECTION_TOKEN);
     requestMock = mock<Request>();
     responseMock = mock<Response>();
   });

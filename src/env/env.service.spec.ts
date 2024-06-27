@@ -89,8 +89,11 @@ describe('EnvService', () => {
 
   describe('getEnvWithAuth', () => {
     const oauthServerUrlSAP = 'www.sap.com';
+    const oauthTokenUrlSAP = 'www.sap.token.com';
     const oauthServerUrlFoo = 'www.foo.com';
+    const oauthTokenUrlFoo = 'www.foo.token.com';
     const oauthServerUrlHyperspace = 'www.btp.com';
+    const oauthTokenUrlHyperspace = 'www.btp.com/token';
     const clientIdFoo = '12134aads';
     const clientIdHyperspace = 'bbbtttppp';
     const clientIdSap = 'asqrfr';
@@ -101,15 +104,18 @@ describe('EnvService', () => {
     beforeEach(() => {
       process.env['IDP_NAMES'] = 'sap,foo,hyperspace,not-configured';
       process.env['BASE_DOMAINS_SAP'] = 'dxp.k8s.ondemand.com';
-      process.env['IAS_TENANT_URL_SAP'] = oauthServerUrlSAP;
+      process.env['AUTH_SERVER_URL_SAP'] = oauthServerUrlSAP;
+      process.env['TOKEN_URL_SAP'] = oauthTokenUrlSAP;
       process.env['OIDC_CLIENT_ID_SAP'] = clientIdSap;
       process.env['OIDC_CLIENT_SECRET_SAP'] = clientSecretSap;
       process.env['BASE_DOMAINS_HYPERSPACE'] = 'hyper.space,localhost';
       process.env['BASE_DOMAINS_FOO'] = '';
-      process.env['IAS_TENANT_URL_FOO'] = oauthServerUrlFoo;
+      process.env['AUTH_SERVER_URL_FOO'] = oauthServerUrlFoo;
+      process.env['TOKEN_URL_FOO'] = oauthTokenUrlFoo;
       process.env['OIDC_CLIENT_ID_FOO'] = clientIdFoo;
       process.env['OIDC_CLIENT_SECRET_FOO'] = clientSecretFoo;
-      process.env['IAS_TENANT_URL_HYPERSPACE'] = oauthServerUrlHyperspace;
+      process.env['AUTH_SERVER_URL_HYPERSPACE'] = oauthServerUrlHyperspace;
+      process.env['TOKEN_URL_HYPERSPACE'] = oauthTokenUrlHyperspace;
       process.env['OIDC_CLIENT_ID_HYPERSPACE'] = clientIdHyperspace;
       process.env['OIDC_CLIENT_SECRET_HYPERSPACE'] = clientSecretHyperspace;
     });
@@ -122,7 +128,26 @@ describe('EnvService', () => {
 
       expect(envWithAuth.clientId).toBe(clientIdFoo);
       expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlFoo);
-      expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlFoo);
+    });
+
+    it('should map the idp to the token url for foo', () => {
+      const request = mock<Request>();
+      request.hostname = 'foo.hyper.space';
+
+      const envWithAuth = service.getCurrentAuthEnv(request);
+
+      expect(envWithAuth.clientId).toBe(clientIdFoo);
+      expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlFoo);
+    });
+
+    it('should map the idp to the token url for sap', () => {
+      const request = mock<Request>();
+      request.hostname = 'dxp.k8s.ondemand.com';
+
+      const envWithAuth = service.getCurrentAuthEnv(request);
+
+      expect(envWithAuth.clientId).toBe(clientIdSap);
+      expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlSAP);
     });
 
     it('should map the idp of foo to a different base url', () => {
@@ -167,6 +192,16 @@ describe('EnvService', () => {
       }).toThrow("the idp 'not-existing' is not configured!");
     });
 
+    it('should throw when the token url is not configured is not existing', () => {
+      const request = mock<Request>();
+      request.hostname = 'dxp.k8s.ondemand.com';
+      delete process.env[`TOKEN_URL_SAP`];
+
+      expect(function () {
+        service.getCurrentAuthEnv(request);
+      }).toThrow(Error);
+    });
+
     it('should throw when the domain is not existing', () => {
       const request = mock<Request>();
       request.hostname = 'sap-btp.foo.com';
@@ -185,7 +220,7 @@ describe('EnvService', () => {
       expect(function () {
         service.getCurrentAuthEnv(request);
       }).toThrow(
-        "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false"
+        "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false"
       );
     });
   });

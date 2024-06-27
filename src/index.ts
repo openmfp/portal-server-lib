@@ -10,6 +10,9 @@ export {
 export { FrameContextProvider } from './config/context/frame-context-provider';
 export { FeatureTogglesProvider } from './config/context/feature-toggles-provider';
 export { TenantService } from './auth/tenant.service';
+export { AuthDataService } from './auth/auth-data.service';
+export { AuthCallback } from './auth/auth.callback';
+export { IasResponse } from './auth/ias.service';
 export { HeaderParserService } from './services/header-parser.service';
 export {
   ServiceProviderResponse,

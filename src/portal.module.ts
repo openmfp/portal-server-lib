@@ -1,7 +1,7 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import {
-  AuthCallbackService,
+  AuthCallback,
   AuthController,
   AuthDataService,
   IasService,
@@ -92,7 +92,7 @@ export interface PortalModuleOptions {
    */
   frontendDistSources?: string;
 
-  authCallbackProvider?: Type<AuthCallbackService>;
+  authCallbackProvider?: Type<AuthCallback>;
 
   /**
    * IAS service other than default keycloak providing oauth functionality
