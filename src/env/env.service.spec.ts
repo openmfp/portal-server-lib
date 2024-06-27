@@ -16,6 +16,15 @@ describe('EnvService', () => {
     expect(service).toBeDefined();
   });
 
+  it('should get logoutRedirectUrl', () => {
+    const envVarName = 'LOGOUT_REDIRECT_URL';
+    process.env[envVarName] = '/logout';
+
+    expect(service.getEnv()['logoutRedirectUrl']).toStrictEqual('/logout');
+
+    delete process.env[envVarName];
+  });
+
   [
     {
       envVarName: 'HEALTH_CHECK_INTERVAL',
