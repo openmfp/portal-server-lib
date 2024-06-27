@@ -17,7 +17,7 @@ import {
 } from './env/env-variables.service';
 import { LogoutController } from './logout/logout.controller';
 import { NoopLogoutService } from './logout/noop-logout.service';
-import { LogoutCallback } from './logout/logoutCallback';
+import { LogoutCallback } from './logout/logout-callback';
 
 export interface PortalModuleOptions {
   /**

@@ -3,7 +3,7 @@ import { LogoutController } from './logout.controller';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { NoopLogoutService } from './noop-logout.service';
-import { LogoutCallback } from './logoutCallback';
+import { LogoutCallback } from './logout-callback';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 
 describe('LogoutController', () => {
