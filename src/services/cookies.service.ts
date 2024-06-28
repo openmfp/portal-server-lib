@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IasResponse } from '../auth/ias.service';
+import { AuthTokenResponse } from '../auth/auth-token.service';
 import { Request, Response } from 'express';
 
 const authCookie = 'auth_cookie';
@@ -11,7 +11,7 @@ export class CookiesService {
     return cookies && cookies[authCookie];
   }
 
-  public setAuthCookie(response: Response, iasResponse: IasResponse) {
+  public setAuthCookie(response: Response, iasResponse: AuthTokenResponse) {
     response.cookie(authCookie, iasResponse.refresh_token, {
       httpOnly: true,
       secure: true,

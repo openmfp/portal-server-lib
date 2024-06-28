@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
-import { IasResponse, IasService } from './ias.service';
+import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
 import { Request, Response } from 'express';
 import nock from 'nock';
 import { EnvService } from '../env/env.service';
@@ -9,7 +9,7 @@ import { AuthCallback } from './auth.callback';
 import { PortalModule } from '../portal.module';
 
 describe('IasService', () => {
-  let service: IasService;
+  let service: AuthTokenService;
   let responseMock: Response;
   let requestMock: Request;
   let envService: EnvService;
@@ -34,7 +34,7 @@ describe('IasService', () => {
       .useValue(authCallbackMock)
       .compile();
 
-    service = module.get<IasService>(IasService);
+    service = module.get<AuthTokenService>(AuthTokenService);
     envService = module.get<EnvService>(EnvService);
     responseMock = mock<Response>();
     requestMock = mock<Request>();
@@ -62,7 +62,7 @@ describe('IasService', () => {
       requestMock.hostname = hostname;
     });
 
-    function assertResponseAndCookies(iasResponse: IasResponse) {
+    function assertResponseAndCookies(iasResponse: AuthTokenResponse) {
       expect(iasResponse.refresh_token).toBe(refreshTokenValue);
       expect(iasResponse.id_token).toBe(idTokenValue);
       expect(iasResponse.access_token).toBe(accessTokenValue);

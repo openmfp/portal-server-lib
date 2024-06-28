@@ -6,7 +6,7 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { CookiesService } from '../services/cookies.service';
 
-export interface IasResponse {
+export interface AuthTokenResponse {
   access_token: string;
   expires_in: string;
   refresh_token: string;
@@ -17,7 +17,7 @@ export interface IasResponse {
 }
 
 @Injectable()
-export class IasService {
+export class AuthTokenService {
   constructor(
     private envService: EnvService,
     private httpService: HttpService,
@@ -34,7 +34,7 @@ export class IasService {
     request: Request,
     response: Response,
     code: string
-  ): Promise<IasResponse> {
+  ): Promise<AuthTokenResponse> {
     const currentAuthEnv = this.envService.getCurrentAuthEnv(request);
     const redirectUri = this.getRedirectUri(request);
 
@@ -57,7 +57,7 @@ export class IasService {
     request: Request,
     response: Response,
     refreshToken: string
-  ): Promise<IasResponse> {
+  ): Promise<AuthTokenResponse> {
     const currentAuthEnv = this.envService.getCurrentAuthEnv(request);
 
     const body = new URLSearchParams({
@@ -72,14 +72,14 @@ export class IasService {
     response: Response,
     currentAuthEnv: ServerAuthVariables,
     body: URLSearchParams
-  ): Promise<IasResponse> {
+  ): Promise<AuthTokenResponse> {
     const authorization = `${Buffer.from(
       `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`
     ).toString('base64')}`;
 
     const tokenFetchResult = await firstValueFrom(
       this.httpService
-        .post<IasResponse>(currentAuthEnv.oauthTokenUrl, body, {
+        .post<AuthTokenResponse>(currentAuthEnv.oauthTokenUrl, body, {
           headers: {
             Authorization: `Basic ${authorization}`,
             'content-type': 'application/x-www-form-urlencoded',

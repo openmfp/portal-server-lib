@@ -12,7 +12,7 @@ import { Request, Response } from 'express';
 import { CookiesService } from '../services/cookies.service';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { IasService, IasResponse } from './ias.service';
+import { AuthTokenService, AuthTokenResponse } from './auth-token.service';
 
 @Controller('/rest/auth')
 export class AuthController {
@@ -20,7 +20,7 @@ export class AuthController {
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
-    private iasService: IasService,
+    private iasService: AuthTokenService,
     private logger: Logger
   ) {}
 
@@ -28,7 +28,7 @@ export class AuthController {
   async auth(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<IasResponse> {
+  ): Promise<AuthTokenResponse> {
     const code = request.query.code;
     if (!code) {
       throw new HttpException(
@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     try {
-      const iasResponse: IasResponse =
+      const iasResponse: AuthTokenResponse =
         await this.iasService.exchangeTokenForCode(
           request,
           response,
@@ -59,7 +59,7 @@ export class AuthController {
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<IasResponse> {
+  ): Promise<AuthTokenResponse> {
     const dxpAuthCookie = this.cookiesService.getAuthCookie(request);
     if (!dxpAuthCookie) {
       throw new HttpException(
@@ -69,7 +69,7 @@ export class AuthController {
     }
 
     try {
-      const iasResponse: IasResponse =
+      const iasResponse: AuthTokenResponse =
         await this.iasService.exchangeTokenForRefreshToken(
           request,
           response,
@@ -89,7 +89,7 @@ export class AuthController {
   private async handleTokenRetrieval(
     request: Request,
     response: Response,
-    iasResponse: IasResponse
+    iasResponse: AuthTokenResponse
   ) {
     await this.authCallbackService.handleSuccess(
       request,
@@ -99,7 +99,9 @@ export class AuthController {
     return this.filterIasResponseForFrontend(iasResponse);
   }
 
-  private filterIasResponseForFrontend(iasResponse: IasResponse): IasResponse {
+  private filterIasResponseForFrontend(
+    iasResponse: AuthTokenResponse
+  ): AuthTokenResponse {
     delete iasResponse.refresh_token;
     delete iasResponse.refresh_expires_in;
     return iasResponse;

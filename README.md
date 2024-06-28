@@ -22,7 +22,8 @@ In order to be able to use the library following environment properties have to 
 | IDP_NAMES                 | Comma separated values of the name(s) of the Identity Providers (IDPs) used for authentication.                                                                                                |
 | TENANT_ID                 | The idp that will be used when running on local host.                                                                                                                                          |
 | BASE_DOMAINS_${idp}       | Comma separated values of base domains for the application.                                                                                                                                    |
-| IAS_TENANT_URL_${idp}     | The URL for the IAS (Identity Access Service) tenant specific to the idp name. This URL is used for interactions with the IAS service, such as user authentication and authorization.          |
+| AUTH_SERVER_URL_${idp}    | The URL for the authentication service provider specific to the idp name. This URL is used for retrieveing an authenticating a user.                                                           |
+| TOKEN_URL_${idp}          | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
 | OIDC_CLIENT_ID_${idp}     | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
 | OIDC_CLIENT_SECRET_${idp} | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
 
@@ -44,7 +45,8 @@ IDP_NAMES=app,dev
 TENANT_ID=123op89ujuy
 
 BASE_DOMAINS_APP=localhost,example.com
-IAS_TENANT_URL_APP=https://example.com
+AUTH_SERVER_URL_APP=https://example.com/auth
+TOKEN_URL_APP=https://example.com/token
 OIDC_CLIENT_ID_APP=app_client_id
 OIDC_CLIENT_SECRET_APP=app_client_secret
 

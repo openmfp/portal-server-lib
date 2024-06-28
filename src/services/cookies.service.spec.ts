@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CookiesService } from './cookies.service';
 import { Request, Response } from 'express';
-import { IasResponse } from '../auth/ias.service';
+import { AuthTokenResponse } from '../auth/auth-token.service';
 
 describe('CookiesService', () => {
   let service: CookiesService;
@@ -42,9 +42,9 @@ describe('CookiesService', () => {
         cookie: jest.fn(),
       } as Response;
 
-      const mockIasResponse: IasResponse = {
+      const mockIasResponse: AuthTokenResponse = {
         refresh_token: 'test-refresh-token',
-      } as IasResponse;
+      } as AuthTokenResponse;
 
       service.setAuthCookie(mockResponse, mockIasResponse);
 

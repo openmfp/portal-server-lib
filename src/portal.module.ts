@@ -4,7 +4,7 @@ import {
   AuthCallback,
   AuthController,
   AuthDataService,
-  IasService,
+  AuthTokenService,
   NoopAuthCallback,
 } from './auth';
 import { EnvService } from './env/env.service';
@@ -92,12 +92,10 @@ export interface PortalModuleOptions {
    */
   frontendDistSources?: string;
 
-  authCallbackProvider?: Type<AuthCallback>;
-
   /**
-   * IAS service other than default keycloak providing oauth functionality
+   * Auth callback handler service.
    */
-  iasService?: Type<IasService>;
+  authCallbackProvider?: Type<AuthCallback>;
 }
 
 @Module({})
@@ -119,7 +117,7 @@ export class PortalModule {
       LuigiConfigNodesService,
       ContentConfigurationLuigiDataService,
       AuthDataService,
-      IasService,
+      AuthTokenService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,

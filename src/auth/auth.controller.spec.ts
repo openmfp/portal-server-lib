@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { PortalModule } from '../portal.module';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { IasResponse, IasService } from './ias.service';
+import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
 import { HttpException } from '@nestjs/common';
 
 describe('AuthController', () => {
@@ -14,16 +14,16 @@ describe('AuthController', () => {
   let authCallback: AuthCallback;
   let requestMock: Request;
   let responseMock: Response;
-  let iasServiceMock: IasService;
+  let iasServiceMock: AuthTokenService;
   let cookiesService: CookiesService;
 
   beforeEach(async () => {
-    iasServiceMock = mock<IasService>();
+    iasServiceMock = mock<AuthTokenService>();
     cookiesService = mock<CookiesService>();
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     })
-      .overrideProvider(IasService)
+      .overrideProvider(AuthTokenService)
       .useValue(iasServiceMock)
       .overrideProvider(CookiesService)
       .useValue(cookiesService)
@@ -49,7 +49,7 @@ describe('AuthController', () => {
       refresh_token: 'ref',
       expires_in: '12312',
       access_token: 'access',
-    } as IasResponse;
+    } as AuthTokenResponse;
     getTokenForCode.mockResolvedValue(iasServiceResponse);
 
     // act
@@ -106,7 +106,7 @@ describe('AuthController', () => {
       refresh_token: 'ref',
       expires_in: '12312',
       access_token: 'access',
-    } as IasResponse;
+    } as AuthTokenResponse;
     exchangeTokenForRefreshToken.mockResolvedValue(iasServiceResponse);
 
     // act
