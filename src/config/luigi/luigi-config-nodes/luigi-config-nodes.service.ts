@@ -38,21 +38,16 @@ export class LuigiConfigNodesService {
     const rawServiceProviders = fetchedProvider.serviceProviders;
     const promises = rawServiceProviders.map((provider) =>
       this.cdmLuigiData
-        .getLuigiData(
-          provider.cdm,
-          provider.contentConfiguration,
-          acceptLanguage,
-          {
-            isMissingMandatoryData: provider.isMissingMandatoryData,
-            extensionClassName: provider.extensionClassName,
-            helpContext: {
-              displayName: provider.displayName,
-              ...provider.helpCenterData,
-              documentation: provider.documentation,
-            },
-            breadcrumbBadge: provider?.breadcrumbBadge,
-          }
-        )
+        .getLuigiDataFromCDM(provider.cdm, acceptLanguage, {
+          isMissingMandatoryData: provider.isMissingMandatoryData,
+          extensionClassName: provider.extensionClassName,
+          helpContext: {
+            displayName: provider.displayName,
+            ...provider.helpCenterData,
+            documentation: provider.documentation,
+          },
+          breadcrumbBadge: provider?.breadcrumbBadge,
+        })
         .then(
           (nodes) => ({ nodes, provider }),
           (error) =>

@@ -37,7 +37,7 @@ describe('LuigiConfigNodesService', () => {
   it('should return a service provider for each request', async () => {
     const nodes: LuigiNode[] = [];
     jest
-      .spyOn(cdmLuigiDataService, 'getLuigiData')
+      .spyOn(cdmLuigiDataService, 'getLuigiDataFromCDM')
       .mockReturnValue(Promise.resolve(nodes));
     const rawServiceProviders: RawServiceProvider[] = [
       {

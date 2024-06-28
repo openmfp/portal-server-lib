@@ -7,45 +7,17 @@ import {
 import * as URI from 'uri-js';
 import { URIComponents } from 'uri-js';
 import { LuigiAppConfig, LuigiNavConfig } from '../../model/luigi-app-config';
-import {
-  CDM,
-  ContentConfiguration,
-  Dictionary,
-  ExtendedData,
-} from '../../model/configuration';
-import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
+import { CDM, Dictionary, CDMExtendedData } from '../../model/configuration';
 
-export class LuigiDataBaseService {
-  constructor(
-    protected httpService: any,
-    protected contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
-  ) {
+export class CdmLuigiDataBaseService {
+  constructor(protected httpService: any) {
     this.httpService = httpService;
-    this.contentConfigurationLuigiDataService =
-      contentConfigurationLuigiDataService;
   }
 
-  async getLuigiData(
-    cdm: CDM[],
-    contentConfiguration: ContentConfiguration[],
-    language: string,
-    extendedData?: ExtendedData
-  ): Promise<LuigiNode[]> {
-    if (cdm) {
-      return this.processCDM(cdm, language, extendedData);
-    } else {
-      return this.contentConfigurationLuigiDataService.processContentConfiguration(
-        contentConfiguration,
-        language,
-        extendedData
-      );
-    }
-  }
-
-  private async processCDM(
+  async getLuigiDataFromCDM(
     cdm: CDM[],
     language: string,
-    cdmExtendedData?: ExtendedData
+    cdmExtendedData?: CDMExtendedData
   ): Promise<LuigiNode[]> {
     const nodeArrays = await Promise.allSettled(
       cdm.map(async (c) => {
@@ -103,13 +75,13 @@ export class LuigiDataBaseService {
   // Only add the extension class name to a node if it's missing mandatory data
   // because we need it for navigation purposes
   private getExtensionClassNameForNode(
-    extendedData: ExtendedData
+    cdmExtendedData: CDMExtendedData
   ): string | undefined {
     if (
-      extendedData?.isMissingMandatoryData &&
-      extendedData?.extensionClassName
+      cdmExtendedData?.isMissingMandatoryData &&
+      cdmExtendedData?.extensionClassName
     ) {
-      return extendedData?.extensionClassName;
+      return cdmExtendedData?.extensionClassName;
     }
 
     return undefined;

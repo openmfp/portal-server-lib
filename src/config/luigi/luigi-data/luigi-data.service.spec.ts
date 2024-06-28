@@ -1,14 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LuigiDataService } from './luigi-data.service';
 import { HttpModule } from '@nestjs/axios';
-import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
 
 describe('CdmLuigiDataService', () => {
   let service: LuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LuigiDataService, ContentConfigurationLuigiDataService],
+      providers: [LuigiDataService],
       imports: [HttpModule],
     }).compile();
     service = module.get<LuigiDataService>(LuigiDataService);

@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { LuigiDataBaseService } from './luigi-data-base.service';
-import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
+import { CdmLuigiDataBaseService } from './cdm-luigi-data-base.service';
 
 @Injectable()
-export class LuigiDataService extends LuigiDataBaseService {
-  constructor(
-    private httpServiceImpl: HttpService,
-    protected contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
-  ) {
-    super(httpServiceImpl, contentConfigurationLuigiDataService);
+export class LuigiDataService extends CdmLuigiDataBaseService {
+  constructor(private httpServiceImpl: HttpService) {
+    super(httpServiceImpl);
   }
 }

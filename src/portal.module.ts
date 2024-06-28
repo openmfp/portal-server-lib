@@ -28,7 +28,6 @@ import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-prov
 import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { HeaderParserService } from './services/header-parser.service';
-import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
 import {
   EmptyServiceProviderService,
   ServiceProviderService,
@@ -98,7 +97,6 @@ export class PortalModule {
       Logger,
       LuigiDataService,
       LuigiConfigNodesService,
-      ContentConfigurationLuigiDataService,
       HeaderParserService,
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,

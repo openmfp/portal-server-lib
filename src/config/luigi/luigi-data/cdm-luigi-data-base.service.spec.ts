@@ -1,18 +1,16 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import nock from 'nock';
-import { LuigiDataBaseService } from './luigi-data-base.service';
+import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
 import {
   CrossNavigationInbounds,
   LuigiIntent,
   LuigiNode,
 } from '../../model/luigi.node';
-import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
-import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
-import { mock } from 'jest-mock-extended';
+import { CdmLuigiDataBaseService } from './cdm-luigi-data-base.service';
 
-describe('LuigiDataBaseService', () => {
-  let service: LuigiDataBaseService;
+describe('CdmLuigiDataService', () => {
+  let service: CdmLuigiDataBaseService;
   const baseUrl = 'https://github.tools.sap';
   const pathToCdmJson = '/path/cmd.json';
   const urlToCdmJson = baseUrl + pathToCdmJson;
@@ -21,16 +19,11 @@ describe('LuigiDataBaseService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LuigiDataBaseService],
+      providers: [CdmLuigiDataBaseService],
       imports: [HttpModule],
     }).compile();
     const httpService = module.get<HttpService>(HttpService);
-    const mockContentConfigurationLuigiDataService =
-      mock<ContentConfigurationLuigiDataService>();
-    service = new LuigiDataBaseService(
-      httpService,
-      mockContentConfigurationLuigiDataService
-    );
+    service = new CdmLuigiDataBaseService(httpService);
 
     consoleWarn = jest.spyOn(global.console, 'warn').mockImplementation();
   });
@@ -87,15 +80,14 @@ describe('LuigiDataBaseService', () => {
 
     it('should use data if present', async () => {
       await expect(
-        service.getLuigiData([{ data: cdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ data: cdmJson }], language)
       ).resolves.toEqual([expectedNode]);
     });
 
     it('should concatenate nodes', async () => {
       await expect(
-        service.getLuigiData(
+        service.getLuigiDataFromCDM(
           [{ data: cdmJson }, { data: cdmJson }],
-          null,
           language
         )
       ).resolves.toEqual([expectedNode, expectedNode]);
@@ -109,7 +101,7 @@ describe('LuigiDataBaseService', () => {
         },
       };
       await expect(
-        service.getLuigiData([{ data: cdmJson }], null, language, {
+        service.getLuigiDataFromCDM([{ data: cdmJson }], language, {
           helpContext,
         })
       ).resolves.toEqual([{ ...expectedNode, helpContext }]);
@@ -122,7 +114,7 @@ describe('LuigiDataBaseService', () => {
         hint: 'text to show on hover',
       };
       await expect(
-        service.getLuigiData([{ data: cdmJson }], null, language, {
+        service.getLuigiDataFromCDM([{ data: cdmJson }], language, {
           breadcrumbBadge,
         })
       ).resolves.toEqual([{ ...expectedNode, breadcrumbBadge }]);
@@ -133,7 +125,7 @@ describe('LuigiDataBaseService', () => {
     it('and responded with error status code', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(404);
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -144,7 +136,7 @@ describe('LuigiDataBaseService', () => {
         message: errorMsg,
       });
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -156,7 +148,7 @@ describe('LuigiDataBaseService', () => {
         .delayConnection(2000) // 2 seconds
         .reply(200, {});
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -212,9 +204,8 @@ describe('LuigiDataBaseService', () => {
         ].urlTemplateParams.url = baseUrl;
 
         nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-        const nodes = await service.getLuigiData(
+        const nodes = await service.getLuigiDataFromCDM(
           [{ url: urlToCdmJson }],
-          null,
           language
         );
         expect(nodes).toBeDefined();
@@ -253,9 +244,8 @@ describe('LuigiDataBaseService', () => {
       it('should build a url if a relative url is given for a single node', async () => {
         nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
 
-        const nodes = await service.getLuigiData(
+        const nodes = await service.getLuigiDataFromCDM(
           [{ url: urlToCdmJson }],
-          null,
           language
         );
         expect(nodes).toBeDefined();
@@ -299,9 +289,8 @@ describe('LuigiDataBaseService', () => {
         },
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-      const nodes = await service.getLuigiData(
+      const nodes = await service.getLuigiDataFromCDM(
         [{ url: urlToCdmJson }],
-        null,
         language
       );
       expect(nodes).toBeDefined();
@@ -357,9 +346,8 @@ describe('LuigiDataBaseService', () => {
         },
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-      const nodes: LuigiNode[] = await service.getLuigiData(
+      const nodes: LuigiNode[] = await service.getLuigiDataFromCDM(
         [{ url: urlToCdmJson }],
-        null,
         language
       );
       expect(nodes).toBeDefined();
@@ -394,7 +382,7 @@ describe('LuigiDataBaseService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -402,7 +390,7 @@ describe('LuigiDataBaseService', () => {
     it('with empty cdm.json', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, {});
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -410,7 +398,7 @@ describe('LuigiDataBaseService', () => {
     it('with illegal cdm.json', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, 'notAJson');
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -419,7 +407,7 @@ describe('LuigiDataBaseService', () => {
       const cdmJson = { payload: {} };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -442,7 +430,7 @@ describe('LuigiDataBaseService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -461,7 +449,7 @@ describe('LuigiDataBaseService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiData([{ url: urlToCdmJson }], null, language)
+        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -520,9 +508,8 @@ describe('LuigiDataBaseService', () => {
       },
     };
     nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-    const nodes = await service.getLuigiData(
+    const nodes = await service.getLuigiDataFromCDM(
       [{ url: urlToCdmJson }],
-      null,
       language
     );
     expect(nodes).toBeDefined();
