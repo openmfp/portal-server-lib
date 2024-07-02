@@ -9,6 +9,7 @@ import { EnvService } from '../env/env.service';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
+  let envService: EnvService;
   let requestMock: Request;
   let responseMock: Response;
   let logoutCallback: MockProxy<LogoutCallback>;
@@ -28,6 +29,7 @@ describe('LogoutController', () => {
     }).compile();
 
     controller = module.get<LogoutController>(LogoutController);
+    envService = module.get<EnvService>(EnvService);
     requestMock = mock<Request>();
     responseMock = mock<Response>();
   });
@@ -36,12 +38,20 @@ describe('LogoutController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should redirect to the client logout site when the backend is done', async () => {
+  it('should return response', async () => {
+    // Act
+    const result = await controller.logout(requestMock, responseMock);
+
+    // Assert
+    expect(result).toBeUndefined();
+  });
+
+  it('should clear cookies when logout controller is called', async () => {
     // Act
     await controller.logout(requestMock, responseMock);
 
     // Assert
-    expect(responseMock.redirect).toHaveBeenCalled();
+    expect(responseMock.clearCookie).toHaveBeenCalledWith('auth_cookie');
   });
 
   it('should execute handleLogout when logout controller is called', async () => {
@@ -49,6 +59,33 @@ describe('LogoutController', () => {
     await controller.logout(requestMock, responseMock);
 
     // Assert
-    expect(logoutCallback.handleLogout).toHaveBeenCalledTimes(1);
+    expect(logoutCallback.handleLogout).toHaveBeenCalledWith(requestMock, responseMock);
+  });
+
+  describe('getLogoutRedirectUrl', function () {
+    beforeEach(function () {
+      jest.spyOn(envService, 'getEnv').mockReturnValue({
+        logoutRedirectUrl: '\test',
+      });
+    });
+
+    it('should redirect to the client logout site when the backend is done and no error', async () => {
+      // Act
+      await controller.logout(requestMock, responseMock);
+
+      // Assert
+      expect(responseMock.redirect).toHaveBeenCalledWith('\test');
+    });
+
+    it('should redirect to the client logout site when the backend is done and error', async () => {
+      //Arrange
+      requestMock.query.error = 'Something_Important';
+
+      // Act
+      await controller.logout(requestMock, responseMock);
+
+      // Assert
+      expect(responseMock.redirect).toHaveBeenCalledWith('\test?error=Something_Important');
+    });
   });
 });
