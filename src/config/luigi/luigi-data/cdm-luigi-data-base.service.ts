@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call*/
-import {
-  CrossNavigationInbounds,
-  LuigiIntent,
-  LuigiNode,
-} from '../../model/luigi.node';
+import { LuigiNode } from '../../model/luigi.node';
 import * as URI from 'uri-js';
 import { URIComponents } from 'uri-js';
-import { LuigiAppConfig, LuigiNavConfig } from '../../model/luigi-app-config';
+import { LuigiNavConfig } from '../../model/luigi-app-config';
 import { CDM, Dictionary, CDMExtendedData } from '../../model/configuration';
+import { NodesProcessorService } from './nodes-processor.service';
 
 export class CdmLuigiDataBaseService {
-  constructor(protected httpService: any) {
+  constructor(
+    protected httpService: any,
+    protected nodeProcessorService: NodesProcessorService
+  ) {
     this.httpService = httpService;
+    this.nodeProcessorService = nodeProcessorService;
   }
 
   async getLuigiDataFromCDM(
@@ -133,14 +134,10 @@ export class CdmLuigiDataBaseService {
     ) {
       const luigiVisConf = data.payload.visualizations
         .LuigiNavConfig as LuigiNavConfig;
-      const luigiAppConfig: LuigiAppConfig =
-        data.payload.targetAppConfig['sap.integration'];
-      const luigiIntentInboundList: CrossNavigationInbounds =
-        data.payload.targetAppConfig['sap.app']?.crossNavigation?.inbounds;
+
       return this._createNodes(
+        data.payload,
         luigiVisConf,
-        luigiAppConfig,
-        luigiIntentInboundList,
         cdmUri != undefined ? URI.parse(cdmUri) : undefined
       );
     } else {
@@ -151,9 +148,8 @@ export class CdmLuigiDataBaseService {
   }
 
   private _createNodes(
+    payload,
     cfg: LuigiNavConfig,
-    appConfig: LuigiAppConfig,
-    luigiIntentInboundList: CrossNavigationInbounds,
     cdmUri: URIComponents | undefined
   ): LuigiNode[] {
     if (cfg && cfg.vizConfig && cfg.vizConfig.nodes) {
@@ -164,119 +160,30 @@ export class CdmLuigiDataBaseService {
         const localUrl = cdmUri.port
           ? `${schemeAndHost}:${cdmUri.port}`
           : schemeAndHost;
-        urlTemplateUrl = appConfig.urlTemplateParams.url || localUrl;
+        urlTemplateUrl = localUrl;
       }
 
       cfg.vizConfig.nodes.forEach((node) => {
-        nodes.push(this._createNode(node, cfg, appConfig, urlTemplateUrl));
+        nodes.push(this._createNode(node, cfg, urlTemplateUrl));
       });
 
-      if (nodes.length > 0) {
-        const configTransferNode = nodes[0];
-
-        if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
-          configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
-        }
-        configTransferNode._requiredIFramePermissionsForViewGroup =
-          cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
-
-        configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
-        if (configTransferNode._dxpUserSettingsConfig?.groups) {
-          Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
-            (key) => {
-              const group =
-                configTransferNode._dxpUserSettingsConfig.groups[key];
-              if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
-                group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
-              }
-            }
-          );
-        }
-
-        // Resolve intentMapping information and pass through with the config transfer node
-        const intentData = this.resolveIntentTargetsAndEntityPath(
-          nodes,
-          luigiIntentInboundList
-        );
-        configTransferNode._intentMappings = intentData?.intentMappings;
-        configTransferNode._entityRelativePaths =
-          intentData?.entityRelativePaths;
-      }
-
+      this.nodeProcessorService.processNodes(payload, nodes, urlTemplateUrl);
       return nodes;
     } else {
       return [];
     }
   }
 
-  private isAbsoluteUrl(url: string) {
-    const testBase = 'http://test.url.tld';
-    return (
-      url.trim().startsWith(testBase) ||
-      new URL(testBase).origin !== new URL(url, testBase).origin
-    );
-  }
-
   private _createNode(
     nodeCfg: LuigiNode,
     cfg: LuigiNavConfig,
-    appConfig: LuigiAppConfig,
     urlTemplateUrl: string
-  ): LuigiNode {
+  ): LuigiNode & Record<string, any> {
     const nodeDefaults = cfg.vizConfig.nodeDefaults || {};
     const node: LuigiNode = {
       ...nodeDefaults,
       ...nodeCfg,
     };
-
-    const {
-      pathSegment,
-      externalLink,
-      icon,
-      testId,
-      link,
-      hideFromNav,
-      useHashRouting,
-      visibleForFeatureToggles,
-      visibleForEntityContext,
-      visibleForContext,
-      visibleForPlugin,
-      isolateView,
-      networkVisibility,
-      virtualTree,
-      hideFromBreadcrumb,
-      hideSideNav,
-      tabNav,
-      loadingIndicator,
-      requiredPolicies,
-      category,
-      dxpOrder,
-      entityType,
-      label,
-      context,
-      keepSelectedForChildren,
-      requiredIFramePermissions,
-      userSettingsGroup,
-      defineEntity,
-      webcomponent,
-      navigationContext,
-      compound,
-      layoutConfig,
-      navHeader,
-      titleResolver,
-      clientPermissions,
-      showBreadcrumbs,
-      target,
-      ignoreInDocumentTitle,
-      navSlot,
-      defineSlot,
-      decodeViewUrl,
-      statusBadge,
-
-      configurationMissing,
-      configurationHint,
-      configurationLink,
-    } = node;
 
     let viewGroup: string,
       viewUrl: string,
@@ -309,64 +216,21 @@ export class CdmLuigiDataBaseService {
     if (node.children) {
       const directChildren = node.children as LuigiNode[];
       children = directChildren.map((child) => {
-        return this._createNode(child, cfg, appConfig, urlTemplateUrl);
+        return this._createNode(child, cfg, urlTemplateUrl);
       });
     }
 
     return {
-      label,
-      children,
-      viewGroup,
-      icon,
-      testId,
-      link,
-      userSettingsGroup,
-      pathSegment,
-      externalLink,
-      hideFromNav,
-      useHashRouting,
-      visibleForFeatureToggles,
-      visibleForEntityContext,
-      visibleForContext,
-      visibleForPlugin,
-      isolateView,
-      networkVisibility,
-      virtualTree,
-      hideFromBreadcrumb,
-      hideSideNav,
-      tabNav,
-      loadingIndicator,
-      requiredPolicies,
+      ...node,
+      url: undefined,
+      urlSuffix: undefined,
       viewUrl,
-      context,
-      category,
-      dxpOrder,
-      entityType,
-      keepSelectedForChildren,
-      requiredIFramePermissions,
-      defineEntity,
-      webcomponent,
-      navigationContext,
-      compound,
-      layoutConfig,
-      navHeader,
-      titleResolver,
-      clientPermissions,
-      showBreadcrumbs,
-      target,
-      ignoreInDocumentTitle,
-      navSlot,
-      defineSlot,
-      decodeViewUrl,
-      statusBadge,
-
-      configurationMissing,
-      configurationHint,
-      configurationLink,
+      viewGroup,
+      children,
     };
   }
 
-  processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
+  private processCompoundChildrenUrls(compound: any, urlTemplateUrl: string) {
     compound?.children?.forEach((element) => {
       if (element.url) {
         element.viewUrl = element.url;
@@ -375,127 +239,5 @@ export class CdmLuigiDataBaseService {
         element.viewUrl = `${urlTemplateUrl}${urlSuffix}`;
       }
     });
-  }
-
-  /**
-   * Iterates over the given list of nodes and builds the intent target information recursively for each node.
-   * @param nodes list of nodes to traverse
-   * @param inbounds list of semanticObject + action coming as an input from the CDM ["crossNavigation.inbounds"] configuration
-   * @returns a list of LuigiIntents (intentMappings) and 'entityRelativePaths' built after the nodes recursive traversal.
-   */
-  resolveIntentTargetsAndEntityPath(
-    nodes: LuigiNode[],
-    inbounds: CrossNavigationInbounds
-  ): {
-    intentMappings?: LuigiIntent[];
-    entityRelativePaths?: Record<string, any>;
-  } {
-    let listOfIntentMappings = [];
-    const listOfEntityPaths = {};
-    nodes.forEach((node) => {
-      // skip parent nodes with no entities defined
-      if (node.entityType) {
-        const tempListObject = { intentMappings: [], entityRelativePaths: {} };
-        this.prebuildIntentTargetsRecursively(
-          node,
-          inbounds,
-          node.entityType,
-          '',
-          node.entityType,
-          tempListObject
-        );
-        listOfIntentMappings = listOfIntentMappings.concat(
-          tempListObject.intentMappings
-        );
-        Object.assign(listOfEntityPaths, tempListObject.entityRelativePaths);
-      }
-    });
-    return {
-      intentMappings: listOfIntentMappings,
-      entityRelativePaths: listOfEntityPaths,
-    };
-  }
-
-  /**
-   * Traverses the given node recursively in order to find all nodes which define a target.
-   * Upon successful search it pushes the defined target with its matched information to a separate list - 'intentKnowledge.intentMappings'
-   * The list is extended as it traverses the rest of the tree.
-   * Within the same recursion the function also builds the entity's path by appending them separately -  'intentKnowledge.entityRelativePaths'
-   * Data knowledge collected is then stiched together to form the complete absolute path for the intents on client side.
-   * @param node node to traverse
-   * @param inbounds defines the semantic inbound representation that comes from ["crossNavigation.inbounds"] configuration
-   * @param parentEntity the entity of the parent node, used as a reference in child nodes as they inherit the entityType
-   * @param pathSegment a recursive parameter to accumulate the pathSegment of all nodes down to the target node
-   * @param targetParentEntity the parentEntity data saved upon each recursive traversal to build the target intents parent entity id
-   * @param intentKnowledge the knowledge object, whose properties are modified by reference
-   */
-  prebuildIntentTargetsRecursively(
-    node: LuigiNode,
-    inbounds,
-    parentEntity,
-    pathSegment = '',
-    targetParentEntity = '',
-    intentKnowledge: {
-      intentMappings: LuigiIntent[];
-      entityRelativePaths: Record<string, any>;
-    }
-  ) {
-    // parent entity for building 'entityRelativePaths' knowledge
-    let currentParentEntity = parentEntity;
-    let currentPathSegment = pathSegment;
-    // parent entity for building intentMappings' baseEntityId
-    let currentTargetParentEntity = targetParentEntity;
-    // predicate value checking whether a node has composition of both 'entityType' and 'defineEntity' defined
-    const isComposedEntityNode =
-      node.defineEntity?.id && node.entityType && node.entityType !== 'global';
-    const entityIdDefined = node.defineEntity?.id;
-
-    // if entity id is defined, build entity relative path knowledge
-    if (entityIdDefined) {
-      // update parent so it's inherited further down the tree levels of recursion
-      currentParentEntity = entityIdDefined;
-      intentKnowledge.entityRelativePaths[currentParentEntity] = {
-        pathSegment: currentPathSegment + '/' + node.pathSegment,
-        parentEntity,
-      };
-      // update parentEntity for entityRelativePaths & intentMappings knowledge
-      currentParentEntity = isComposedEntityNode
-        ? node.entityType + '.' + entityIdDefined
-        : currentParentEntity;
-      currentTargetParentEntity =
-        currentTargetParentEntity + '.' + entityIdDefined;
-    }
-    // concatenate the pathSegment depending on the entity definition.
-    currentPathSegment = entityIdDefined
-      ? ''
-      : currentPathSegment + '/' + node.pathSegment;
-
-    // find if target exists and add it to list of targets based on inbounds list, adjacent to relativePath to baseEntity
-    if (node.target && node.target.inboundId) {
-      const id = node.target.inboundId;
-      if (inbounds[id]) {
-        const semantic: LuigiIntent = inbounds[id];
-        intentKnowledge.intentMappings.push({
-          semanticObject: semantic.semanticObject,
-          baseEntityId: currentTargetParentEntity,
-          relativePath: currentPathSegment,
-          action: semantic.action,
-        });
-      }
-    }
-
-    // recursively iterate on children
-    if (node.children && Array.isArray(node.children)) {
-      for (const child of node.children) {
-        this.prebuildIntentTargetsRecursively(
-          child,
-          inbounds,
-          currentParentEntity,
-          currentPathSegment,
-          currentTargetParentEntity,
-          intentKnowledge
-        );
-      }
-    }
   }
 }

@@ -1,6 +1,7 @@
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import nock from 'nock';
+import { NODES_PROCESSOR_INJECTION_TOKEN } from '../../../injection-tokens';
 import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
 import {
   CrossNavigationInbounds,
@@ -8,9 +9,13 @@ import {
   LuigiNode,
 } from '../../model/luigi.node';
 import { CdmLuigiDataBaseService } from './cdm-luigi-data-base.service';
+import { DxpNodeProcessorService } from './dxp-node-processor.service';
+import { IntentResolveService } from './intent-resolve.service';
+import { NodesProcessorService } from './nodes-processor.service';
 
 describe('CdmLuigiDataService', () => {
   let service: CdmLuigiDataBaseService;
+  let intentResolveService: IntentResolveService;
   const baseUrl = 'https://github.tools.sap';
   const pathToCdmJson = '/path/cmd.json';
   const urlToCdmJson = baseUrl + pathToCdmJson;
@@ -19,11 +24,20 @@ describe('CdmLuigiDataService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CdmLuigiDataBaseService],
+      providers: [
+        CdmLuigiDataBaseService,
+        IntentResolveService,
+        DxpNodeProcessorService,
+      ],
       imports: [HttpModule],
     }).compile();
     const httpService = module.get<HttpService>(HttpService);
-    service = new CdmLuigiDataBaseService(httpService);
+    intentResolveService =
+      module.get<IntentResolveService>(IntentResolveService);
+    const nodeProcessorService = module.get<NodesProcessorService>(
+      DxpNodeProcessorService
+    );
+    service = new CdmLuigiDataBaseService(httpService, nodeProcessorService);
 
     consoleWarn = jest.spyOn(global.console, 'warn').mockImplementation();
   });
@@ -36,8 +50,6 @@ describe('CdmLuigiDataService', () => {
     let cdmJson: Record<any, any>;
 
     const expectedNode = {
-      _entityRelativePaths: {},
-      _intentMappings: [],
       children: [],
       entityType: 'project',
       icon: 'e-learning',
@@ -217,8 +229,6 @@ describe('CdmLuigiDataService', () => {
               allow: ['allow'],
               sandbox: ['sandbox'],
             },
-            _entityRelativePaths: {},
-            _intentMappings: [],
             category: undefined,
             children: [],
             entityType: undefined,
@@ -251,6 +261,7 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toBeDefined();
         expect(nodes).toHaveLength(1);
         expect(nodes[0].viewUrl).toBe(`${baseUrl}${urlSuffix}`);
+        // @ts-ignore
         expect(nodes[0]._dxpPreloadUrl).toBe(`${baseUrl}${preloadUrl}`);
       });
     });
@@ -535,6 +546,7 @@ describe('CdmLuigiDataService', () => {
         pathSegment: 'metal',
         label: 'Metal',
         hideFromNav: true,
+        // @ts-ignore
         entityType: 'project.component',
         children: [
           {
@@ -550,6 +562,7 @@ describe('CdmLuigiDataService', () => {
         pathSegment: 'sample',
         label: 'LabelWithTarget',
         hideFromNav: true,
+        // @ts-ignore
         entityType: 'project',
         target: {
           type: 'IBN',
@@ -580,6 +593,7 @@ describe('CdmLuigiDataService', () => {
                 children: [
                   {
                     pathSegment: ':componentId',
+                    // @ts-ignore
                     defineEntity: {
                       id: 'component',
                     },
@@ -645,11 +659,11 @@ describe('CdmLuigiDataService', () => {
       intentMappings: expectedIntentMapping,
     };
 
-    const intentMappings = service.resolveIntentTargetsAndEntityPath(
-      luigiNodes,
-      inbounds
-    );
-    expect(intentMappings).toBeDefined();
-    expect(intentMappings).toStrictEqual(expectedMapping);
+    intentResolveService.resolve(luigiNodes, inbounds);
+    expect(luigiNodes[0]._intentMappings).toBeDefined();
+    expect({
+      entityRelativePaths: luigiNodes[0]._entityRelativePaths,
+      intentMappings: luigiNodes[0]._intentMappings,
+    }).toStrictEqual(expectedMapping);
   });
 });

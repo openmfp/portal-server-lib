@@ -1,5 +1,10 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
+import {
+  NodesProcessorService,
+  NodesProcessorServiceImpl,
+} from './config/luigi/luigi-data/nodes-processor.service';
 import { EnvService } from './env/env.service';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -7,6 +12,7 @@ import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FRAME_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
+  NODES_PROCESSOR_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
@@ -25,7 +31,7 @@ import { EntityContextProviders } from './config/context/entity-context-provider
 import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
 import { LocalTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
+import { CdmLuigiDataService } from './config/luigi/luigi-data/cdm-luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { HeaderParserService } from './services/header-parser.service';
 import {
@@ -77,6 +83,11 @@ export interface PortalModuleOptions {
   serviceProviderService?: Type<ServiceProviderService>;
 
   /**
+   * A custom service to execute additional processing on a luigi nodes.
+   */
+  nodesProcessor?: Type<NodesProcessorService>;
+
+  /**
    * The path to the built sources of the frontend ui. They will be served statically, so the html site is on the same host.
    * If it is not provided, no sources will be served.
    */
@@ -95,9 +106,10 @@ export class PortalModule {
     let providers: Provider[] = [
       EnvService,
       Logger,
-      LuigiDataService,
+      CdmLuigiDataService,
       LuigiConfigNodesService,
       HeaderParserService,
+      IntentResolveService,
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
         useClass: options.healthChecker || EmptyHealthChecker,
@@ -125,6 +137,10 @@ export class PortalModule {
       {
         provide: SERVICE_PROVIDER_INJECTION_TOKEN,
         useClass: options.serviceProviderService || EmptyServiceProviderService,
+      },
+      {
+        provide: NODES_PROCESSOR_INJECTION_TOKEN,
+        useClass: options.nodesProcessor || NodesProcessorServiceImpl,
       },
     ];
 

@@ -59,7 +59,6 @@ export class ConfigController {
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    // start async processes
     const providersAndTenantPromise = this.getProvidersAndTenant(
       request,
       acceptLanguage
@@ -72,9 +71,6 @@ export class ConfigController {
       .catch((e: Error) => e);
 
     try {
-      // TODO: follow-up to get rid of this try/catch block: https://github.tools.sap/dxp/jukebox/issues/1041
-
-      // await all promises
       const featureToggles = ConfigController.getOrThrow(
         await featureTogglePromise
       );

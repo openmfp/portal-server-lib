@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service';
 import { PortalModule } from '../../../portal.module';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
+import { CdmLuigiDataService } from '../luigi-data/cdm-luigi-data.service';
 import { mock } from 'jest-mock-extended';
 import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
 import { LuigiNode } from '../../model/luigi.node';
@@ -13,7 +13,7 @@ import {
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;
   let serviceProviderService: ServiceProviderService;
-  let cdmLuigiDataService: LuigiDataService;
+  let cdmLuigiDataService: CdmLuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,7 +27,7 @@ describe('LuigiConfigNodesService', () => {
     serviceProviderService = module.get<ServiceProviderService>(
       SERVICE_PROVIDER_INJECTION_TOKEN
     );
-    cdmLuigiDataService = module.get<LuigiDataService>(LuigiDataService);
+    cdmLuigiDataService = module.get<CdmLuigiDataService>(CdmLuigiDataService);
   });
 
   it('should be defined', () => {

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
+import { CdmLuigiDataService } from '../luigi-data/cdm-luigi-data.service';
 import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
 import { ServiceProvider } from '../../model/luigi.node';
 import {
@@ -12,7 +12,7 @@ export class LuigiConfigNodesService {
   constructor(
     @Inject(SERVICE_PROVIDER_INJECTION_TOKEN)
     private serviceProviderService: ServiceProviderService,
-    private cdmLuigiData: LuigiDataService
+    private cdmLuigiData: CdmLuigiDataService
   ) {}
 
   async getNodes(
