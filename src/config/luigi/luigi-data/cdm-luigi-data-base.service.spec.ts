@@ -9,9 +9,11 @@ import {
   LuigiNode,
 } from '../../model/luigi.node';
 import { CdmLuigiDataBaseService } from './cdm-luigi-data-base.service';
-import { DxpNodeProcessorService } from './dxp-node-processor.service';
 import { IntentResolveService } from './intent-resolve.service';
-import { NodesProcessorService } from './nodes-processor.service';
+import {
+  NodesProcessorService,
+  NodesProcessorServiceImpl,
+} from './nodes-processor.service';
 
 describe('CdmLuigiDataService', () => {
   let service: CdmLuigiDataBaseService;
@@ -27,7 +29,10 @@ describe('CdmLuigiDataService', () => {
       providers: [
         CdmLuigiDataBaseService,
         IntentResolveService,
-        DxpNodeProcessorService,
+        {
+          provide: NODES_PROCESSOR_INJECTION_TOKEN,
+          useClass: NodesProcessorServiceImpl,
+        },
       ],
       imports: [HttpModule],
     }).compile();
@@ -35,7 +40,7 @@ describe('CdmLuigiDataService', () => {
     intentResolveService =
       module.get<IntentResolveService>(IntentResolveService);
     const nodeProcessorService = module.get<NodesProcessorService>(
-      DxpNodeProcessorService
+      NODES_PROCESSOR_INJECTION_TOKEN
     );
     service = new CdmLuigiDataBaseService(httpService, nodeProcessorService);
 
@@ -224,11 +229,6 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toHaveLength(1);
         expect(nodes).toEqual([
           {
-            _dxpPreloadUrl: baseUrl + preloadUrl,
-            _requiredIFramePermissionsForViewGroup: {
-              allow: ['allow'],
-              sandbox: ['sandbox'],
-            },
             category: undefined,
             children: [],
             entityType: undefined,
@@ -261,8 +261,6 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toBeDefined();
         expect(nodes).toHaveLength(1);
         expect(nodes[0].viewUrl).toBe(`${baseUrl}${urlSuffix}`);
-        // @ts-ignore
-        expect(nodes[0]._dxpPreloadUrl).toBe(`${baseUrl}${preloadUrl}`);
       });
     });
 
