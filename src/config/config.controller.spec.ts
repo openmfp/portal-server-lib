@@ -106,48 +106,8 @@ describe('ConfigController', () => {
       );
 
       expect(config.providers).toBe(resultingNodes);
-      expect(getNodesMock).toHaveBeenCalledWith(
-        token,
-        ['GLOBAL', 'TENANT'],
-        acceptLanguage,
-        { tenant: mockTenant }
-      );
-    });
-
-    it('should add additionalValuesToTheContext', async () => {
-      // Arrange
-      const expectedObject = {
-        foo: 'bar',
-      };
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([
-        {
-          nodes: [
-            {
-              context: {
-                providesMissingMandatoryDataUrl: true,
-              },
-              viewUrl: 'foo-url',
-            },
-          ],
-          config: {},
-          creationTimestamp: 'baz',
-        },
-      ]);
-      jest
-        .spyOn(frameContextProvider, 'getContextValues')
-        .mockResolvedValue({ ...expectedObject });
-
-      // Act
-      const config = await controller.getConfig(
-        requestMock,
-        responseMock,
-        acceptLanguage
-      );
-
-      // Assert
-      expect(config.frameContext).toStrictEqual({
-        ...expectedObject,
-        extensionManagerMissingMandatoryDataUrl: 'foo-url',
+      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
+        tenant: mockTenant,
       });
     });
 

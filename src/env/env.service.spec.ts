@@ -37,7 +37,9 @@ describe('EnvService', () => {
     },
   ].forEach(function ({ envVarName, resultName, value, expected }) {
     it('should get ' + resultName, () => {
-      process.env[envVarName] = value;
+      if (value !== undefined && value !== null) {
+        process.env[envVarName] = value;
+      }
 
       expect(service.getEnv()[resultName]).toStrictEqual(expected);
 

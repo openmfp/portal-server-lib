@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
+import { ServiceProvider } from '../model/luigi.node';
+
+export interface ProvidersResult {
+  providers: ServiceProvider[];
+}
 
 export interface FrameContextProvider {
   getContextValues(
     request: Request,
-    response: Response
+    response: Response,
+    providersPromise: Promise<ProvidersResult | Error>
   ): Promise<Record<string, any>>;
 }
