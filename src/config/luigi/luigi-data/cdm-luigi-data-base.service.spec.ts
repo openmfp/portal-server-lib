@@ -230,7 +230,7 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toHaveLength(1);
         expect(nodes).toEqual([
           {
-            _dxpPreloadUrl: baseUrl + preloadUrl,
+            _preloadUrl: baseUrl + preloadUrl,
             _requiredIFramePermissionsForViewGroup: {
               allow: ['allow'],
               sandbox: ['sandbox'],
@@ -268,7 +268,7 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toBeDefined();
         expect(nodes).toHaveLength(1);
         expect(nodes[0].viewUrl).toBe(`${baseUrl}${urlSuffix}`);
-        expect(nodes[0]._dxpPreloadUrl).toBe(`${baseUrl}${preloadUrl}`);
+        expect(nodes[0]._preloadUrl).toBe(`${baseUrl}${preloadUrl}`);
       });
     });
 

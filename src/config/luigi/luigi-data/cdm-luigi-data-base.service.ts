@@ -171,17 +171,16 @@ export class CdmLuigiDataBaseService {
         const configTransferNode = nodes[0];
 
         if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
-          configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
+          configTransferNode._preloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
         }
         configTransferNode._requiredIFramePermissionsForViewGroup =
           cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
 
-        configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
-        if (configTransferNode._dxpUserSettingsConfig?.groups) {
-          Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
+        configTransferNode._userSettingsConfig = cfg.vizConfig?.userSettings;
+        if (configTransferNode._userSettingsConfig?.groups) {
+          Object.keys(configTransferNode._userSettingsConfig.groups).forEach(
             (key) => {
-              const group =
-                configTransferNode._dxpUserSettingsConfig.groups[key];
+              const group = configTransferNode._userSettingsConfig.groups[key];
               if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
                 group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
               }
