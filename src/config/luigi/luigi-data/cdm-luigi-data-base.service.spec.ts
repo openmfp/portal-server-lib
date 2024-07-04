@@ -62,6 +62,7 @@ describe('CdmLuigiDataService', () => {
       pathSegment: 'stack',
       viewUrl:
         '{context.serviceProviderConfig.searchMicroFrontendUrl}/#/search/stack?q=tag:{context.serviceProviderConfig.tag}%20',
+      url: '{context.serviceProviderConfig.searchMicroFrontendUrl}/#/search/stack?q=tag:{context.serviceProviderConfig.tag}%20',
       virtualTree: false,
       visibleForFeatureToggles: ['enable-stack-search'],
     };
@@ -229,6 +230,11 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toHaveLength(1);
         expect(nodes).toEqual([
           {
+            _dxpPreloadUrl: baseUrl + preloadUrl,
+            _requiredIFramePermissionsForViewGroup: {
+              allow: ['allow'],
+              sandbox: ['sandbox'],
+            },
             category: undefined,
             children: [],
             entityType: undefined,
@@ -240,6 +246,7 @@ describe('CdmLuigiDataService', () => {
             loadingIndicator: undefined,
             pathSegment: 'github',
             useHashRouting: undefined,
+            urlSuffix: '/#:projectId2/github',
             viewGroup: baseUrl,
             viewUrl: baseUrl + urlSuffix,
             virtualTree: undefined,
@@ -261,6 +268,7 @@ describe('CdmLuigiDataService', () => {
         expect(nodes).toBeDefined();
         expect(nodes).toHaveLength(1);
         expect(nodes[0].viewUrl).toBe(`${baseUrl}${urlSuffix}`);
+        expect(nodes[0]._dxpPreloadUrl).toBe(`${baseUrl}${preloadUrl}`);
       });
     });
 
@@ -544,7 +552,6 @@ describe('CdmLuigiDataService', () => {
         pathSegment: 'metal',
         label: 'Metal',
         hideFromNav: true,
-        // @ts-ignore
         entityType: 'project.component',
         children: [
           {
@@ -560,7 +567,6 @@ describe('CdmLuigiDataService', () => {
         pathSegment: 'sample',
         label: 'LabelWithTarget',
         hideFromNav: true,
-        // @ts-ignore
         entityType: 'project',
         target: {
           type: 'IBN',
@@ -591,7 +597,6 @@ describe('CdmLuigiDataService', () => {
                 children: [
                   {
                     pathSegment: ':componentId',
-                    // @ts-ignore
                     defineEntity: {
                       id: 'component',
                     },
@@ -663,5 +668,32 @@ describe('CdmLuigiDataService', () => {
       entityRelativePaths: luigiNodes[0]._entityRelativePaths,
       intentMappings: luigiNodes[0]._intentMappings,
     }).toStrictEqual(expectedMapping);
+  });
+
+  describe('isAbsoluteUrl', () => {
+    it('should correctly identify absolute URLs', () => {
+      const absoluteUrls = [
+        'http://example.com',
+        'https://example.com',
+        'ftp://example.com',
+      ];
+
+      absoluteUrls.forEach((url) => {
+        expect((service as any).isAbsoluteUrl(url)).toBe(true);
+      });
+    });
+
+    it('should correctly identify relative URLs', () => {
+      const relativeUrls = [
+        '/path/to/resource',
+        'path/to/resource',
+        './resource',
+        '../resource',
+      ];
+
+      relativeUrls.forEach((url) => {
+        expect((service as any).isAbsoluteUrl(url)).toBe(false);
+      });
+    });
   });
 });

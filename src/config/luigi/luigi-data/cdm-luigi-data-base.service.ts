@@ -167,7 +167,31 @@ export class CdmLuigiDataBaseService {
         nodes.push(this._createNode(node, cfg, urlTemplateUrl));
       });
 
+      if (nodes.length > 0) {
+        const configTransferNode = nodes[0];
+
+        if (cfg.vizConfig?.viewGroup?.preloadSuffix) {
+          configTransferNode._dxpPreloadUrl = `${urlTemplateUrl}${cfg.vizConfig.viewGroup.preloadSuffix}`;
+        }
+        configTransferNode._requiredIFramePermissionsForViewGroup =
+          cfg.vizConfig?.viewGroup?.requiredIFramePermissions;
+
+        configTransferNode._dxpUserSettingsConfig = cfg.vizConfig?.userSettings;
+        if (configTransferNode._dxpUserSettingsConfig?.groups) {
+          Object.keys(configTransferNode._dxpUserSettingsConfig.groups).forEach(
+            (key) => {
+              const group =
+                configTransferNode._dxpUserSettingsConfig.groups[key];
+              if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
+                group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
+              }
+            }
+          );
+        }
+      }
+
       this.nodeProcessorService.processNodes(payload, nodes, urlTemplateUrl);
+
       return nodes;
     } else {
       return [];
@@ -222,8 +246,6 @@ export class CdmLuigiDataBaseService {
 
     return {
       ...node,
-      url: undefined,
-      urlSuffix: undefined,
       viewUrl,
       viewGroup,
       children,
@@ -239,5 +261,14 @@ export class CdmLuigiDataBaseService {
         element.viewUrl = `${urlTemplateUrl}${urlSuffix}`;
       }
     });
+  }
+
+  private isAbsoluteUrl(url: string) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

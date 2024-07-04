@@ -3,17 +3,16 @@ import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
 import { IntentResolveService } from './intent-resolve.service';
 
 export interface NodesProcessorService {
-  processNodes(payload, nodes: LuigiNode[], urlTemplateUrl: string): void;
+  processNodes(payload, nodes: LuigiNode[]): void;
 }
 
 @Injectable()
-export class NodesProcessorServiceImpl {
+export class NodesProcessorServiceImpl implements NodesProcessorService {
   constructor(private intentResolveService: IntentResolveService) {}
 
   public processNodes(
     payload,
-    nodes: (LuigiNode & Record<string, any>)[],
-    urlTemplateUrl: string
+    nodes: (LuigiNode & Record<string, any>)[]
   ): void {
     const luigiIntentInboundList: CrossNavigationInbounds =
       payload.crossNavigation?.inbounds;
