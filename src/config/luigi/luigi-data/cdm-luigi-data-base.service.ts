@@ -190,7 +190,7 @@ export class CdmLuigiDataBaseService {
         }
       }
 
-      this.nodeProcessorService.processNodes(payload, nodes, urlTemplateUrl);
+      this.nodeProcessorService.processNodes(payload, nodes);
 
       return nodes;
     } else {
