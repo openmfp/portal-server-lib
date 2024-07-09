@@ -1,5 +1,5 @@
 import { BreadcrumbBadge } from '../model/breadcrumb-badge';
-import { CDM, ContentConfiguration } from '../model/configuration';
+import { CDM } from '../model/configuration';
 import { StackSearch } from '../model/luigi.node';
 
 export interface HelpCenterData {
@@ -11,8 +11,7 @@ export interface HelpCenterData {
 export interface RawServiceProvider {
   name: string;
   displayName: string;
-  contentConfiguration?: ContentConfiguration[];
-  cdm?: CDM[];
+  cdm: CDM[];
   config: Record<string, string>;
   creationTimestamp: string;
   installationData?: Record<string, string>;

@@ -9,6 +9,7 @@ import {
   NotFoundException,
   ForbiddenException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
@@ -36,6 +37,7 @@ export class ConfigController {
   private entityContextProviders: Record<string, EntityContextProvider> = {};
 
   constructor(
+    private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
     @Inject(TENANT_PROVIDER_INJECTION_TOKEN)
@@ -59,22 +61,28 @@ export class ConfigController {
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    // start async processes
     const providersAndTenantPromise = this.getProvidersAndTenant(
       request,
       acceptLanguage
-    ).catch((e: Error) => e);
+    ).catch((e: Error) => {
+      this.logger.error(e);
+      return e;
+    });
     const featureTogglePromise = this.featureTogglesProvider
       .getFeatureToggles()
-      .catch((e: Error) => e);
+      .catch((e: Error) => {
+        this.logger.error(e);
+        return e;
+      });
+
     const frameContextPromise = this.frameContextProvider
-      .getContextValues(request, response)
-      .catch((e: Error) => e);
+      .getContextValues(request, response, providersAndTenantPromise)
+      .catch((e: Error) => {
+        this.logger.error(e);
+        return e;
+      });
 
     try {
-      // TODO: follow-up to get rid of this try/catch block: https://github.tools.sap/dxp/jukebox/issues/1041
-
-      // await all promises
       const featureToggles = ConfigController.getOrThrow(
         await featureTogglePromise
       );
@@ -84,9 +92,6 @@ export class ConfigController {
       const { tenantId, providers } = ConfigController.getOrThrow(
         await providersAndTenantPromise
       );
-
-      frameContext.extensionManagerMissingMandatoryDataUrl =
-        this.getExtensionManagerMissingMandatoryDataUrl(providers);
 
       return {
         providers,
@@ -103,17 +108,6 @@ export class ConfigController {
     }
   }
 
-  // Jukebox UI needs this URL to show a Page from Extension Manager UI
-  private getExtensionManagerMissingMandatoryDataUrl(
-    providers: ServiceProvider[]
-  ): string | undefined {
-    const node = providers
-      .map((provider) => provider.nodes)
-      .flat()
-      .find((node) => node.context?.providesMissingMandatoryDataUrl);
-    return node?.viewUrl;
-  }
-
   private async getProvidersAndTenant(
     request: Request,
     acceptLanguage: string
@@ -123,7 +117,7 @@ export class ConfigController {
 
     const providers = await this.luigiConfigNodesService.getNodes(
       token,
-      ['GLOBAL', 'TENANT'],
+      [],
       acceptLanguage,
       { tenant: tenantId }
     );
@@ -141,15 +135,20 @@ export class ConfigController {
 
     const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [params.entity], acceptLanguage, request.query)
-      .catch((e: Error) => e);
+      .catch((e: Error) => {
+        this.logger.error(e);
+        return e;
+      });
 
     const eCP = this.entityContextProviders[params.entity];
     const entityContextPromise = eCP
-      ? eCP.getContextValues(token, request.query).catch((e: Error) => e)
+      ? eCP.getContextValues(token, request.query).catch((e: Error) => {
+          this.logger.error(e);
+          return e;
+        })
       : Promise.resolve({});
 
     try {
-      // TODO: follow-up to get rid of this try/catch block: https://github.tools.sap/dxp/jukebox/issues/1041
       return {
         providers: ConfigController.getOrThrow(await providersPromise),
         entityContext: ConfigController.getOrThrow(await entityContextPromise),

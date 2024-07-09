@@ -3,7 +3,7 @@ import { BreadcrumbBadge } from './breadcrumb-badge';
 export interface LuigiNodeCategory {
   label: string;
   collapsible?: boolean;
-  dxpOrder?: number;
+  order?: number;
   id?: string;
   icon?: string;
 }
@@ -86,58 +86,43 @@ export interface LuigiUrlParameterPermissions {
   read?: boolean;
 }
 
-export interface FrameLuigiNodeExtensions {
-  // used internally by jukebox, not intended to be set from the cdm.json
-
-  _dxpPreloadUrl?: string;
+export interface PortalLuigiNodeExtensions {
+  _preloadUrl?: string;
   // cfg.vizConfig?.userSettings is copied to every node with this parameter
-  _dxpUserSettingsConfig?: LuigiUserSettingsConfig;
+  _userSettingsConfig?: LuigiUserSettingsConfig;
   // cfg.vizConfig?.viewGroup?.requiredIFramePermissions; is copied to every node with this parameter
   _requiredIFramePermissionsForViewGroup?: LuigiNodeIFramePermissions;
-
   // internal navigation ordering
-  _frameDirectChildren?: LuigiNode[];
+  _portalDirectChildren?: LuigiNode[];
   _entityRootChild?: boolean;
-
   // intent mapping related private properties
   _intentMappings?: LuigiIntent[];
   _entityRelativePaths?: Record<string, any>;
 
-  // public dxp properties
+  // public portal properties
 
   defineEntity?: EntityDefinition;
   // concatenates the service provider domain with the url of the microfrontend
   urlSuffix?: string;
   hideFromBreadcrumb?: boolean;
   requiredIFramePermissions?: LuigiNodeIFramePermissions;
-  dxpOrder?: number; //experimental
+  order?: number; //experimental
   entityType?: string;
   visibleForEntityContext?: Record<string, any>; // experimental // deprecated
   visibleForContext?: string; // experimental
-  visibleForPlugin?: boolean; // experimental
-  networkVisibility?: NetworkVisibility; //experimental
   ignoreInDocumentTitle?: boolean; //experimental
-
-  configurationMissing?: string; // experimental
-  configurationHint?: string; // experimental
-  configurationLink?: string; // experimental
-
-  isMissingMandatoryData?: boolean; // experimental
   helpContext?: HelpContext;
-
   globalNav?: boolean | string;
-
   breadcrumbBadge?: BreadcrumbBadge;
   url?: string;
 
-  // order frame nodes by navigation slots
+  // order portal nodes by navigation slots
   navSlot?: string;
   defineSlot?: string;
-
   requiredPolicies?: string[];
 }
 
-export interface LuigiNode extends FrameLuigiNodeExtensions {
+export interface LuigiNode extends PortalLuigiNodeExtensions {
   // officially documented by luigi
   badgeCounter?: LuigiBadgeCounter;
   category?: LuigiNodeCategory | string;
@@ -179,11 +164,6 @@ export interface LuigiNode extends FrameLuigiNodeExtensions {
   navHeader?: any; // experimental
   titleResolver?: any; // experimental
   decodeViewUrl?: boolean;
-}
-
-export enum NetworkVisibility {
-  INTERNAL = 'internal',
-  INTERNET = 'internet',
 }
 
 export interface ServiceProvider {

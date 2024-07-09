@@ -15,7 +15,7 @@
   "prettier": "@openmfp/config-prettier",
   "scripts": {
     "build": "nest build",
-    "lint": "eslint \"./**/*.ts\"",
+    "build:watch": "mkdir dist && nodemon --ignore dist --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build && yalc publish --push --sig\"",
     "lint:fix": "eslint \"./**/*.ts\" --fix",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --detectOpenHandles",
@@ -25,6 +25,7 @@
   "dependencies": {
     "@nestjs/axios": "3.0.1",
     "@nestjs/common": "10.3.0",
+    "@nestjs/serve-static": "4.0.0",
     "axios": "1.6.3",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
@@ -52,6 +53,7 @@
     "@types/supertest": "2.0.16",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
+    "concurrently": "^8.2.2",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "27.9.0",
@@ -60,12 +62,15 @@
     "jest-junit": "16.0.0",
     "jest-mock-extended": "3.0.5",
     "nock": "13.5.4",
+    "nodemon": "^3.1.4",
     "prettier": "^3.2.0",
     "supertest": "7.0.0",
     "ts-jest": "29.1.1",
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "wait-on": "^7.2.0",
+    "yalc": "^1.0.0-pre.53"
   }
 }
