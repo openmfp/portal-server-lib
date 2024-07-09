@@ -69,7 +69,7 @@ describe('AuthTokenService', () => {
       expect(authTokenResponse.expires_in).toBe(12345);
 
       expect(responseMock.cookie).toHaveBeenCalledWith(
-        'auth_cookie',
+        'openmfp_auth_cookie',
         refreshTokenValue,
         {
           httpOnly: true,

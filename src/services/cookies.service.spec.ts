@@ -21,7 +21,7 @@ describe('CookiesService', () => {
   describe('getAuthCookie', () => {
     it('should return the auth cookie value if it exists', () => {
       const mockRequest = {
-        cookies: { auth_cookie: 'test-token' },
+        cookies: { openmfp_auth_cookie: 'test-token' },
       } as Request;
 
       expect(service.getAuthCookie(mockRequest)).toBe('test-token');
@@ -49,7 +49,7 @@ describe('CookiesService', () => {
       service.setAuthCookie(mockResponse, mockAuthTokenResponse);
 
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'auth_cookie',
+        'openmfp_auth_cookie',
         'test-refresh-token',
         {
           httpOnly: true,
@@ -68,7 +68,9 @@ describe('CookiesService', () => {
 
       service.removeAuthCookie(mockResponse);
 
-      expect(mockResponse.clearCookie).toHaveBeenCalledWith('auth_cookie');
+      expect(mockResponse.clearCookie).toHaveBeenCalledWith(
+        'openmfp_auth_cookie'
+      );
     });
   });
 });

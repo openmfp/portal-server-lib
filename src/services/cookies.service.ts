@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthTokenResponse } from '../auth/auth-token.service';
 import { Request, Response } from 'express';
 
-const authCookie = 'auth_cookie';
+const authCookie = 'openmfp_auth_cookie';
 
 @Injectable()
 export class CookiesService {
