@@ -6,7 +6,7 @@ export interface AuthCallback {
   handleSuccess(
     request: Request,
     response: Response,
-    iasResponse: AuthTokenResponse
+    authTokenResponse: AuthTokenResponse
   ): Promise<any>;
 
   handleFailure(request: Request, response: Response): Promise<any>;
@@ -17,7 +17,7 @@ export class NoopAuthCallback implements AuthCallback {
   handleSuccess(
     request: Request,
     response: Response,
-    iasResponse: AuthTokenResponse
+    authTokenResponse: AuthTokenResponse
   ): Promise<void> {
     return Promise.resolve();
   }

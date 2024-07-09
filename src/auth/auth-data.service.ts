@@ -6,7 +6,7 @@ import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
 @Injectable()
 export class AuthDataService {
   constructor(
-    private iasService: AuthTokenService,
+    private authTokenService: AuthTokenService,
     private cookiesService: CookiesService,
     private logger: Logger
   ) {}
@@ -21,7 +21,7 @@ export class AuthDataService {
     }
 
     try {
-      return await this.iasService.exchangeTokenForRefreshToken(
+      return await this.authTokenService.exchangeTokenForRefreshToken(
         request,
         response,
         dxpAuthCookie

@@ -6,7 +6,7 @@ It is closely related to the [portal ui library](https://github.com/openmfp/port
 Main features of this library are:
 
 * Provide a Dynamic Luigi configuration, without the need to deploy a library
-* Authentication capabilities with GitHub and IAS
+* Authentication capabilities with GitHub and Auth Server
 * Dynamic development capabilities - Embed your local MicroFrontend into a running luigi frame.
 
 # Getting started

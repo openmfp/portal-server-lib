@@ -11,8 +11,11 @@ export class CookiesService {
     return cookies && cookies[authCookie];
   }
 
-  public setAuthCookie(response: Response, iasResponse: AuthTokenResponse) {
-    response.cookie(authCookie, iasResponse.refresh_token, {
+  public setAuthCookie(
+    response: Response,
+    authTokenResponse: AuthTokenResponse
+  ) {
+    response.cookie(authCookie, authTokenResponse.refresh_token, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',

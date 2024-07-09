@@ -8,7 +8,7 @@ import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthCallback } from './auth.callback';
 import { PortalModule } from '../portal.module';
 
-describe('IasService', () => {
+describe('AuthTokenService', () => {
   let service: AuthTokenService;
   let responseMock: Response;
   let requestMock: Request;
@@ -62,11 +62,11 @@ describe('IasService', () => {
       requestMock.hostname = hostname;
     });
 
-    function assertResponseAndCookies(iasResponse: AuthTokenResponse) {
-      expect(iasResponse.refresh_token).toBe(refreshTokenValue);
-      expect(iasResponse.id_token).toBe(idTokenValue);
-      expect(iasResponse.access_token).toBe(accessTokenValue);
-      expect(iasResponse.expires_in).toBe(12345);
+    function assertResponseAndCookies(authTokenResponse: AuthTokenResponse) {
+      expect(authTokenResponse.refresh_token).toBe(refreshTokenValue);
+      expect(authTokenResponse.id_token).toBe(idTokenValue);
+      expect(authTokenResponse.access_token).toBe(accessTokenValue);
+      expect(authTokenResponse.expires_in).toBe(12345);
 
       expect(responseMock.cookie).toHaveBeenCalledWith(
         'auth_cookie',
@@ -92,14 +92,14 @@ describe('IasService', () => {
           .reply(200, serverResponse);
 
         // Act
-        const iasResponse = await service.exchangeTokenForRefreshToken(
+        const authTokenResponse = await service.exchangeTokenForRefreshToken(
           requestMock,
           responseMock,
           refreshToken
         );
 
         // Assert
-        assertResponseAndCookies(iasResponse);
+        assertResponseAndCookies(authTokenResponse);
       });
 
       it('should not set the cookies, authorization exception', async () => {
@@ -119,7 +119,9 @@ describe('IasService', () => {
             responseMock,
             refreshToken
           )
-        ).rejects.toThrowError('Unexpected response code from ias: 206, null');
+        ).rejects.toThrowError(
+          'Unexpected response code from auth token server: 206, null'
+        );
       });
     });
 
@@ -139,14 +141,14 @@ describe('IasService', () => {
           .reply(200, serverResponse);
 
         // Act
-        const iasResponse = await service.exchangeTokenForCode(
+        const authTokenResponse = await service.exchangeTokenForCode(
           requestMock,
           responseMock,
           code
         );
 
         // Assert
-        assertResponseAndCookies(iasResponse);
+        assertResponseAndCookies(authTokenResponse);
       });
 
       it('should set the cookies for none local env', async () => {
@@ -165,18 +167,18 @@ describe('IasService', () => {
           .reply(200, serverResponse);
 
         // Act
-        const iasResponse = await service.exchangeTokenForCode(
+        const authTokenResponse = await service.exchangeTokenForCode(
           requestMock,
           responseMock,
           code
         );
 
         // Assert
-        assertResponseAndCookies(iasResponse);
+        assertResponseAndCookies(authTokenResponse);
       });
     });
 
-    it('handles an ias error', async () => {
+    it('handles an auth server error', async () => {
       // Arrange
       const env = envService.getCurrentAuthEnv(requestMock);
       const code = 'secret code';
@@ -191,14 +193,14 @@ describe('IasService', () => {
         .reply(500, 'oh nose');
 
       // Act
-      const iasResponse = service.exchangeTokenForCode(
+      const authTokenResponsePromise = service.exchangeTokenForCode(
         requestMock,
         responseMock,
         code
       );
 
-      await expect(iasResponse).rejects.toThrowError(
-        'Error response from ias: AxiosError: Request failed with status code 500'
+      await expect(authTokenResponsePromise).rejects.toThrowError(
+        'Error response from auth token server: AxiosError: Request failed with status code 500'
       );
     });
   });

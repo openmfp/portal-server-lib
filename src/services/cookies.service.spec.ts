@@ -42,11 +42,11 @@ describe('CookiesService', () => {
         cookie: jest.fn(),
       } as Response;
 
-      const mockIasResponse: AuthTokenResponse = {
+      const mockAuthTokenResponse: AuthTokenResponse = {
         refresh_token: 'test-refresh-token',
       } as AuthTokenResponse;
 
-      service.setAuthCookie(mockResponse, mockIasResponse);
+      service.setAuthCookie(mockResponse, mockAuthTokenResponse);
 
       expect(mockResponse.cookie).toHaveBeenCalledWith(
         'auth_cookie',

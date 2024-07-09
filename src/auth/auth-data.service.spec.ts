@@ -8,17 +8,17 @@ import { Request, Response } from 'express';
 
 describe('AuthDataService', () => {
   let service: AuthDataService;
-  let iasServiceMock: MockProxy<AuthTokenService>;
+  let authTokenService: MockProxy<AuthTokenService>;
   let cookiesService: MockProxy<CookiesService>;
 
   beforeEach(async () => {
-    iasServiceMock = mock<AuthTokenService>();
+    authTokenService = mock<AuthTokenService>();
     cookiesService = mock<CookiesService>();
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     })
       .overrideProvider(AuthTokenService)
-      .useValue(iasServiceMock)
+      .useValue(authTokenService)
       .overrideProvider(CookiesService)
       .useValue(cookiesService)
       .compile();
@@ -33,12 +33,14 @@ describe('AuthDataService', () => {
   it('not do anything if there is no cookie', async () => {
     await service.provideAuthData(mock<Request>(), mock<Response>());
 
-    expect(iasServiceMock.exchangeTokenForRefreshToken).not.toHaveBeenCalled();
+    expect(
+      authTokenService.exchangeTokenForRefreshToken
+    ).not.toHaveBeenCalled();
   });
 
-  it('call the ias service if there is a cookie', async () => {
+  it('call the auth server service if there is a cookie', async () => {
     // arrange
-    // iasServiceMock.getAuthCookie.mockReturnValue('foo');
+    // authTokenService.getAuthCookie.mockReturnValue('foo');
     const request = mock<Request>();
     const response = mock<Response>();
     cookiesService.getAuthCookie.mockReturnValue('foo');
@@ -47,7 +49,7 @@ describe('AuthDataService', () => {
     await service.provideAuthData(request, response);
 
     // assert
-    expect(iasServiceMock.exchangeTokenForRefreshToken).toHaveBeenCalledWith(
+    expect(authTokenService.exchangeTokenForRefreshToken).toHaveBeenCalledWith(
       request,
       response,
       'foo'

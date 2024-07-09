@@ -25,7 +25,7 @@ export class AuthTokenService {
   ) {}
 
   /**
-   * Requests a token from the ias and sets the dxp cookies
+   * Requests a token from the auth token server and sets the cookies
    * @param request
    * @param response
    * @param code
@@ -48,7 +48,7 @@ export class AuthTokenService {
   }
 
   /**
-   * Requests a token from the ias and sets the dxp cookies
+   * Requests a token from the auth token server and sets the cookies
    * @param request
    * @param response
    * @param refreshToken
@@ -88,7 +88,9 @@ export class AuthTokenService {
         })
         .pipe(
           catchError((e: AxiosError) => {
-            throw new Error(`Error response from ias: ${e.toString()}`);
+            throw new Error(
+              `Error response from auth token server: ${e.toString()}`
+            );
           })
         )
     );
@@ -99,7 +101,7 @@ export class AuthTokenService {
     }
 
     throw new Error(
-      `Unexpected response code from ias: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`
+      `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`
     );
   }
 

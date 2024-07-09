@@ -20,7 +20,7 @@ export class AuthController {
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
-    private iasService: AuthTokenService,
+    private authTokenService: AuthTokenService,
     private logger: Logger
   ) {}
 
@@ -38,14 +38,18 @@ export class AuthController {
     }
 
     try {
-      const iasResponse: AuthTokenResponse =
-        await this.iasService.exchangeTokenForCode(
+      const authTokenResponse: AuthTokenResponse =
+        await this.authTokenService.exchangeTokenForCode(
           request,
           response,
           code.toString()
         );
       this.logger.debug('retrieving token successful');
-      return await this.handleTokenRetrieval(request, response, iasResponse);
+      return await this.handleTokenRetrieval(
+        request,
+        response,
+        authTokenResponse
+      );
     } catch (e: any) {
       this.logger.error(`error while retrieving token, logging out: ${e}`);
       // logout to trigger a fresh login flow
@@ -69,14 +73,18 @@ export class AuthController {
     }
 
     try {
-      const iasResponse: AuthTokenResponse =
-        await this.iasService.exchangeTokenForRefreshToken(
+      const authTokenResponse: AuthTokenResponse =
+        await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
           dxpAuthCookie
         );
       this.logger.debug('retrieving refreshing auth successful');
-      return await this.handleTokenRetrieval(request, response, iasResponse);
+      return await this.handleTokenRetrieval(
+        request,
+        response,
+        authTokenResponse
+      );
     } catch (e: any) {
       this.logger.error(`error while refreshing token, logging out: ${e}`);
       // logout to trigger a fresh login flow
@@ -89,21 +97,21 @@ export class AuthController {
   private async handleTokenRetrieval(
     request: Request,
     response: Response,
-    iasResponse: AuthTokenResponse
+    authTokenResponse: AuthTokenResponse
   ) {
     await this.authCallbackService.handleSuccess(
       request,
       response,
-      iasResponse
+      authTokenResponse
     );
-    return this.filterIasResponseForFrontend(iasResponse);
+    return this.filterAuthTokenResponseForFrontend(authTokenResponse);
   }
 
-  private filterIasResponseForFrontend(
-    iasResponse: AuthTokenResponse
+  private filterAuthTokenResponseForFrontend(
+    authTokenResponse: AuthTokenResponse
   ): AuthTokenResponse {
-    delete iasResponse.refresh_token;
-    delete iasResponse.refresh_expires_in;
-    return iasResponse;
+    delete authTokenResponse.refresh_token;
+    delete authTokenResponse.refresh_expires_in;
+    return authTokenResponse;
   }
 }
