@@ -8,12 +8,13 @@ import {
   NoopAuthCallback,
 } from './auth';
 import {
-    IntentResolveService,
-    NodesProcessorService,
-    NodesProcessorServiceImpl,
+  ConfigController,
+  IntentResolveService,
+  NodesProcessorService,
+  NodesProcessorServiceImpl,
+  FrameContextProvider,
 } from './config';
-
-import { EnvService } from './env/env.service';
+import { EnvService } from './env';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -34,20 +35,17 @@ import {
   EmptyEnvVariablesService,
   EnvVariablesService,
 } from './env/env-variables.service';
-import { ConfigController } from './config/config.controller';
-import { FrameContextProvider } from './config/context/frame-context-provider';
 import { EntityContextProviders } from './config/context/entity-context-provider';
 import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
-import { LocalTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
 import { CdmLuigiDataService } from './config/luigi/luigi-data/cdm-luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { CookiesService } from './services/cookies.service';
-import { HeaderParserService } from './services/header-parser.service';
 import {
   EmptyServiceProviderService,
   ServiceProviderService,
 } from './config/context/service-provider';
+import { LocalTenantService, TenantService } from './auth/tenant.service';
+import { HeaderParserService, CookiesService } from './services';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
 export interface PortalModuleOptions {
@@ -126,7 +124,7 @@ export class PortalModule {
       CookiesService,
       CdmLuigiDataService,
       LuigiConfigNodesService,
-        IntentResolveService,
+      IntentResolveService,
       AuthDataService,
       AuthTokenService,
       {
