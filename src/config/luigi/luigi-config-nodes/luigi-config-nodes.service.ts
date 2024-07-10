@@ -1,18 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CdmLuigiDataService } from '../luigi-data/cdm-luigi-data.service';
-import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
+import {
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+} from '../../../injection-tokens';
 import { ServiceProvider } from '../../model/luigi.node';
 import {
   ServiceProviderResponse,
   ServiceProviderService,
 } from '../../context/service-provider';
+import { LuigiDataService } from '../luigi-data/luigi-data.service';
 
 @Injectable()
 export class LuigiConfigNodesService {
   constructor(
     @Inject(SERVICE_PROVIDER_INJECTION_TOKEN)
     private serviceProviderService: ServiceProviderService,
-    private cdmLuigiData: CdmLuigiDataService
+    @Inject(LUIGI_DATA_SERVICE_INJECTION_TOKEN)
+    private cdmLuigiData: LuigiDataService
   ) {}
 
   async getNodes(
@@ -38,7 +42,7 @@ export class LuigiConfigNodesService {
     const rawServiceProviders = fetchedProvider.serviceProviders;
     const promises = rawServiceProviders.map((provider) =>
       this.cdmLuigiData
-        .getLuigiData(provider.cdm, acceptLanguage, {
+        .getLuigiData(provider, acceptLanguage, {
           isMissingMandatoryData: provider.isMissingMandatoryData,
           extensionClassName: provider.extensionClassName,
           helpContext: {
@@ -51,7 +55,7 @@ export class LuigiConfigNodesService {
         .then(
           (nodes) => ({ nodes, provider }),
           (error) =>
-            console.error("[ERROR] Couldn't create nodes", provider.cdm, error)
+            console.error("[ERROR] Couldn't create nodes", provider, error)
         )
     );
 

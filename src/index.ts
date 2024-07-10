@@ -14,6 +14,7 @@ export {
 export { FeatureTogglesProvider } from './config/context/feature-toggles-provider';
 export { NodesProcessorService } from './config/luigi/luigi-data/nodes-processor.service';
 export { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
+export { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 export * from './config/model/luigi.node';
 export * from './config/model/luigi-app-config';
 export { TenantService } from './auth/tenant.service';
@@ -24,4 +25,4 @@ export {
   HelpCenterData,
   RawServiceProvider,
 } from './config/context/service-provider';
-export * from './config/model/configuration';
+export * from './config/model/content-configuration';

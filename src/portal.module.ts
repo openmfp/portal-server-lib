@@ -1,10 +1,8 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
 import { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
-import {
-  NodesProcessorService,
-  NodesProcessorServiceImpl,
-} from './config/luigi/luigi-data/nodes-processor.service';
+import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 import { EnvService } from './env/env.service';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -12,7 +10,7 @@ import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FRAME_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
-  NODES_PROCESSOR_INJECTION_TOKEN,
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
@@ -31,7 +29,6 @@ import { EntityContextProviders } from './config/context/entity-context-provider
 import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
 import { EmptyTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { CdmLuigiDataService } from './config/luigi/luigi-data/cdm-luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { HeaderParserService } from './services/header-parser.service';
 import {
@@ -83,9 +80,9 @@ export interface PortalModuleOptions {
   serviceProviderService?: Type<ServiceProviderService>;
 
   /**
-   * A custom service to execute additional processing on a luigi nodes.
+   * A custom service to process configuration coming from service providers
    */
-  nodesProcessor?: Type<NodesProcessorService>;
+  luigiDataService?: Type<LuigiDataService>;
 
   /**
    * The path to the built sources of the frontend ui. They will be served statically, so the html site is on the same host.
@@ -106,7 +103,6 @@ export class PortalModule {
     let providers: Provider[] = [
       EnvService,
       Logger,
-      CdmLuigiDataService,
       LuigiConfigNodesService,
       HeaderParserService,
       IntentResolveService,
@@ -139,8 +135,9 @@ export class PortalModule {
         useClass: options.serviceProviderService || EmptyServiceProviderService,
       },
       {
-        provide: NODES_PROCESSOR_INJECTION_TOKEN,
-        useClass: options.nodesProcessor || NodesProcessorServiceImpl,
+        provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+        useClass:
+          options.luigiDataService || ContentConfigurationLuigiDataService,
       },
     ];
 
