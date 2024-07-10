@@ -10,6 +10,7 @@ import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FRAME_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
@@ -23,6 +24,9 @@ import {
   EmptyEnvVariablesService,
   EnvVariablesService,
 } from './env/env-variables.service';
+import { LogoutController } from './logout/logout.controller';
+import { NoopLogoutService } from './logout/noop-logout.service';
+import { LogoutCallback } from './logout/logout-callback';
 import { ConfigController } from './config/config.controller';
 import { PortalContextProvider } from './config/context/portal-context-provider';
 import { EntityContextProviders } from './config/context/entity-context-provider';
@@ -53,6 +57,12 @@ export interface PortalModuleOptions {
    * Service providing environment variables required to be sent to the clients.
    */
   envVariablesProvider?: Type<EnvVariablesService>;
+
+  /**
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
+   */
+  logoutCallbackProvider?: Type<LogoutCallback>;
 
   /**
    * Service providing tenant id.
@@ -97,7 +107,8 @@ export class PortalModule {
     const controllers: any[] = [
       HealthController,
       EnvController,
-      ConfigController,
+      LogoutController,
+        ConfigController,
     ];
 
     let providers: Provider[] = [
@@ -113,6 +124,10 @@ export class PortalModule {
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
         useClass: options.envVariablesProvider || EmptyEnvVariablesService,
+      },
+      {
+        provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
+        useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
       {
         provide: TENANT_PROVIDER_INJECTION_TOKEN,
