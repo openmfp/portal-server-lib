@@ -1,9 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContentConfiguration } from '../../model/content-configuration';
+import { ContentConfigurationLuigiDataService } from '../luigi-data/content-configuration-luigi-data.service';
+import { LuigiDataService } from '../luigi-data/luigi-data.service';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service';
 import { PortalModule } from '../../../portal.module';
-import { CdmLuigiDataService } from '../luigi-data/cdm-luigi-data.service';
 import { mock } from 'jest-mock-extended';
-import { SERVICE_PROVIDER_INJECTION_TOKEN } from '../../../injection-tokens';
+import {
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+} from '../../../injection-tokens';
 import { LuigiNode } from '../../model/luigi.node';
 import {
   RawServiceProvider,
@@ -13,7 +18,7 @@ import {
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;
   let serviceProviderService: ServiceProviderService;
-  let cdmLuigiDataService: CdmLuigiDataService;
+  let luigiDataService: LuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,7 +32,9 @@ describe('LuigiConfigNodesService', () => {
     serviceProviderService = module.get<ServiceProviderService>(
       SERVICE_PROVIDER_INJECTION_TOKEN
     );
-    cdmLuigiDataService = module.get<CdmLuigiDataService>(CdmLuigiDataService);
+    luigiDataService = module.get<LuigiDataService>(
+      LUIGI_DATA_SERVICE_INJECTION_TOKEN
+    );
   });
 
   it('should be defined', () => {
@@ -37,21 +44,21 @@ describe('LuigiConfigNodesService', () => {
   it('should return a service provider for each request', async () => {
     const nodes: LuigiNode[] = [];
     jest
-      .spyOn(cdmLuigiDataService, 'getLuigiData')
+      .spyOn(luigiDataService, 'getLuigiData')
       .mockReturnValue(Promise.resolve(nodes));
     const rawServiceProviders: RawServiceProvider[] = [
       {
         name: 'a',
         displayName: 'c',
         isMandatoryExtension: true,
-        cdm: [{ url: 'microfrontend.com' }],
+        contentConfiguration: [{} as ContentConfiguration],
         config: {},
         creationTimestamp: '2022-05-17T11:37:17Z',
       },
       {
         name: 'b',
         displayName: 'd',
-        cdm: [{ url: 'microfrontend2.com' }],
+        contentConfiguration: [{} as ContentConfiguration],
         config: {},
         creationTimestamp: '2021-05-17T11:37:17Z',
       },
