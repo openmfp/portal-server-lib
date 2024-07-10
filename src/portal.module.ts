@@ -8,7 +8,7 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
@@ -108,7 +108,7 @@ export class PortalModule {
       HealthController,
       EnvController,
       LogoutController,
-        ConfigController,
+      ConfigController,
     ];
 
     let providers: Provider[] = [
@@ -134,7 +134,7 @@ export class PortalModule {
         useClass: options.tenantProvider || EmptyTenantService,
       },
       {
-        provide: FRAME_CONTEXT_INJECTION_TOKEN,
+        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
         useClass: options.frameContextProvider || EmptyPortalContextProvider,
       },
       {

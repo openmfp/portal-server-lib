@@ -17,7 +17,7 @@ import { HeaderParserService } from '../services/header-parser.service';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { TenantService } from '../auth/tenant.service';
@@ -42,7 +42,7 @@ export class ConfigController {
     private headerParser: HeaderParserService,
     @Inject(TENANT_PROVIDER_INJECTION_TOKEN)
     private tenantProvider: TenantService,
-    @Inject(FRAME_CONTEXT_INJECTION_TOKEN)
+    @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,

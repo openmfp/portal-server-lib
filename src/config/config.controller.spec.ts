@@ -7,7 +7,7 @@ import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config
 import { TenantService } from '../auth/tenant.service';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
@@ -67,7 +67,7 @@ describe('ConfigController', () => {
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
     frameContextProvider = module.get<PortalContextProvider>(
-      FRAME_CONTEXT_INJECTION_TOKEN
+      PORTAL_CONTEXT_INJECTION_TOKEN
     );
 
     jest
