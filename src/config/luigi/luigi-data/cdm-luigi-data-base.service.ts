@@ -6,6 +6,14 @@ import { LuigiNavConfig } from '../../model/luigi-app-config';
 import { CDM, Dictionary, CDMExtendedData } from '../../model/configuration';
 import { NodesProcessorService } from './nodes-processor.service';
 
+export interface LuigiDataService {
+  getLuigiData(
+    cdm: CDM[],
+    language: string,
+    cdmExtendedData?: CDMExtendedData
+  ): Promise<LuigiNode[]>;
+}
+
 export class CdmLuigiDataBaseService {
   constructor(
     protected httpService: any,
@@ -15,7 +23,7 @@ export class CdmLuigiDataBaseService {
     this.nodeProcessorService = nodeProcessorService;
   }
 
-  async getLuigiDataFromCDM(
+  async getLuigiData(
     cdm: CDM[],
     language: string,
     cdmExtendedData?: CDMExtendedData

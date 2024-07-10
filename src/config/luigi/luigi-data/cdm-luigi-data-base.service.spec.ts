@@ -98,16 +98,13 @@ describe('CdmLuigiDataService', () => {
 
     it('should use data if present', async () => {
       await expect(
-        service.getLuigiDataFromCDM([{ data: cdmJson }], language)
+        service.getLuigiData([{ data: cdmJson }], language)
       ).resolves.toEqual([expectedNode]);
     });
 
     it('should concatenate nodes', async () => {
       await expect(
-        service.getLuigiDataFromCDM(
-          [{ data: cdmJson }, { data: cdmJson }],
-          language
-        )
+        service.getLuigiData([{ data: cdmJson }, { data: cdmJson }], language)
       ).resolves.toEqual([expectedNode, expectedNode]);
     });
 
@@ -119,7 +116,7 @@ describe('CdmLuigiDataService', () => {
         },
       };
       await expect(
-        service.getLuigiDataFromCDM([{ data: cdmJson }], language, {
+        service.getLuigiData([{ data: cdmJson }], language, {
           helpContext,
         })
       ).resolves.toEqual([{ ...expectedNode, helpContext }]);
@@ -132,7 +129,7 @@ describe('CdmLuigiDataService', () => {
         hint: 'text to show on hover',
       };
       await expect(
-        service.getLuigiDataFromCDM([{ data: cdmJson }], language, {
+        service.getLuigiData([{ data: cdmJson }], language, {
           breadcrumbBadge,
         })
       ).resolves.toEqual([{ ...expectedNode, breadcrumbBadge }]);
@@ -143,7 +140,7 @@ describe('CdmLuigiDataService', () => {
     it('and responded with error status code', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(404);
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -154,7 +151,7 @@ describe('CdmLuigiDataService', () => {
         message: errorMsg,
       });
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -166,7 +163,7 @@ describe('CdmLuigiDataService', () => {
         .delayConnection(2000) // 2 seconds
         .reply(200, {});
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -222,7 +219,7 @@ describe('CdmLuigiDataService', () => {
         ].urlTemplateParams.url = baseUrl;
 
         nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-        const nodes = await service.getLuigiDataFromCDM(
+        const nodes = await service.getLuigiData(
           [{ url: urlToCdmJson }],
           language
         );
@@ -261,7 +258,7 @@ describe('CdmLuigiDataService', () => {
       it('should build a url if a relative url is given for a single node', async () => {
         nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
 
-        const nodes = await service.getLuigiDataFromCDM(
+        const nodes = await service.getLuigiData(
           [{ url: urlToCdmJson }],
           language
         );
@@ -306,7 +303,7 @@ describe('CdmLuigiDataService', () => {
         },
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-      const nodes = await service.getLuigiDataFromCDM(
+      const nodes = await service.getLuigiData(
         [{ url: urlToCdmJson }],
         language
       );
@@ -363,7 +360,7 @@ describe('CdmLuigiDataService', () => {
         },
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-      const nodes: LuigiNode[] = await service.getLuigiDataFromCDM(
+      const nodes: LuigiNode[] = await service.getLuigiData(
         [{ url: urlToCdmJson }],
         language
       );
@@ -399,7 +396,7 @@ describe('CdmLuigiDataService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -407,7 +404,7 @@ describe('CdmLuigiDataService', () => {
     it('with empty cdm.json', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, {});
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -415,7 +412,7 @@ describe('CdmLuigiDataService', () => {
     it('with illegal cdm.json', async () => {
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, 'notAJson');
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -424,7 +421,7 @@ describe('CdmLuigiDataService', () => {
       const cdmJson = { payload: {} };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -447,7 +444,7 @@ describe('CdmLuigiDataService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -466,7 +463,7 @@ describe('CdmLuigiDataService', () => {
       };
       nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
       await expect(
-        service.getLuigiDataFromCDM([{ url: urlToCdmJson }], language)
+        service.getLuigiData([{ url: urlToCdmJson }], language)
       ).resolves.toEqual([]);
       expect(consoleWarn).toHaveBeenCalled();
     });
@@ -525,10 +522,7 @@ describe('CdmLuigiDataService', () => {
       },
     };
     nock(baseUrl).get(pathToCdmJson).query(true).reply(200, cdmJson);
-    const nodes = await service.getLuigiDataFromCDM(
-      [{ url: urlToCdmJson }],
-      language
-    );
+    const nodes = await service.getLuigiData([{ url: urlToCdmJson }], language);
     expect(nodes).toBeDefined();
     expect(nodes).toHaveLength(1);
     const luigiNode: LuigiNode = nodes[0];

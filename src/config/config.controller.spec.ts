@@ -13,7 +13,7 @@ import {
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import { HeaderParserService } from '../services/header-parser.service';
 import { ServiceProvider } from './model/luigi.node';
-import { FrameContextProvider } from './context/frame-context-provider';
+import { PortalContextProvider } from './context/portal-context-provider';
 import {
   EntityContextProviders,
   EntityNotFoundException,
@@ -32,7 +32,7 @@ describe('ConfigController', () => {
   let requestMock: Request;
   let responseMock: Response;
   let tenantProvider: TenantService;
-  let frameContextProvider: FrameContextProvider;
+  let frameContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   let entityContextProviders: EntityContextProviders;
@@ -66,7 +66,7 @@ describe('ConfigController', () => {
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    frameContextProvider = module.get<FrameContextProvider>(
+    frameContextProvider = module.get<PortalContextProvider>(
       FRAME_CONTEXT_INJECTION_TOKEN
     );
 

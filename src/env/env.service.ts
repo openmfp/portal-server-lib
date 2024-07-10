@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 export interface EnvVariables {
-  tenantId?: string;
   healthCheckInterval?: number;
 }
 
@@ -9,7 +8,6 @@ export interface EnvVariables {
 export class EnvService {
   public getEnv(): EnvVariables {
     return {
-      tenantId: process.env.TENANT_ID,
       healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL, 10),
     };
   }

@@ -26,10 +26,10 @@ import {
   EnvVariablesService,
 } from './env/env-variables.service';
 import { ConfigController } from './config/config.controller';
-import { FrameContextProvider } from './config/context/frame-context-provider';
+import { PortalContextProvider } from './config/context/portal-context-provider';
 import { EntityContextProviders } from './config/context/entity-context-provider';
-import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
-import { LocalTenantService, TenantService } from './auth/tenant.service';
+import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
+import { EmptyTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
 import { CdmLuigiDataService } from './config/luigi/luigi-data/cdm-luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
@@ -66,7 +66,7 @@ export interface PortalModuleOptions {
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  frameContextProvider?: Type<FrameContextProvider>;
+  frameContextProvider?: Type<PortalContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -120,11 +120,11 @@ export class PortalModule {
       },
       {
         provide: TENANT_PROVIDER_INJECTION_TOKEN,
-        useClass: options.tenantProvider || LocalTenantService,
+        useClass: options.tenantProvider || EmptyTenantService,
       },
       {
         provide: FRAME_CONTEXT_INJECTION_TOKEN,
-        useClass: options.frameContextProvider || EmptyFrameContextProvider,
+        useClass: options.frameContextProvider || EmptyPortalContextProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,

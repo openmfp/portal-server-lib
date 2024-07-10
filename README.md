@@ -20,7 +20,6 @@ In order to be able to use the library following environment properties have to 
 | Property name             | Description                                                                                                                                                                                    |
 |---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | IDP_NAMES                 | Comma separated values of the name(s) of the Identity Providers (IDPs) used for authentication.                                                                                                |
-| TENANT_ID                 | The idp that will be used when running on local host.                                                                                                                                          |
 | BASE_DOMAINS_${idp}       | Comma separated values of base domains for the application.                                                                                                                                    |
 | IAS_TENANT_URL_${idp}     | The URL for the IAS (Identity Access Service) tenant specific to the idp name. This URL is used for interactions with the IAS service, such as user authentication and authorization.          |
 | OIDC_CLIENT_ID_${idp}     | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
@@ -41,7 +40,6 @@ Below is an example of a `.env` file for configuring the application:
 
 ```properties
 IDP_NAMES=app,dev
-TENANT_ID=123op89ujuy
 
 BASE_DOMAINS_APP=localhost,example.com
 IAS_TENANT_URL_APP=https://example.com

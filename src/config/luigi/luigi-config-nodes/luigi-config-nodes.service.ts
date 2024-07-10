@@ -38,7 +38,7 @@ export class LuigiConfigNodesService {
     const rawServiceProviders = fetchedProvider.serviceProviders;
     const promises = rawServiceProviders.map((provider) =>
       this.cdmLuigiData
-        .getLuigiDataFromCDM(provider.cdm, acceptLanguage, {
+        .getLuigiData(provider.cdm, acceptLanguage, {
           isMissingMandatoryData: provider.isMissingMandatoryData,
           extensionClassName: provider.extensionClassName,
           helpContext: {

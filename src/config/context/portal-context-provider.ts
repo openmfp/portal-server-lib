@@ -5,7 +5,7 @@ export interface ProvidersResult {
   providers: ServiceProvider[];
 }
 
-export interface FrameContextProvider {
+export interface PortalContextProvider {
   getContextValues(
     request: Request,
     response: Response,
