@@ -4,6 +4,7 @@ import { EnvService } from './env/env.service';
 import {
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
 } from './injection-tokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
@@ -14,6 +15,9 @@ import {
   EmptyEnvVariablesService,
   EnvVariablesService,
 } from './env/env-variables.service';
+import { LogoutController } from './logout/logout.controller';
+import { NoopLogoutService } from './logout/noop-logout.service';
+import { LogoutCallback } from './logout/logout-callback';
 
 export interface PortalModuleOptions {
   /**
@@ -31,12 +35,22 @@ export interface PortalModuleOptions {
    * Service providing environment variables required to be sent to the clients.
    */
   envVariablesProvider?: Type<EnvVariablesService>;
+
+  /**
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
+   */
+  logoutCallbackProvider?: Type<LogoutCallback>;
 }
 
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
-    const controllers: any[] = [HealthController, EnvController];
+    const controllers: any[] = [
+      HealthController,
+      EnvController,
+      LogoutController,
+    ];
 
     let providers: Provider[] = [
       EnvService,
@@ -48,6 +62,10 @@ export class PortalModule {
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
         useClass: options.envVariablesProvider || EmptyEnvVariablesService,
+      },
+      {
+        provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
+        useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
     ];
 

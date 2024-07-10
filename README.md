@@ -30,6 +30,7 @@ In order to be able to use the library following environment properties have to 
 | Property name           | Description                                                                                                                                                                                                 |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HEALTH_CHECK_INTERVAL   | The interval in *milliseconds* at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                         |
+| LOGOUT_REDIRECT_URL   | The url to redirect user after logout action, by default */logout*.                                                          |
 | ENVIRONMENT             | This property indicates the environment in which the application is running, *local* indicates development environment.                                                                                     |
 | DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
 | FRONTEND_PORT           | Set the port number on which the frontend of the application will run in *local* environment.                                                                                                               |
@@ -46,6 +47,7 @@ OIDC_CLIENT_ID_APP=app_client_id
 OIDC_CLIENT_SECRET_APP=app_client_secret
 
 HEALTH_CHECK_INTERVAL=
+LOGOUT_REDIRECT_URL="/logout"
 ENVIRONMENT=local
 DEVELOPMENT_INSTANCE=true
 FRONTEND_PORT=4300
