@@ -4,7 +4,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { NoopLogoutService } from './noop-logout.service';
 import { LogoutCallback } from './logout-callback';
-import { OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
+import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { EnvService } from '../env/env.service';
 
 describe('LogoutController', () => {
@@ -22,7 +22,7 @@ describe('LogoutController', () => {
       providers: [
         EnvService,
         {
-          provide: OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN,
+          provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
           useValue: logoutCallback,
         },
       ],

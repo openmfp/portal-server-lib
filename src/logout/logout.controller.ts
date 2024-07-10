@@ -1,13 +1,13 @@
 import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { LogoutCallback } from './logout-callback';
-import { OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
+import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { EnvService } from '../env/env.service';
 
 @Controller('/rest/logout')
 export class LogoutController {
   constructor(
-    @Inject(OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN)
+    @Inject(LOGOUT_CALLBACK_INJECTION_TOKEN)
     private logoutCallback: LogoutCallback,
     private envService: EnvService
   ) {}

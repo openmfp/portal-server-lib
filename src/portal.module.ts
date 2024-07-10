@@ -4,7 +4,7 @@ import { EnvService } from './env/env.service';
 import {
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
-  OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
 } from './injection-tokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
@@ -64,7 +64,7 @@ export class PortalModule {
         useClass: options.envVariablesProvider || EmptyEnvVariablesService,
       },
       {
-        provide: OPENMFP_LOGOUT_CALLBACK_INJECTION_TOKEN,
+        provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
         useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
     ];
