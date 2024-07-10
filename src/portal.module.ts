@@ -37,7 +37,8 @@ export interface PortalModuleOptions {
   envVariablesProvider?: Type<EnvVariablesService>;
 
   /**
-   * Will be called to logout user from authentication provider
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
    */
   logoutCallbackProvider?: Type<LogoutCallback>;
 }
