@@ -16,7 +16,7 @@ export class LuigiConfigNodesService {
     @Inject(SERVICE_PROVIDER_INJECTION_TOKEN)
     private serviceProviderService: ServiceProviderService,
     @Inject(LUIGI_DATA_SERVICE_INJECTION_TOKEN)
-    private cdmLuigiData: LuigiDataService
+    private luigiDataService: LuigiDataService
   ) {}
 
   async getNodes(
@@ -41,7 +41,7 @@ export class LuigiConfigNodesService {
     const serviceProviders: ServiceProvider[] = [];
     const rawServiceProviders = fetchedProvider.serviceProviders;
     const promises = rawServiceProviders.map((provider) =>
-      this.cdmLuigiData
+      this.luigiDataService
         .getLuigiData(provider, acceptLanguage, {
           isMissingMandatoryData: provider.isMissingMandatoryData,
           extensionClassName: provider.extensionClassName,
