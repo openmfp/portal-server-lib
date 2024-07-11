@@ -1,18 +1,22 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import {
   AuthCallback,
   AuthController,
   AuthDataService,
   AuthTokenService,
   NoopAuthCallback,
+  EmptyTenantService,
+  TenantService,
 } from './auth';
 import {
   ConfigController,
   IntentResolveService,
-  NodesProcessorService,
-  NodesProcessorServiceImpl,
-  FrameContextProvider,
+  LuigiDataService,
+  ContentConfigurationLuigiDataService,
 } from './config';
 import { EnvService } from './env';
 import {
@@ -27,31 +31,23 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
-import { HealthController } from './health/health.controller';
-import { EmptyHealthChecker, HealthChecker } from './health/health-checker';
-import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
-import { EnvController } from './env/env.controller';
+import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import {
+  EnvController,
   EmptyEnvVariablesService,
   EnvVariablesService,
-} from './env/env-variables.service';
-import { LogoutController } from './logout/logout.controller';
-import { NoopLogoutService } from './logout/noop-logout.service';
-import { LogoutCallback } from './logout/logout-callback';
-import { PortalContextProvider } from './config/context/portal-context-provider';
-import { EntityContextProviders } from './config/context/entity-context-provider';
-import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
-import { EmptyTenantService, TenantService } from './auth/tenant.service';
-import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
+} from './env';
+import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
 import {
+  PortalContextProvider,
+  EntityContextProviders,
+  EmptyPortalContextProvider,
+  EnvFeatureTogglesProvider,
+  LuigiConfigNodesService,
   EmptyServiceProviderService,
   ServiceProviderService,
-} from './config/context/service-provider';
-import { LocalTenantService, TenantService } from './auth/tenant.service';
+} from './config';
 import { HeaderParserService, CookiesService } from './services';
-import { ServeStaticModule } from '@nestjs/serve-static';
 
 export interface PortalModuleOptions {
   /**

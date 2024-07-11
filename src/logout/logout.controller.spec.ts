@@ -1,29 +1,33 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CookiesService } from '../services';
 import { LogoutController } from './logout.controller';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { NoopLogoutService } from './noop-logout.service';
 import { LogoutCallback } from './logout-callback';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { EnvService } from '../env/env.service';
+import { EnvService } from '../env';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
   let envService: EnvService;
+  let cookiesServiceMock: CookiesService;
   let requestMock: Request;
   let responseMock: Response;
-  let logoutCallback: MockProxy<LogoutCallback>;
+  let logoutCallbackMock: MockProxy<LogoutCallback>;
 
   beforeEach(async () => {
-    logoutCallback = mock<NoopLogoutService>();
+    logoutCallbackMock = mock<NoopLogoutService>();
+    cookiesServiceMock = mock<CookiesService>();
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LogoutController],
       providers: [
         EnvService,
+        { provide: CookiesService, useValue: cookiesServiceMock },
         {
           provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
-          useValue: logoutCallback,
+          useValue: logoutCallbackMock,
         },
       ],
     }).compile();
@@ -51,7 +55,9 @@ describe('LogoutController', () => {
     await controller.logout(requestMock, responseMock);
 
     // Assert
-    expect(responseMock.clearCookie).toHaveBeenCalledWith('auth_cookie');
+    expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
+      responseMock
+    );
   });
 
   it('should execute handleLogout when logout controller is called', async () => {
@@ -59,7 +65,10 @@ describe('LogoutController', () => {
     await controller.logout(requestMock, responseMock);
 
     // Assert
-    expect(logoutCallback.handleLogout).toHaveBeenCalledWith(requestMock, responseMock);
+    expect(logoutCallbackMock.handleLogout).toHaveBeenCalledWith(
+      requestMock,
+      responseMock
+    );
   });
 
   describe('getLogoutRedirectUrl', function () {
@@ -85,7 +94,9 @@ describe('LogoutController', () => {
       await controller.logout(requestMock, responseMock);
 
       // Assert
-      expect(responseMock.redirect).toHaveBeenCalledWith('\test?error=Something_Important');
+      expect(responseMock.redirect).toHaveBeenCalledWith(
+        '\test?error=Something_Important'
+      );
     });
   });
 });

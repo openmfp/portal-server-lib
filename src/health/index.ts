@@ -1,1 +1,2 @@
-export { HealthChecker } from './health-checker';
+export { HealthController } from './health.controller';
+export { HealthChecker, EmptyHealthChecker } from './health-checker';
