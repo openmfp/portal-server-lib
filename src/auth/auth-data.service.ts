@@ -1,6 +1,6 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CookiesService } from '../services/cookies.service';
+import { CookiesService } from '../services';
 import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
 
 @Injectable()
@@ -15,8 +15,8 @@ export class AuthDataService {
     request: Request,
     response: Response
   ): Promise<AuthTokenResponse> {
-    const dxpAuthCookie = this.cookiesService.getAuthCookie(request);
-    if (!dxpAuthCookie) {
+    const authCookie = this.cookiesService.getAuthCookie(request);
+    if (!authCookie) {
       return undefined;
     }
 
@@ -24,7 +24,7 @@ export class AuthDataService {
       return await this.authTokenService.exchangeTokenForRefreshToken(
         request,
         response,
-        dxpAuthCookie
+        authCookie
       );
     } catch (e) {
       this.logger.error(e);

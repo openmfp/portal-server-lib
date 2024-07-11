@@ -2,5 +2,5 @@ export { EnvController } from './env.controller';
 export { EnvService } from './env.service';
 export {
   EnvVariablesService,
-  EmptyEnvVariablesService,
+  EnvVariablesServiceImpl,
 } from './env-variables.service';

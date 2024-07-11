@@ -103,26 +103,26 @@ describe('EnvService', () => {
   });
 
   describe('getEnvWithAuth', () => {
-    const oauthServerUrlSAP = 'www.sap.com';
-    const oauthTokenUrlSAP = 'www.sap.token.com';
+    const oauthServerUrlAPP = 'www.app.com';
+    const oauthTokenUrlAPP = 'www.app.token.com';
     const oauthServerUrlFoo = 'www.foo.com';
     const oauthTokenUrlFoo = 'www.foo.token.com';
     const oauthServerUrlHyperspace = 'www.btp.com';
     const oauthTokenUrlHyperspace = 'www.btp.com/token';
     const clientIdFoo = '12134aads';
     const clientIdHyperspace = 'bbbtttppp';
-    const clientIdSap = 'asqrfr';
+    const clientIdApp = 'asqrfr';
     const clientSecretHyperspace = 'topSecret';
     const clientSecretFoo = 'topSecretFoo';
-    const clientSecretSap = 'topSecretSap';
+    const clientSecretApp = 'topSecretApp';
 
     beforeEach(() => {
-      process.env['IDP_NAMES'] = 'sap,foo,hyperspace,not-configured';
-      process.env['BASE_DOMAINS_SAP'] = 'dxp.k8s.ondemand.com';
-      process.env['AUTH_SERVER_URL_SAP'] = oauthServerUrlSAP;
-      process.env['TOKEN_URL_SAP'] = oauthTokenUrlSAP;
-      process.env['OIDC_CLIENT_ID_SAP'] = clientIdSap;
-      process.env['OIDC_CLIENT_SECRET_SAP'] = clientSecretSap;
+      process.env['IDP_NAMES'] = 'app,foo,hyperspace,not-configured';
+      process.env['BASE_DOMAINS_APP'] = 'app.k8s.ondemand.com';
+      process.env['AUTH_SERVER_URL_APP'] = oauthServerUrlAPP;
+      process.env['TOKEN_URL_APP'] = oauthTokenUrlAPP;
+      process.env['OIDC_CLIENT_ID_APP'] = clientIdApp;
+      process.env['OIDC_CLIENT_SECRET_APP'] = clientSecretApp;
       process.env['BASE_DOMAINS_HYPERSPACE'] = 'hyper.space,localhost';
       process.env['BASE_DOMAINS_FOO'] = '';
       process.env['AUTH_SERVER_URL_FOO'] = oauthServerUrlFoo;
@@ -155,19 +155,19 @@ describe('EnvService', () => {
       expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlFoo);
     });
 
-    it('should map the idp to the token url for sap', () => {
+    it('should map the idp to the token url for app', () => {
       const request = mock<Request>();
-      request.hostname = 'dxp.k8s.ondemand.com';
+      request.hostname = 'app.k8s.ondemand.com';
 
       const envWithAuth = service.getCurrentAuthEnv(request);
 
-      expect(envWithAuth.clientId).toBe(clientIdSap);
-      expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlSAP);
+      expect(envWithAuth.clientId).toBe(clientIdApp);
+      expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlAPP);
     });
 
     it('should map the idp of foo to a different base url', () => {
       const request = mock<Request>();
-      request.hostname = 'foo.dxp.k8s.ondemand.com';
+      request.hostname = 'foo.app.k8s.ondemand.com';
 
       const envWithAuth = service.getCurrentAuthEnv(request);
 
@@ -178,13 +178,13 @@ describe('EnvService', () => {
 
     it('should return the default tenant, if a host name is directly matched', () => {
       const request = mock<Request>();
-      request.hostname = 'dxp.k8s.ondemand.com';
+      request.hostname = 'app.k8s.ondemand.com';
 
       const envWithAuth = service.getCurrentAuthEnv(request);
 
-      expect(envWithAuth.clientId).toBe(clientIdSap);
-      expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlSAP);
-      expect(envWithAuth.clientSecret).toBe(clientSecretSap);
+      expect(envWithAuth.clientId).toBe(clientIdApp);
+      expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlAPP);
+      expect(envWithAuth.clientSecret).toBe(clientSecretApp);
     });
 
     it('should return the default tenant, for a different host with multiple names is directly matched', () => {
@@ -200,7 +200,7 @@ describe('EnvService', () => {
 
     it('should throw when the idp is not existing', () => {
       const request = mock<Request>();
-      request.hostname = 'not-existing.dxp.k8s.ondemand.com';
+      request.hostname = 'not-existing.app.k8s.ondemand.com';
 
       expect(function () {
         service.getCurrentAuthEnv(request);
@@ -209,8 +209,8 @@ describe('EnvService', () => {
 
     it('should throw when the token url is not configured is not existing', () => {
       const request = mock<Request>();
-      request.hostname = 'dxp.k8s.ondemand.com';
-      delete process.env[`TOKEN_URL_SAP`];
+      request.hostname = 'app.k8s.ondemand.com';
+      delete process.env[`TOKEN_URL_APP`];
 
       expect(function () {
         service.getCurrentAuthEnv(request);
@@ -219,18 +219,18 @@ describe('EnvService', () => {
 
     it('should throw when the domain is not existing', () => {
       const request = mock<Request>();
-      request.hostname = 'sap-btp.foo.com';
+      request.hostname = 'app-btp.foo.com';
 
       expect(function () {
         service.getCurrentAuthEnv(request);
       }).toThrow(
-        "sap-btp.foo.com is not listed in the portal's base urls: 'dxp.k8s.ondemand.com,hyper.space,localhost'"
+        "app-btp.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
       );
     });
 
     it('should throw when the idp is not properly configured', () => {
       const request = mock<Request>();
-      request.hostname = 'not-configured.dxp.k8s.ondemand.com';
+      request.hostname = 'not-configured.app.k8s.ondemand.com';
 
       expect(function () {
         service.getCurrentAuthEnv(request);

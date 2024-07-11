@@ -34,7 +34,7 @@ import {
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import {
   EnvController,
-  EmptyEnvVariablesService,
+  EnvVariablesServiceImpl,
   EnvVariablesService,
 } from './env';
 import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
@@ -144,7 +144,7 @@ export class PortalModule {
       },
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
-        useClass: options.envVariablesProvider || EmptyEnvVariablesService,
+        useClass: options.envVariablesProvider || EnvVariablesServiceImpl,
       },
       {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,

@@ -3,7 +3,7 @@ import { mock } from 'jest-mock-extended';
 import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
 import { Request, Response } from 'express';
 import nock from 'nock';
-import { EnvService } from '../env/env.service';
+import { EnvService } from '../env';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthCallback } from './auth.callback';
 import { PortalModule } from '../portal.module';
@@ -16,14 +16,12 @@ describe('AuthTokenService', () => {
   let authCallbackMock: AuthCallback;
 
   beforeEach(async () => {
-    process.env['IDP_NAMES'] = 'sap';
-    process.env['BASE_DOMAINS_SAP'] = 'example.com';
-    process.env['AUTH_SERVER_URL_SAP'] =
-      'https://ametqb0em.accounts400.ondemand.com/auth';
-    process.env['TOKEN_URL_SAP'] =
-      'https://ametqb0em.accounts400.ondemand.com/token';
-    process.env['OIDC_CLIENT_ID_SAP'] = '1fd3f7a6-d506-4289-9fcf-fed52eeb4c16';
-    process.env['OIDC_CLIENT_SECRET_SAP'] = 'test secret';
+    process.env['IDP_NAMES'] = 'app';
+    process.env['BASE_DOMAINS_APP'] = 'example.com';
+    process.env['AUTH_SERVER_URL_APP'] = 'https://serv-example.com/auth';
+    process.env['TOKEN_URL_APP'] = 'https://serv-example.com/token';
+    process.env['OIDC_CLIENT_ID_APP'] = '1fd3f7a6-d506-4289-9fcf';
+    process.env['OIDC_CLIENT_SECRET_APP'] = 'test secret';
     process.env['ENVIRONMENT'] = 'local';
 
     authCallbackMock = mock<AuthCallback>();
