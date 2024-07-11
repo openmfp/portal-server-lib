@@ -107,8 +107,8 @@ describe('EnvService', () => {
     const oauthTokenUrlAPP = 'www.app.token.com';
     const oauthServerUrlFoo = 'www.foo.com';
     const oauthTokenUrlFoo = 'www.foo.token.com';
-    const oauthServerUrlHyperspace = 'www.btp.com';
-    const oauthTokenUrlHyperspace = 'www.btp.com/token';
+    const oauthServerUrlHyperspace = 'www.too.com';
+    const oauthTokenUrlHyperspace = 'www.too.com/token';
     const clientIdFoo = '12134aads';
     const clientIdHyperspace = 'bbbtttppp';
     const clientIdApp = 'asqrfr';
@@ -219,12 +219,12 @@ describe('EnvService', () => {
 
     it('should throw when the domain is not existing', () => {
       const request = mock<Request>();
-      request.hostname = 'app-btp.foo.com';
+      request.hostname = 'app-too.foo.com';
 
       expect(function () {
         service.getCurrentAuthEnv(request);
       }).toThrow(
-        "app-btp.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
+        "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
       );
     });
 

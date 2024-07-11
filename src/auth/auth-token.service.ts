@@ -105,14 +105,19 @@ export class AuthTokenService {
     );
   }
 
+  /**
+   *  Redirection URL is calculated based on the ENVIRONMENT system variable.
+   *  When running locally after executing token retrieval the call will be redirected to localhost and port set in FRONTEND_PORT system variable,
+   *  otherwise to the host of the initiating request
+   */
   private getRedirectUri(request: Request) {
-    let hostAndProto: string;
+    let redirectionUrl: string;
     const env = this.envService.getEnv();
     if (env.isLocal) {
-      hostAndProto = `http://localhost:${env.frontendPort}`;
+      redirectionUrl = `http://localhost:${env.localFrontendPort}`;
     } else {
-      hostAndProto = `https://${request.hostname}`;
+      redirectionUrl = `https://${request.hostname}`;
     }
-    return `${hostAndProto}/callback?storageType=none`;
+    return `${redirectionUrl}/callback?storageType=none`;
   }
 }
