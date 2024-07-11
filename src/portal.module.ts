@@ -20,9 +20,10 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
-  NODES_PROCESSOR_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
@@ -35,10 +36,14 @@ import {
   EmptyEnvVariablesService,
   EnvVariablesService,
 } from './env/env-variables.service';
+import { LogoutController } from './logout/logout.controller';
+import { NoopLogoutService } from './logout/noop-logout.service';
+import { LogoutCallback } from './logout/logout-callback';
+import { PortalContextProvider } from './config/context/portal-context-provider';
 import { EntityContextProviders } from './config/context/entity-context-provider';
-import { EmptyFrameContextProvider } from './config/context/empty-frame-context-provider';
+import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
+import { EmptyTenantService, TenantService } from './auth/tenant.service';
 import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { CdmLuigiDataService } from './config/luigi/luigi-data/cdm-luigi-data.service';
 import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
 import {
   EmptyServiceProviderService,
@@ -66,6 +71,12 @@ export interface PortalModuleOptions {
   envVariablesProvider?: Type<EnvVariablesService>;
 
   /**
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
+   */
+  logoutCallbackProvider?: Type<LogoutCallback>;
+
+  /**
    * Service providing tenant id.
    */
   tenantProvider?: Type<TenantService>;
@@ -74,7 +85,7 @@ export interface PortalModuleOptions {
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  frameContextProvider?: Type<FrameContextProvider>;
+  frameContextProvider?: Type<PortalContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -91,9 +102,9 @@ export interface PortalModuleOptions {
   serviceProviderService?: Type<ServiceProviderService>;
 
   /**
-   * A custom service to execute additional processing on a luigi nodes.
+   * A custom service to process configuration coming from service providers
    */
-  nodesProcessor?: Type<NodesProcessorService>;
+  luigiDataService?: Type<LuigiDataService>;
 
   /**
    * The path to the built sources of the frontend ui. They will be served statically, so the html site is on the same host.
@@ -114,6 +125,7 @@ export class PortalModule {
       AuthController,
       HealthController,
       EnvController,
+      LogoutController,
       ConfigController,
     ];
 
@@ -122,7 +134,6 @@ export class PortalModule {
       EnvService,
       HeaderParserService,
       CookiesService,
-      CdmLuigiDataService,
       LuigiConfigNodesService,
       IntentResolveService,
       AuthDataService,
@@ -140,12 +151,16 @@ export class PortalModule {
         useClass: options.envVariablesProvider || EmptyEnvVariablesService,
       },
       {
-        provide: TENANT_PROVIDER_INJECTION_TOKEN,
-        useClass: options.tenantProvider || LocalTenantService,
+        provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
+        useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
       {
-        provide: FRAME_CONTEXT_INJECTION_TOKEN,
-        useClass: options.frameContextProvider || EmptyFrameContextProvider,
+        provide: TENANT_PROVIDER_INJECTION_TOKEN,
+        useClass: options.tenantProvider || EmptyTenantService,
+      },
+      {
+        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
+        useClass: options.frameContextProvider || EmptyPortalContextProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -160,8 +175,9 @@ export class PortalModule {
         useClass: options.serviceProviderService || EmptyServiceProviderService,
       },
       {
-        provide: NODES_PROCESSOR_INJECTION_TOKEN,
-        useClass: options.nodesProcessor || NodesProcessorServiceImpl,
+        provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+        useClass:
+          options.luigiDataService || ContentConfigurationLuigiDataService,
       },
     ];
 

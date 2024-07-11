@@ -17,11 +17,11 @@ import { HeaderParserService } from '../services/header-parser.service';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { TenantService } from '../auth/tenant.service';
-import { FrameContextProvider } from './context/frame-context-provider';
+import { PortalContextProvider } from './context/portal-context-provider';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
@@ -42,8 +42,8 @@ export class ConfigController {
     private headerParser: HeaderParserService,
     @Inject(TENANT_PROVIDER_INJECTION_TOKEN)
     private tenantProvider: TenantService,
-    @Inject(FRAME_CONTEXT_INJECTION_TOKEN)
-    private frameContextProvider: FrameContextProvider,
+    @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
+    private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
@@ -75,7 +75,7 @@ export class ConfigController {
         return e;
       });
 
-    const frameContextPromise = this.frameContextProvider
+    const portalContextPromise = this.portalContextProvider
       .getContextValues(request, response, providersAndTenantPromise)
       .catch((e: Error) => {
         this.logger.error(e);
@@ -87,7 +87,7 @@ export class ConfigController {
         await featureTogglePromise
       );
       const frameContext = ConfigController.getOrThrow(
-        await frameContextPromise
+        await portalContextPromise
       );
       const { tenantId, providers } = ConfigController.getOrThrow(
         await providersAndTenantPromise

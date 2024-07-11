@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EnvService } from '../env/env.service';
 import { Request } from 'express';
 
 export interface TenantService {
@@ -7,14 +6,8 @@ export interface TenantService {
 }
 
 @Injectable()
-export class LocalTenantService implements TenantService {
-  private readonly tenantId: string;
-
-  constructor(envService: EnvService) {
-    this.tenantId = envService.getEnv().tenantId;
-  }
-
+export class EmptyTenantService implements TenantService {
   provideTenant(request: Request): Promise<string> {
-    return Promise.resolve(this.tenantId);
+    return Promise.resolve('');
   }
 }

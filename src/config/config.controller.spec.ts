@@ -7,13 +7,13 @@ import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config
 import { TenantService } from '../auth/tenant.service';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  FRAME_CONTEXT_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import { HeaderParserService } from '../services/header-parser.service';
 import { ServiceProvider } from './model/luigi.node';
-import { FrameContextProvider } from './context/frame-context-provider';
+import { PortalContextProvider } from './context/portal-context-provider';
 import {
   EntityContextProviders,
   EntityNotFoundException,
@@ -32,7 +32,7 @@ describe('ConfigController', () => {
   let requestMock: Request;
   let responseMock: Response;
   let tenantProvider: TenantService;
-  let frameContextProvider: FrameContextProvider;
+  let frameContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   let entityContextProviders: EntityContextProviders;
@@ -66,8 +66,8 @@ describe('ConfigController', () => {
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    frameContextProvider = module.get<FrameContextProvider>(
-      FRAME_CONTEXT_INJECTION_TOKEN
+    frameContextProvider = module.get<PortalContextProvider>(
+      PORTAL_CONTEXT_INJECTION_TOKEN
     );
 
     jest

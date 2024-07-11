@@ -20,7 +20,6 @@ In order to be able to use the library following environment properties have to 
 | Property name             | Description                                                                                                                                                                                    |
 |---------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | IDP_NAMES                 | Comma separated values of the name(s) of the Identity Providers (IDPs) used for authentication.                                                                                                |
-| TENANT_ID                 | The idp that will be used when running on local host.                                                                                                                                          |
 | BASE_DOMAINS_${idp}       | Comma separated values of base domains for the application.                                                                                                                                    |
 | AUTH_SERVER_URL_${idp}    | The URL for the authentication service provider specific to the idp name. This URL is used for retrieveing an authenticating a user.                                                           |
 | TOKEN_URL_${idp}          | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
@@ -32,6 +31,7 @@ In order to be able to use the library following environment properties have to 
 | Property name           | Description                                                                                                                                                                                                 |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HEALTH_CHECK_INTERVAL   | The interval in *milliseconds* at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                         |
+| LOGOUT_REDIRECT_URL   | The url to redirect user after logout action, by default */logout*.                                                          |
 | ENVIRONMENT             | This property indicates the environment in which the application is running, *local* indicates development environment.                                                                                     |
 | DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
 | FRONTEND_PORT           | Set the port number on which the frontend of the application will run in *local* environment.                                                                                                               |
@@ -42,7 +42,6 @@ Below is an example of a `.env` file for configuring the application:
 
 ```properties
 IDP_NAMES=app,dev
-TENANT_ID=123op89ujuy
 
 BASE_DOMAINS_APP=localhost,example.com
 AUTH_SERVER_URL_APP=https://example.com/auth
@@ -51,6 +50,7 @@ OIDC_CLIENT_ID_APP=app_client_id
 OIDC_CLIENT_SECRET_APP=app_client_secret
 
 HEALTH_CHECK_INTERVAL=
+LOGOUT_REDIRECT_URL="/logout"
 FEATURE_TOGGLES="foo=true,boo=false"
 ENVIRONMENT=local
 DEVELOPMENT_INSTANCE=true

@@ -10,7 +10,7 @@ export interface ServerAuthVariables {
 
 export interface EnvVariables {
   idpNames?: string[];
-  tenantId?: string;
+  logoutRedirectUrl?: string;
   healthCheckInterval?: number;
   isLocal?: boolean;
   frontendPort?: string;
@@ -28,8 +28,8 @@ export class EnvService {
   public getEnv(): EnvVariables {
     return {
       idpNames: this.getIdpNames(),
-      tenantId: process.env.TENANT_ID,
       healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL, 10),
+      logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
       frontendPort: process.env.FRONTEND_PORT || '4300',

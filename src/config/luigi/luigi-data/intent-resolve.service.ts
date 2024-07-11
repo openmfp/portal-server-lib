@@ -27,7 +27,7 @@ export class IntentResolveService {
   /**
    * Iterates over the given list of nodes and builds the intent target information recursively for each node.
    * @param nodes list of nodes to traverse
-   * @param inbounds list of semanticObject + action coming as an input from the CDM ["crossNavigation.inbounds"] configuration
+   * @param inbounds list of semanticObject + action coming as an input from the Content Configuration ["crossNavigation.inbounds"] configuration
    * @returns a list of LuigiIntents (intentMappings) and 'entityRelativePaths' built after the nodes recursive traversal.
    */
   private resolveIntentTargetsAndEntityPath(

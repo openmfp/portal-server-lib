@@ -1,31 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LocalTenantService, TenantService } from './tenant.service';
-import { EnvService } from '../env/env.service';
+import { EmptyTenantService, TenantService } from './tenant.service';
 
-describe('LocalTenantService', () => {
+describe('EmptyTenantService', () => {
   let service: TenantService;
-  let envService: EnvService;
 
   beforeEach(async () => {
-    const mockEnvService = {
-      getEnv: jest.fn().mockReturnValue({ tenantId: 'test-tenant' }),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LocalTenantService,
-        { provide: EnvService, useValue: mockEnvService },
-      ],
+      providers: [EmptyTenantService],
     }).compile();
 
-    service = module.get<TenantService>(LocalTenantService);
-    envService = module.get<EnvService>(EnvService);
+    service = module.get<TenantService>(EmptyTenantService);
   });
 
-  it('should return the tenantId from EnvService', async () => {
+  it('should return the empty tenantId', async () => {
     const tenantId = await service.provideTenant({});
 
-    expect(tenantId).toEqual('test-tenant');
-    expect(envService.getEnv).toHaveBeenCalledTimes(1);
+    expect(tenantId).toEqual('');
   });
 });
