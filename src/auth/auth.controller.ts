@@ -44,7 +44,6 @@ export class AuthController {
           response,
           code.toString()
         );
-      this.logger.debug('retrieving token successful');
       return await this.handleTokenRetrieval(
         request,
         response,
@@ -79,7 +78,6 @@ export class AuthController {
           response,
           dxpAuthCookie
         );
-      this.logger.debug('retrieving refreshing auth successful');
       return await this.handleTokenRetrieval(
         request,
         response,
