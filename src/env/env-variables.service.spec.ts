@@ -1,23 +1,70 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { EmptyEnvVariablesService } from './env-variables.service';
+import { EnvVariablesServiceImpl } from './env-variables.service';
+import { AuthDataService, AuthTokenResponse } from '../auth';
+import { Request, Response } from 'express';
 
-describe('EmptyEnvVariablesService', () => {
-  let service: EmptyEnvVariablesService;
+describe('EnvVariablesServiceImpl', () => {
+  let envVariablesService: EnvVariablesServiceImpl;
+  let authDataServiceMock: jest.Mocked<AuthDataService>;
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [EmptyEnvVariablesService],
-    }).compile();
+  beforeEach(() => {
+    authDataServiceMock = {
+      provideAuthData: jest.fn(),
+    } as any;
 
-    service = module.get<EmptyEnvVariablesService>(EmptyEnvVariablesService);
+    envVariablesService = new EnvVariablesServiceImpl(authDataServiceMock);
+
+    mockRequest = {};
+    mockResponse = {};
   });
 
-  it('should return an empty object', async () => {
-    const mockRequest = {};
-    const mockResponse = {};
+  describe('getEnv', () => {
+    it('should call authDataService.provideAuthData', async () => {
+      await envVariablesService.getEnv(
+        mockRequest as Request,
+        mockResponse as Response
+      );
 
-    const response = await service.getEnv(mockRequest, mockResponse);
+      expect(authDataServiceMock.provideAuthData).toHaveBeenCalledWith(
+        mockRequest,
+        mockResponse
+      );
+    });
 
-    expect(response).toEqual({});
+    it('should return the result from authDataService.provideAuthData', async () => {
+      const mockAuthData = {
+        access_token: 'testAccessToken',
+        refresh_token: 'testRefreshToken',
+      } as AuthTokenResponse;
+      authDataServiceMock.provideAuthData.mockResolvedValue(mockAuthData);
+
+      const result = await envVariablesService.getEnv(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(result).toEqual(mockAuthData);
+    });
+
+    it('should handle errors from authDataService.provideAuthData', async () => {
+      const mockError = new Error('Auth data error');
+      authDataServiceMock.provideAuthData.mockRejectedValue(mockError);
+
+      await expect(
+        envVariablesService.getEnv(
+          mockRequest as Request,
+          mockResponse as Response
+        )
+      ).rejects.toThrow('Auth data error');
+    });
+
+    it('should return a promise', () => {
+      const result = envVariablesService.getEnv(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(result).toBeInstanceOf(Promise);
+    });
   });
 });

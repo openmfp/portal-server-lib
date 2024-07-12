@@ -59,7 +59,6 @@ export interface LuigiIntent {
 export interface IntentSpecification {
   type: string;
   inboundId: string;
-  // the actual intent and its pathSegment is resolved dynamically after parsing based on inboundId mapped in [sap.app.crossNavigation.inbounds]
   resolvedIntent?: LuigiIntent;
 }
 

@@ -1,10 +1,19 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
-import { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
-import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
-import { EnvService } from './env/env.service';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import {
+  AuthCallback,
+  AuthController,
+  AuthDataService,
+  AuthTokenService,
+  NoopAuthCallback,
+  EmptyTenantService,
+  TenantService,
+} from './auth';
+import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -15,31 +24,28 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
-import { HealthController } from './health/health.controller';
-import { EmptyHealthChecker, HealthChecker } from './health/health-checker';
-import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
-import { EnvController } from './env/env.controller';
+import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import {
-  EmptyEnvVariablesService,
+  EnvController,
+  EnvVariablesServiceImpl,
   EnvVariablesService,
-} from './env/env-variables.service';
-import { LogoutController } from './logout/logout.controller';
-import { NoopLogoutService } from './logout/noop-logout.service';
-import { LogoutCallback } from './logout/logout-callback';
-import { ConfigController } from './config/config.controller';
-import { PortalContextProvider } from './config/context/portal-context-provider';
-import { EntityContextProviders } from './config/context/entity-context-provider';
-import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
-import { EmptyTenantService, TenantService } from './auth/tenant.service';
-import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
-import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { HeaderParserService } from './services/header-parser.service';
+  EnvService,
+} from './env';
+import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
 import {
+  IntentResolveService,
+  LuigiDataService,
+  ContentConfigurationLuigiDataService,
+  ConfigController,
+  PortalContextProvider,
+  EntityContextProviders,
+  EmptyPortalContextProvider,
+  EnvFeatureTogglesProvider,
+  LuigiConfigNodesService,
   EmptyServiceProviderService,
   ServiceProviderService,
-} from './config/context/service-provider';
-import { ServeStaticModule } from '@nestjs/serve-static';
+} from './config';
+import { HeaderParserService, CookiesService } from './services';
 
 export interface PortalModuleOptions {
   /**
@@ -99,12 +105,18 @@ export interface PortalModuleOptions {
    * If it is not provided, no sources will be served.
    */
   frontendDistSources?: string;
+
+  /**
+   * Auth callback handler service.
+   */
+  authCallbackProvider?: Type<AuthCallback>;
 }
 
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
     const controllers: any[] = [
+      AuthController,
       HealthController,
       EnvController,
       LogoutController,
@@ -112,18 +124,25 @@ export class PortalModule {
     ];
 
     let providers: Provider[] = [
-      EnvService,
       Logger,
-      LuigiConfigNodesService,
+      EnvService,
       HeaderParserService,
+      CookiesService,
+      LuigiConfigNodesService,
       IntentResolveService,
+      AuthDataService,
+      AuthTokenService,
+      {
+        provide: AUTH_CALLBACK_INJECTION_TOKEN,
+        useClass: options.authCallbackProvider || NoopAuthCallback,
+      },
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
         useClass: options.healthChecker || EmptyHealthChecker,
       },
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
-        useClass: options.envVariablesProvider || EmptyEnvVariablesService,
+        useClass: options.envVariablesProvider || EnvVariablesServiceImpl,
       },
       {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,

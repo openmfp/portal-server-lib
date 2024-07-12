@@ -2,15 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EnvController } from './env.controller';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
-import { EmptyEnvVariablesService } from './env-variables.service';
+import { EnvVariablesServiceImpl } from './env-variables.service';
 import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens';
 
 describe('EnvController', () => {
   let controller: EnvController;
-  let envVariablesProvider: MockProxy<EmptyEnvVariablesService>;
+  let envVariablesProvider: MockProxy<EnvVariablesServiceImpl>;
 
   beforeEach(async () => {
-    envVariablesProvider = mock<EmptyEnvVariablesService>();
+    envVariablesProvider = mock<EnvVariablesServiceImpl>();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EnvController],
       providers: [
