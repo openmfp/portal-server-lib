@@ -1,10 +1,19 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
+import { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
+import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 import { EnvService } from './env/env.service';
 import {
+  ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
+  FEATURE_TOGGLES_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
   LOGOUT_CALLBACK_INJECTION_TOKEN,
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+  TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { HealthController } from './health/health.controller';
@@ -18,6 +27,19 @@ import {
 import { LogoutController } from './logout/logout.controller';
 import { NoopLogoutService } from './logout/noop-logout.service';
 import { LogoutCallback } from './logout/logout-callback';
+import { ConfigController } from './config/config.controller';
+import { PortalContextProvider } from './config/context/portal-context-provider';
+import { EntityContextProviders } from './config/context/entity-context-provider';
+import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
+import { EmptyTenantService, TenantService } from './auth/tenant.service';
+import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
+import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { HeaderParserService } from './services/header-parser.service';
+import {
+  EmptyServiceProviderService,
+  ServiceProviderService,
+} from './config/context/service-provider';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 export interface PortalModuleOptions {
   /**
@@ -41,6 +63,42 @@ export interface PortalModuleOptions {
    * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
    */
   logoutCallbackProvider?: Type<LogoutCallback>;
+
+  /**
+   * Service providing tenant id.
+   */
+  tenantProvider?: Type<TenantService>;
+
+  /**
+   * Makes it possible to extend the luigi context of every luigi node with contextValues
+   * The values will be available in the context under the property 'frameContext'
+   */
+  frameContextProvider?: Type<PortalContextProvider>;
+
+  /**
+   * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
+   * entityContextProviders is map from the entity id to the provider. The provider will be loaded via dependency injection.
+   * You can provide a class or a string that can gets resolved to a class. This class must implement the interface EntityContextProvider.
+   * The values will be available in the context under the property 'entityContext'
+   */
+  entityContextProviders?: EntityContextProviders;
+
+  /**
+   * A service provider service is responsible for fetching micro-service providers.
+   * The micro-frontends need to specify a url.
+   */
+  serviceProviderService?: Type<ServiceProviderService>;
+
+  /**
+   * A custom service to process configuration coming from service providers
+   */
+  luigiDataService?: Type<LuigiDataService>;
+
+  /**
+   * The path to the built sources of the frontend ui. They will be served statically, so the html site is on the same host.
+   * If it is not provided, no sources will be served.
+   */
+  frontendDistSources?: string;
 }
 
 @Module({})
@@ -50,11 +108,15 @@ export class PortalModule {
       HealthController,
       EnvController,
       LogoutController,
+      ConfigController,
     ];
 
     let providers: Provider[] = [
       EnvService,
       Logger,
+      LuigiConfigNodesService,
+      HeaderParserService,
+      IntentResolveService,
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
         useClass: options.healthChecker || EmptyHealthChecker,
@@ -67,6 +129,31 @@ export class PortalModule {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
         useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
+      {
+        provide: TENANT_PROVIDER_INJECTION_TOKEN,
+        useClass: options.tenantProvider || EmptyTenantService,
+      },
+      {
+        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
+        useClass: options.frameContextProvider || EmptyPortalContextProvider,
+      },
+      {
+        provide: ENTITY_CONTEXT_INJECTION_TOKEN,
+        useValue: options.entityContextProviders || {},
+      },
+      {
+        provide: FEATURE_TOGGLES_INJECTION_TOKEN,
+        useClass: EnvFeatureTogglesProvider,
+      },
+      {
+        provide: SERVICE_PROVIDER_INJECTION_TOKEN,
+        useClass: options.serviceProviderService || EmptyServiceProviderService,
+      },
+      {
+        provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+        useClass:
+          options.luigiDataService || ContentConfigurationLuigiDataService,
+      },
     ];
 
     if (options.additionalProviders) {
@@ -76,6 +163,15 @@ export class PortalModule {
     const moduleImports: Array<
       Type | DynamicModule | Promise<DynamicModule> | ForwardReference
     > = [HttpModule.register({})];
+
+    if (options.frontendDistSources) {
+      moduleImports.push(
+        ServeStaticModule.forRoot({
+          rootPath: options.frontendDistSources,
+          exclude: ['/rest'],
+        })
+      );
+    }
 
     return {
       module: PortalModule,

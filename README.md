@@ -35,19 +35,21 @@ In order to be able to use the library following environment properties have to 
 | DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
 | FRONTEND_PORT           | Set the port number on which the frontend of the application will run in *local* environment.                                                                                                               |
 | VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
+| FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                            |
 
 Below is an example of a `.env` file for configuring the application:
 
 ```properties
-IDP_NAMES=app
+IDP_NAMES=app,dev
 
-BASE_DOMAINS_APP=localhost
+BASE_DOMAINS_APP=localhost,example.com
 IAS_TENANT_URL_APP=https://example.com
 OIDC_CLIENT_ID_APP=app_client_id
 OIDC_CLIENT_SECRET_APP=app_client_secret
 
 HEALTH_CHECK_INTERVAL=
 LOGOUT_REDIRECT_URL="/logout"
+FEATURE_TOGGLES="foo=true,boo=false"
 ENVIRONMENT=local
 DEVELOPMENT_INSTANCE=true
 FRONTEND_PORT=4300
