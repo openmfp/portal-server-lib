@@ -1,9 +1,13 @@
 import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { ContentConfigurationLuigiDataService } from './config/luigi/luigi-data/content-configuration-luigi-data.service';
+import { IntentResolveService } from './config/luigi/luigi-data/intent-resolve.service';
+import { LuigiDataService } from './config/luigi/luigi-data/luigi-data.service';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import {
+  ENTITY_CONTEXT_INJECTION_TOKEN,
   AuthCallback,
   AuthController,
   AuthDataService,
@@ -48,6 +52,19 @@ import {
   ServiceProviderService,
 } from './config';
 import { HeaderParserService, CookiesService } from './services';
+import { ConfigController } from './config/config.controller';
+import { PortalContextProvider } from './config/context/portal-context-provider';
+import { EntityContextProviders } from './config/context/entity-context-provider';
+import { EmptyPortalContextProvider } from './config/context/empty-portal-context-provider';
+import { EmptyTenantService, TenantService } from './auth/tenant.service';
+import { EnvFeatureTogglesProvider } from './config/context/feature-toggles-provider';
+import { LuigiConfigNodesService } from './config/luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { HeaderParserService } from './services/header-parser.service';
+import {
+  EmptyServiceProviderService,
+  ServiceProviderService,
+} from './config/context/service-provider';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 export interface PortalModuleOptions {
   /**
@@ -92,7 +109,7 @@ export interface PortalModuleOptions {
   entityContextProviders?: EntityContextProviders;
 
   /**
-   * A service provider service is responsible for fetching microservice providers.
+   * A service provider service is responsible for fetching micro-service providers.
    * The micro-frontends need to specify a url.
    */
   serviceProviderService?: Type<ServiceProviderService>;
