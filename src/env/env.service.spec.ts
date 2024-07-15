@@ -2,14 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
 import { EnvService } from './env.service';
 import { Request } from 'express';
+import { HttpService } from '@nestjs/axios';
 
 describe('EnvService', () => {
   let service: EnvService;
+  let httpServiceMock: HttpService;
 
   beforeEach(async () => {
+    httpServiceMock = mock<HttpService>();
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EnvService],
-    }).compile();
+      providers: [EnvService, HttpService],
+    })
+      .overrideProvider(HttpService)
+      .useValue(httpServiceMock)
+      .compile();
 
     service = module.get<EnvService>(EnvService);
   });
@@ -135,63 +141,63 @@ describe('EnvService', () => {
       process.env['OIDC_CLIENT_SECRET_HYPERSPACE'] = clientSecretHyperspace;
     });
 
-    it('should map the idp to the url for foo', () => {
+    it('should map the idp to the url for foo', async () => {
       const request = mock<Request>();
       request.hostname = 'foo.hyper.space';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdFoo);
       expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlFoo);
     });
 
-    it('should map the idp to the token url for foo', () => {
+    it('should map the idp to the token url for foo', async () => {
       const request = mock<Request>();
       request.hostname = 'foo.hyper.space';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdFoo);
       expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlFoo);
     });
 
-    it('should map the idp to the token url for app', () => {
+    it('should map the idp to the token url for app', async () => {
       const request = mock<Request>();
       request.hostname = 'app.k8s.ondemand.com';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdApp);
       expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlAPP);
     });
 
-    it('should map the idp of foo to a different base url', () => {
+    it('should map the idp of foo to a different base url', async () => {
       const request = mock<Request>();
       request.hostname = 'foo.app.k8s.ondemand.com';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdFoo);
       expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlFoo);
       expect(envWithAuth.clientSecret).toBe(clientSecretFoo);
     });
 
-    it('should return the default tenant, if a host name is directly matched', () => {
+    it('should return the default tenant, if a host name is directly matched', async () => {
       const request = mock<Request>();
       request.hostname = 'app.k8s.ondemand.com';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdApp);
       expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlAPP);
       expect(envWithAuth.clientSecret).toBe(clientSecretApp);
     });
 
-    it('should return the default tenant, for a different host with multiple names is directly matched', () => {
+    it('should return the default tenant, for a different host with multiple names is directly matched', async () => {
       const request = mock<Request>();
       request.hostname = 'hyper.space';
 
-      const envWithAuth = service.getCurrentAuthEnv(request);
+      const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.clientId).toBe(clientIdHyperspace);
       expect(envWithAuth.oauthServerUrl).toBe(oauthServerUrlHyperspace);
@@ -202,8 +208,8 @@ describe('EnvService', () => {
       const request = mock<Request>();
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
-      expect(function () {
-        service.getCurrentAuthEnv(request);
+      expect(async function () {
+        await service.getCurrentAuthEnv(request);
       }).toThrow("the idp 'not-existing' is not configured!");
     });
 
@@ -212,8 +218,8 @@ describe('EnvService', () => {
       request.hostname = 'app.k8s.ondemand.com';
       delete process.env[`TOKEN_URL_APP`];
 
-      expect(function () {
-        service.getCurrentAuthEnv(request);
+      expect(async function () {
+        await service.getCurrentAuthEnv(request);
       }).toThrow(Error);
     });
 
@@ -221,8 +227,8 @@ describe('EnvService', () => {
       const request = mock<Request>();
       request.hostname = 'app-too.foo.com';
 
-      expect(function () {
-        service.getCurrentAuthEnv(request);
+      expect(async function () {
+        await service.getCurrentAuthEnv(request);
       }).toThrow(
         "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
       );
@@ -232,8 +238,8 @@ describe('EnvService', () => {
       const request = mock<Request>();
       request.hostname = 'not-configured.app.k8s.ondemand.com';
 
-      expect(function () {
-        service.getCurrentAuthEnv(request);
+      expect(async function () {
+        await service.getCurrentAuthEnv(request);
       }).toThrow(
         "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false"
       );

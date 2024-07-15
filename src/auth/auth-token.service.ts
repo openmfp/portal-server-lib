@@ -35,7 +35,7 @@ export class AuthTokenService {
     response: Response,
     code: string
   ): Promise<AuthTokenResponse> {
-    const currentAuthEnv = this.envService.getCurrentAuthEnv(request);
+    const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
     const redirectUri = this.getRedirectUri(request);
 
     const body = new URLSearchParams({
@@ -58,7 +58,7 @@ export class AuthTokenService {
     response: Response,
     refreshToken: string
   ): Promise<AuthTokenResponse> {
-    const currentAuthEnv = this.envService.getCurrentAuthEnv(request);
+    const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
 
     const body = new URLSearchParams({
       grant_type: 'refresh_token',

@@ -82,7 +82,7 @@ describe('AuthTokenService', () => {
 
       it('should set the cookies', async () => {
         // Arrange
-        nock(envService.getCurrentAuthEnv(requestMock).oauthTokenUrl)
+        nock((await envService.getCurrentAuthEnv(requestMock)).oauthTokenUrl)
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -102,7 +102,7 @@ describe('AuthTokenService', () => {
 
       it('should not set the cookies, authorization exception', async () => {
         // Arrange
-        nock(envService.getCurrentAuthEnv(requestMock).oauthTokenUrl)
+        nock((await envService.getCurrentAuthEnv(requestMock)).oauthTokenUrl)
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -126,7 +126,7 @@ describe('AuthTokenService', () => {
     describe('token for code - authorization_code flow', () => {
       it('should set the cookies', async () => {
         // Arrange
-        const env = envService.getCurrentAuthEnv(requestMock);
+        const env = await envService.getCurrentAuthEnv(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
@@ -152,7 +152,7 @@ describe('AuthTokenService', () => {
       it('should set the cookies for none local env', async () => {
         // Arrange
         process.env['ENVIRONMENT'] = 'prod';
-        const env = envService.getCurrentAuthEnv(requestMock);
+        const env = await envService.getCurrentAuthEnv(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
@@ -178,7 +178,7 @@ describe('AuthTokenService', () => {
 
     it('handles an auth server error', async () => {
       // Arrange
-      const env = envService.getCurrentAuthEnv(requestMock);
+      const env = await envService.getCurrentAuthEnv(requestMock);
       const code = 'secret code';
 
       nock(env.oauthTokenUrl)

@@ -7,6 +7,7 @@ import { NoopLogoutService } from './noop-logout.service';
 import { LogoutCallback } from './logout-callback';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { EnvService } from '../env';
+import { HttpModule } from '@nestjs/axios';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
@@ -30,6 +31,7 @@ describe('LogoutController', () => {
           useValue: logoutCallbackMock,
         },
       ],
+      imports: [HttpModule],
     }).compile();
 
     controller = module.get<LogoutController>(LogoutController);

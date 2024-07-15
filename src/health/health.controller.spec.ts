@@ -5,6 +5,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from '@nestjs/common';
 import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
 import { HealthChecker } from './health-checker';
+import { HttpModule } from '@nestjs/axios';
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -25,6 +26,7 @@ describe('HealthController', () => {
           useValue: healthChecker,
         },
       ],
+      imports: [HttpModule],
     }).compile();
     controller = module.get<HealthController>(HealthController);
     envService = module.get<EnvService>(EnvService);

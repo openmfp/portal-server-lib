@@ -1,5 +1,8 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { Request } from 'express';
+import { catchError, firstValueFrom } from 'rxjs';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;
@@ -23,8 +26,15 @@ interface BaseDomainsToIdp {
   baseDomain: string;
 }
 
+interface OIDC {
+  authorization_endpoint: string;
+  token_endpoint: string;
+}
+
 @Injectable()
 export class EnvService {
+  constructor(private httpService: HttpService) {}
+
   public getEnv(): EnvVariables {
     return {
       idpNames: this.getIdpNames(),
@@ -53,13 +63,15 @@ export class EnvService {
     return result;
   }
 
-  public getCurrentAuthEnv(request: Request): ServerAuthVariables {
+  public async getCurrentAuthEnv(
+    request: Request
+  ): Promise<ServerAuthVariables> {
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
       (x) => x.baseDomain === request.hostname
     );
     if (defaultTenant) {
-      return this.getAuthEnv(defaultTenant.idpName);
+      return await this.getAuthEnv(defaultTenant.idpName);
     }
 
     for (const baseDomainToIdp of baseDomainsToIdps) {
@@ -70,7 +82,7 @@ export class EnvService {
       }
 
       if (regExpExecArray.length > 1) {
-        return this.getAuthEnv(regExpExecArray[1]);
+        return await this.getAuthEnv(regExpExecArray[1]);
       }
     }
 
@@ -83,7 +95,35 @@ export class EnvService {
     );
   }
 
-  private getAuthEnv(idpName: string): ServerAuthVariables {
+  private async getOIDC(): Promise<OIDC> {
+    const oidcUrl = process.env[`DISCOVERY_ENDPOINT_SAP`];
+    if (!oidcUrl) return null;
+
+    const oidcResult = await firstValueFrom(
+      this.httpService.get<OIDC>(oidcUrl).pipe(
+        catchError((e: AxiosError) => {
+          throw new Error(
+            `Unexpected error from openid-configuration: ${e.toString()}`
+          );
+        })
+      )
+    );
+
+    if (oidcResult.status === 200) {
+      const oidc = oidcResult.data;
+
+      if (oidc.authorization_endpoint && oidc.token_endpoint) {
+        return oidc;
+      }
+
+      throw new Error(
+        `Unexpected response from openid-configuration: ${JSON.stringify(oidc)}`
+      );
+    }
+    return null;
+  }
+
+  private async getAuthEnv(idpName: string): Promise<ServerAuthVariables> {
     const env = this.getEnv();
 
     if (!env.idpNames.includes(idpName)) {
@@ -91,8 +131,17 @@ export class EnvService {
     }
 
     const idpEnvName = this.getIdpEnvName(idpName);
-    const oauthServerUrl = process.env[`AUTH_SERVER_URL_${idpEnvName}`];
-    const oauthTokenUrl = process.env[`TOKEN_URL_${idpEnvName}`];
+
+    const oidc = await this.getOIDC();
+    const oauthServerUrl =
+      oidc && oidc.authorization_endpoint
+        ? oidc.authorization_endpoint
+        : process.env[`AUTH_SERVER_URL_${idpEnvName}`];
+    const oauthTokenUrl =
+      oidc && oidc.token_endpoint
+        ? oidc.token_endpoint
+        : process.env[`TOKEN_URL_${idpEnvName}`];
+
     const clientId = process.env[`OIDC_CLIENT_ID_${idpEnvName}`];
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
     const clientSecret = process.env[clientSecretEnvVar];
