@@ -14,5 +14,13 @@ module.exports = {
       },
     ],
   ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 95,
+      statements: -10,
+    },
+  },
   coverageDirectory: '../test-run-reports/coverage/unit',
 };
