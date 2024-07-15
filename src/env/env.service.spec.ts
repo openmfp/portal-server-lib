@@ -204,43 +204,37 @@ describe('EnvService', () => {
       expect(envWithAuth.clientSecret).toBe(clientSecretHyperspace);
     });
 
-    it('should throw when the idp is not existing', () => {
+    it('should throw when the idp is not existing', async () => {
       const request = mock<Request>();
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
-      expect(async function () {
-        await service.getCurrentAuthEnv(request);
-      }).toThrow("the idp 'not-existing' is not configured!");
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
+        "the idp 'not-existing' is not configured!"
+      );
     });
 
-    it('should throw when the token url is not configured is not existing', () => {
+    it('should throw when the token url is not configured is not existing', async () => {
       const request = mock<Request>();
       request.hostname = 'app.k8s.ondemand.com';
       delete process.env[`TOKEN_URL_APP`];
 
-      expect(async function () {
-        await service.getCurrentAuthEnv(request);
-      }).toThrow(Error);
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(Error);
     });
 
-    it('should throw when the domain is not existing', () => {
+    it('should throw when the domain is not existing', async () => {
       const request = mock<Request>();
       request.hostname = 'app-too.foo.com';
 
-      expect(async function () {
-        await service.getCurrentAuthEnv(request);
-      }).toThrow(
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
         "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
       );
     });
 
-    it('should throw when the idp is not properly configured', () => {
+    it('should throw when the idp is not properly configured', async () => {
       const request = mock<Request>();
       request.hostname = 'not-configured.app.k8s.ondemand.com';
 
-      expect(async function () {
-        await service.getCurrentAuthEnv(request);
-      }).toThrow(
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
         "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false"
       );
     });
