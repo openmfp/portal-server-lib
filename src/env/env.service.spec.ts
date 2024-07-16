@@ -142,7 +142,7 @@ describe('EnvService', () => {
       process.env['TOKEN_URL_HYPERSPACE'] = oauthTokenUrlHyperspace;
       process.env['OIDC_CLIENT_ID_HYPERSPACE'] = clientIdHyperspace;
       process.env['OIDC_CLIENT_SECRET_HYPERSPACE'] = clientSecretHyperspace;
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = '';
+      delete process.env['DISCOVERY_ENDPOINT_SAP_APP'];
     };
 
     beforeEach(() => setEnvVariables());
@@ -223,7 +223,6 @@ describe('EnvService', () => {
       const request = mock<Request>();
       request.hostname = 'app.hyper.space';
 
-      delete process.env['DISCOVERY_ENDPOINT_SAP_APP'];
       const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.oauthServerUrl).toEqual('www.app.com');
