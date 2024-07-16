@@ -95,8 +95,8 @@ export class EnvService {
     );
   }
 
-  private async getOIDC(): Promise<OIDC> {
-    const oidcUrl = process.env[`DISCOVERY_ENDPOINT_SAP`];
+  private async getOIDC(idpEnvName: string): Promise<OIDC> {
+    const oidcUrl = process.env[`DISCOVERY_ENDPOINT_SAP_${idpEnvName}`];
     if (!oidcUrl) return null;
 
     const oidcResult = await firstValueFrom(
@@ -132,7 +132,7 @@ export class EnvService {
 
     const idpEnvName = this.getIdpEnvName(idpName);
 
-    const oidc = await this.getOIDC();
+    const oidc = await this.getOIDC(idpEnvName);
     const oauthServerUrl =
       oidc && oidc.authorization_endpoint
         ? oidc.authorization_endpoint
