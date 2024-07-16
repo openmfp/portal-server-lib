@@ -13,13 +13,6 @@ import {
   TenantService,
 } from './auth';
 import {
-  ConfigController,
-  IntentResolveService,
-  LuigiDataService,
-  ContentConfigurationLuigiDataService,
-} from './config';
-import { EnvService } from './env';
-import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
@@ -36,9 +29,14 @@ import {
   EnvController,
   EnvVariablesServiceImpl,
   EnvVariablesService,
+  EnvService,
 } from './env';
 import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
 import {
+  IntentResolveService,
+  LuigiDataService,
+  ContentConfigurationLuigiDataService,
+  ConfigController,
   PortalContextProvider,
   EntityContextProviders,
   EmptyPortalContextProvider,
@@ -92,7 +90,7 @@ export interface PortalModuleOptions {
   entityContextProviders?: EntityContextProviders;
 
   /**
-   * A service provider service is responsible for fetching microservice providers.
+   * A service provider service is responsible for fetching micro-service providers.
    * The micro-frontends need to specify a url.
    */
   serviceProviderService?: Type<ServiceProviderService>;
