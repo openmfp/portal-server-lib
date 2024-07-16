@@ -55,4 +55,18 @@ describe('AuthDataService', () => {
       'foo'
     );
   });
+
+  it('should log the error and return undefined if there is an error', async () => {
+    // arrange
+    const request = mock<Request>();
+    const response = mock<Response>();
+    cookiesService.getAuthCookie.mockReturnValue('foo');
+    authTokenService.exchangeTokenForRefreshToken.mockRejectedValue('error');
+
+    // act
+    const result = await service.provideAuthData(request, response);
+
+    // assert
+    expect(result).toBeUndefined();
+  });
 });

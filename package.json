@@ -18,7 +18,7 @@
     "build:watch": "mkdir dist && nodemon --ignore dist --ext js,yml,yaml,ts,html,css,scss,json,md --exec \"rimraf dist && npm run build && yalc publish --push --sig\"",
     "lint": "eslint \"./**/*.ts\"",
     "lint:fix": "eslint \"./**/*.ts\" --fix",
-    "test": "npm run test:unit -- --coverage && npm run test:integration -- --coverage",
+    "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --detectOpenHandles",
     "test:integration": "jest --config ./integration-tests/jest.config.ts"
   },
