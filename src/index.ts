@@ -5,3 +5,4 @@ export * from './auth';
 export * from './env';
 export * from './config';
 export * from './services';
+export * from './logout';
