@@ -63,8 +63,8 @@ export class AuthController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<AuthTokenResponse> {
-    const dxpAuthCookie = this.cookiesService.getAuthCookie(request);
-    if (!dxpAuthCookie) {
+    const authCookie = this.cookiesService.getAuthCookie(request);
+    if (!authCookie) {
       throw new HttpException(
         'the user is not logged in',
         HttpStatus.BAD_REQUEST
@@ -76,7 +76,7 @@ export class AuthController {
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
-          dxpAuthCookie
+          authCookie
         );
       return await this.handleTokenRetrieval(
         request,
