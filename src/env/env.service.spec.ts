@@ -5,19 +5,20 @@ import { Request } from 'express';
 import { HttpService } from '@nestjs/axios';
 import { of, throwError } from 'rxjs';
 import { AxiosError } from 'axios';
+import { DiscoveryService } from '.';
 
 describe('EnvService', () => {
   let service: EnvService;
-  let httpServiceMock: HttpService;
+  let discoveryServiceMock: DiscoveryService;
 
   beforeEach(async () => {
-    httpServiceMock = mock<HttpService>();
+    discoveryServiceMock = mock<DiscoveryService>();
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EnvService, HttpService],
+      providers: [EnvService, DiscoveryService],
     })
-      .overrideProvider(HttpService)
-      .useValue(httpServiceMock)
+      .overrideProvider(DiscoveryService)
+      .useValue(discoveryServiceMock)
       .compile();
 
     service = module.get<EnvService>(EnvService);
@@ -142,32 +143,26 @@ describe('EnvService', () => {
       process.env['TOKEN_URL_HYPERSPACE'] = oauthTokenUrlHyperspace;
       process.env['OIDC_CLIENT_ID_HYPERSPACE'] = clientIdHyperspace;
       process.env['OIDC_CLIENT_SECRET_HYPERSPACE'] = clientSecretHyperspace;
-      delete process.env['DISCOVERY_ENDPOINT_SAP_APP'];
     };
 
     beforeEach(() => setEnvVariables());
     afterEach(() => {
       setEnvVariables();
-      httpServiceMock = mock<HttpService>();
+      discoveryServiceMock = mock<DiscoveryService>();
     });
 
-    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT_SAP', async () => {
+    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT_SAP when discoveryService returns proper values', async () => {
       const request = mock<Request>();
       request.hostname = 'app.hyper.space';
 
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
-      httpServiceMockGet.mockReturnValue(
-        of({
-          data: {
-            authorization_endpoint: 'example.com/authorization_endpoint',
-            token_endpoint: 'example.com/token_endpoint',
-          },
-          status: 200,
-          statusText: null,
-          headers: null,
-          config: null,
-        })
+      const discoveryServiceMockGetOIDC = jest.spyOn(
+        discoveryServiceMock,
+        'getOIDC'
       );
+      discoveryServiceMockGetOIDC.mockResolvedValue({
+        authorization_endpoint: 'example.com/authorization_endpoint',
+        token_endpoint: 'example.com/token_endpoint',
+      });
 
       process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
       const envWithAuth = await service.getCurrentAuthEnv(request);
@@ -178,104 +173,21 @@ describe('EnvService', () => {
       expect(envWithAuth.oauthTokenUrl).toEqual('example.com/token_endpoint');
     });
 
-    it('should not get oauthServerUrl and oauthTokenUrl and throw error when httpService returns error', async () => {
+    it('should get oauthServerUrl and oauthTokenUrl from env when discoveryService returns null ', async () => {
       const request = mock<Request>();
       request.hostname = 'app.hyper.space';
 
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
-      httpServiceMockGet.mockImplementation(() => {
-        return throwError(() => new AxiosError('error'));
-      });
-
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
-
-      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        'Unexpected error from openid-configuration: AxiosError: error'
+      const discoveryServiceMockGetOIDC = jest.spyOn(
+        discoveryServiceMock,
+        'getOIDC'
       );
-    });
-
-    it('should get oauthServerUrl and oauthTokenUrl from env when DISCOVERY_ENDPOINT_SAP endpoint returns with 101 status', async () => {
-      const request = mock<Request>();
-      request.hostname = 'app.hyper.space';
-
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
-      httpServiceMockGet.mockReturnValue(
-        of({
-          data: {
-            authorization_endpoint: 'example.com/authorization_endpoint',
-            token_endpoint: 'example.com/token_endpoint',
-          },
-          status: 101,
-          statusText: null,
-          headers: null,
-          config: null,
-        })
-      );
+      discoveryServiceMockGetOIDC.mockResolvedValue(null);
 
       process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
       const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.oauthServerUrl).toEqual('www.app.com');
       expect(envWithAuth.oauthTokenUrl).toEqual('www.app.token.com');
-    });
-
-    it('should get oauthServerUrl and oauthTokenUrl from env when DISCOVERY_ENDPOINT_SAP does not exist', async () => {
-      const request = mock<Request>();
-      request.hostname = 'app.hyper.space';
-
-      const envWithAuth = await service.getCurrentAuthEnv(request);
-
-      expect(envWithAuth.oauthServerUrl).toEqual('www.app.com');
-      expect(envWithAuth.oauthTokenUrl).toEqual('www.app.token.com');
-    });
-
-    it('should not get oauthTokenUrl form DISCOVERY_ENDPOINT_SAP and throw error', async () => {
-      const request = mock<Request>();
-      request.hostname = 'app.hyper.space';
-
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
-      httpServiceMockGet.mockReturnValue(
-        of({
-          data: {
-            token_endpoint: 'example.com/token_endpoint',
-          },
-          status: 200,
-          statusText: null,
-          headers: null,
-          config: null,
-        })
-      );
-
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
-
-      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        'Unexpected response from openid-configuration: {"token_endpoint":"example.com/token_endpoint"}'
-      );
-    });
-
-    it('should not get oauthServerUrl form DISCOVERY_ENDPOINT_SAP and throw error', async () => {
-      const request = mock<Request>();
-      request.hostname = 'app.hyper.space';
-
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
-      httpServiceMockGet.mockReturnValue(
-        of({
-          data: {
-            authorization_endpoint: 'example.com/authorization_endpoint',
-            token_endpoint: null,
-          },
-          status: 200,
-          statusText: null,
-          headers: null,
-          config: null,
-        })
-      );
-
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
-
-      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        'Unexpected response from openid-configuration: {"authorization_endpoint":"example.com/authorization_endpoint","token_endpoint":null}'
-      );
     });
 
     it('should map the idp to the url for foo', async () => {

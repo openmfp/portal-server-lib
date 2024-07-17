@@ -1,8 +1,6 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { AxiosError } from 'axios';
 import { Request } from 'express';
-import { catchError, firstValueFrom } from 'rxjs';
+import { DiscoveryService } from '.';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;
@@ -26,14 +24,9 @@ interface BaseDomainsToIdp {
   baseDomain: string;
 }
 
-interface OIDC {
-  authorization_endpoint: string;
-  token_endpoint: string;
-}
-
 @Injectable()
 export class EnvService {
-  constructor(private httpService: HttpService) {}
+  constructor(private discoveryService: DiscoveryService) {}
 
   public getEnv(): EnvVariables {
     return {
@@ -95,34 +88,6 @@ export class EnvService {
     );
   }
 
-  private async getOIDC(idpEnvName: string): Promise<OIDC> {
-    const oidcUrl = process.env[`DISCOVERY_ENDPOINT_SAP_${idpEnvName}`];
-    if (!oidcUrl) return null;
-
-    const oidcResult = await firstValueFrom(
-      this.httpService.get<OIDC>(oidcUrl).pipe(
-        catchError((e: AxiosError) => {
-          throw new Error(
-            `Unexpected error from openid-configuration: ${e.toString()}`
-          );
-        })
-      )
-    );
-
-    if (oidcResult.status === 200) {
-      const oidc = oidcResult.data;
-
-      if (oidc.authorization_endpoint && oidc.token_endpoint) {
-        return oidc;
-      }
-
-      throw new Error(
-        `Unexpected response from openid-configuration: ${JSON.stringify(oidc)}`
-      );
-    }
-    return null;
-  }
-
   private async getAuthEnv(idpName: string): Promise<ServerAuthVariables> {
     const env = this.getEnv();
 
@@ -132,7 +97,7 @@ export class EnvService {
 
     const idpEnvName = this.getIdpEnvName(idpName);
 
-    const oidc = await this.getOIDC(idpEnvName);
+    const oidc = await this.discoveryService.getOIDC(idpEnvName);
     const oauthServerUrl =
       oidc && oidc.authorization_endpoint
         ? oidc.authorization_endpoint
