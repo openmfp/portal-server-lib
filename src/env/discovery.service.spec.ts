@@ -30,7 +30,7 @@ describe('DiscoveryService', () => {
       delete process.env['DISCOVERY_ENDPOINT_APP'];
     });
 
-    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT_SAP', async () => {
+    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT', async () => {
       const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
       httpServiceMockGet.mockReturnValue(
         of({
@@ -67,7 +67,7 @@ describe('DiscoveryService', () => {
       );
     });
 
-    it('should get null when DISCOVERY_ENDPOINT_SAP endpoint returns with 101 status', async () => {
+    it('should get null when DISCOVERY_ENDPOINT endpoint returns with 101 status', async () => {
       const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
       httpServiceMockGet.mockReturnValue(
         of({
@@ -88,13 +88,13 @@ describe('DiscoveryService', () => {
       expect(oidc).toBeNull();
     });
 
-    it('should get null when DISCOVERY_ENDPOINT_SAP does not exist', async () => {
+    it('should get null when DISCOVERY_ENDPOINT does not exist', async () => {
       const oidc = await service.getOIDC('APP');
 
       expect(oidc).toBeNull();
     });
 
-    it('should not get oauthTokenUrl form DISCOVERY_ENDPOINT_SAP and return null', async () => {
+    it('should not get oauthTokenUrl form DISCOVERY_ENDPOINT and return null', async () => {
       const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
       httpServiceMockGet.mockReturnValue(
         of({
@@ -115,7 +115,7 @@ describe('DiscoveryService', () => {
       expect(oidc).toBeNull();
     });
 
-    it('should not get oauthServerUrl form DISCOVERY_ENDPOINT_SAP and return null', async () => {
+    it('should not get oauthServerUrl form DISCOVERY_ENDPOINT and return null', async () => {
       const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
       httpServiceMockGet.mockReturnValue(
         of({

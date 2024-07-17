@@ -151,7 +151,7 @@ describe('EnvService', () => {
       discoveryServiceMock = mock<DiscoveryService>();
     });
 
-    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT_SAP when discoveryService returns proper values', async () => {
+    it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT when discoveryService returns proper values', async () => {
       const request = mock<Request>();
       request.hostname = 'app.hyper.space';
 
@@ -164,7 +164,7 @@ describe('EnvService', () => {
         token_endpoint: 'example.com/token_endpoint',
       });
 
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
+      process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
       const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.oauthServerUrl).toEqual(
@@ -183,7 +183,7 @@ describe('EnvService', () => {
       );
       discoveryServiceMockGetOIDC.mockResolvedValue(null);
 
-      process.env['DISCOVERY_ENDPOINT_SAP_APP'] = 'example.com';
+      process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
       const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.oauthServerUrl).toEqual('www.app.com');
