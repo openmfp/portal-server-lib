@@ -47,8 +47,15 @@ import {
   ServiceProviderService,
 } from './config';
 import { HeaderParserService, CookiesService } from './services';
+import { bootstrapEnv } from './bootstrapEnv';
 
 export interface PortalModuleOptions {
+  /**
+   * Development only: If the environment is != 'production', this file path will be used
+   * to load a .env file into the environment. https://www.npmjs.com/package/dotenv is used behind the scenes
+   */
+  envFilePath?: string;
+
   /**
    * Providers that need to be known to this module, to create an instance of the other providers, that are added here.
    */
@@ -116,6 +123,8 @@ export interface PortalModuleOptions {
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
+    bootstrapEnv(options);
+
     const controllers: any[] = [
       AuthController,
       HealthController,
