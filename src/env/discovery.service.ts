@@ -20,7 +20,7 @@ export class DiscoveryService {
       this.httpService.get<OIDC>(oidcUrl).pipe(
         catchError((e: AxiosError) => {
           throw new Error(
-            `Error response from discovery service: ${e.toString()}`
+            `Error response from discovery service: ${e.toString()}, OIDC endpoint: ${oidcUrl}`
           );
         })
       )
@@ -33,6 +33,9 @@ export class DiscoveryService {
         return oidc;
       }
     }
-    return null;
+
+    throw new Error(
+      `Invalid response from discovery service: OIDC endpoint: ${oidcUrl}`
+    );
   }
 }

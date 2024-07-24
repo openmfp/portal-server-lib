@@ -83,9 +83,10 @@ describe('DiscoveryService', () => {
       );
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
-      const oidc = await service.getOIDC('APP');
 
-      expect(oidc).toBeNull();
+      await expect(service.getOIDC('APP')).rejects.toThrow(
+        'Invalid response from discovery service: OIDC endpoint: example.com'
+      );
     });
 
     it('should get null when DISCOVERY_ENDPOINT does not exist', async () => {
@@ -110,9 +111,9 @@ describe('DiscoveryService', () => {
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
-      const oidc = await service.getOIDC('APP');
-
-      expect(oidc).toBeNull();
+      await expect(service.getOIDC('APP')).rejects.toThrow(
+        'Invalid response from discovery service: OIDC endpoint: example.com'
+      );
     });
 
     it('should not get oauthServerUrl form DISCOVERY_ENDPOINT and return null', async () => {
@@ -132,9 +133,9 @@ describe('DiscoveryService', () => {
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
-      const oidc = await service.getOIDC('APP');
-
-      expect(oidc).toBeNull();
+      await expect(service.getOIDC('APP')).rejects.toThrow(
+        'Invalid response from discovery service: OIDC endpoint: example.com'
+      );
     });
   });
 });
