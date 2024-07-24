@@ -44,7 +44,7 @@ describe('EnvVariablesServiceImpl', () => {
         mockResponse as Response
       );
 
-      expect(result).toEqual(mockAuthData);
+      expect(result).toEqual({authData: mockAuthData});
     });
 
     it('should handle errors from authDataService.provideAuthData', async () => {
