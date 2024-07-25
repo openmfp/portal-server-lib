@@ -1,5 +1,5 @@
 import { EnvVariablesServiceImpl } from './env-variables.service';
-import { AuthDataService, AuthTokenResponse } from '../auth';
+import { AuthDataService, AuthTokenData } from '../auth';
 import { Request, Response } from 'express';
 import { EnvService } from './env.service';
 
@@ -51,7 +51,7 @@ describe('EnvVariablesServiceImpl', () => {
       const mockAuthData = {
         access_token: 'testAccessToken',
         refresh_token: 'testRefreshToken',
-      } as AuthTokenResponse;
+      } as AuthTokenData;
       authDataServiceMock.provideAuthData.mockResolvedValue(mockAuthData);
 
       const result = await envVariablesService.getEnv(

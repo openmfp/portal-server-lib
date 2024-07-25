@@ -6,7 +6,7 @@ import { AuthController } from './auth.controller';
 import { PortalModule } from '../portal.module';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
+import { AuthTokenData, AuthTokenService } from './auth-token.service';
 import { HttpException } from '@nestjs/common';
 
 describe('AuthController', () => {
@@ -52,7 +52,7 @@ describe('AuthController', () => {
       refresh_token: 'ref',
       expires_in: '12312',
       access_token: 'access',
-    } as AuthTokenResponse;
+    } as AuthTokenData;
     getTokenForCode.mockResolvedValue(authTokenResponse);
 
     // act
@@ -75,23 +75,24 @@ describe('AuthController', () => {
   it('should log the error if there is a problem retrieving the token', async () => {
     // arrange
     const getTokenForCode = jest.spyOn(
-        authTokenService,
-        'exchangeTokenForCode'
+      authTokenService,
+      'exchangeTokenForCode'
     );
     requestMock.query = { code: 'foo' };
     getTokenForCode.mockRejectedValue(new Error('error'));
 
     // act
-    await expect(controller.auth(requestMock, responseMock)).rejects.toThrow(Error);
+    await expect(controller.auth(requestMock, responseMock)).rejects.toThrow(
+      Error
+    );
 
     // assert
     expect(getTokenForCode).toHaveBeenCalledWith(
-        requestMock,
-        responseMock,
-        'foo'
+      requestMock,
+      responseMock,
+      'foo'
     );
   });
-
 
   it('should return a bad request when there was no code provided', async () => {
     // arrange
@@ -133,7 +134,7 @@ describe('AuthController', () => {
       refresh_token: 'ref',
       expires_in: '12312',
       access_token: 'access',
-    } as AuthTokenResponse;
+    } as AuthTokenData;
     exchangeTokenForRefreshToken.mockResolvedValue(authTokenResponse);
 
     // act

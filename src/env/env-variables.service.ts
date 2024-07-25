@@ -1,6 +1,13 @@
 import { Request, Response } from 'express';
-import { AuthDataService } from '../auth';
+import { AuthDataService, AuthTokenData } from '../auth';
 import { EnvService } from './env.service';
+
+export interface EnvConfigVariables {
+  authData: AuthTokenData;
+  oauthServerUrl: string;
+  oauthTokenUrl: string;
+  clientId: string;
+}
 
 export interface EnvVariablesService {
   getEnv: (
@@ -18,7 +25,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
   async getEnv(
     request: Request,
     response: Response
-  ): Promise<Record<string, any>> {
+  ): Promise<EnvConfigVariables> {
     const { oauthServerUrl, oauthTokenUrl, clientId } =
       this.envService.getCurrentAuthEnv(request);
     const authData = await this.authDataService.provideAuthData(
