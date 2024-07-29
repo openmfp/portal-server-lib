@@ -30,6 +30,7 @@ import {
   EnvVariablesServiceImpl,
   EnvVariablesService,
   EnvService,
+  DiscoveryService,
 } from './env';
 import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
 import {
@@ -126,6 +127,7 @@ export class PortalModule {
     let providers: Provider[] = [
       Logger,
       EnvService,
+      DiscoveryService,
       HeaderParserService,
       CookiesService,
       LuigiConfigNodesService,

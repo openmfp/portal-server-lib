@@ -6,11 +6,13 @@ import { Request, Response } from 'express';
 import { NoopLogoutService } from './noop-logout.service';
 import { LogoutCallback } from './logout-callback';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { EnvService } from '../env';
+import { DiscoveryService, EnvService } from '../env';
+import { HttpModule } from '@nestjs/axios';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
-  let envService: EnvService;
+  let envServiceMock: EnvService;
+  let discoveryServiceMock: DiscoveryService;
   let cookiesServiceMock: CookiesService;
   let requestMock: Request;
   let responseMock: Response;
@@ -19,21 +21,28 @@ describe('LogoutController', () => {
   beforeEach(async () => {
     logoutCallbackMock = mock<NoopLogoutService>();
     cookiesServiceMock = mock<CookiesService>();
+    discoveryServiceMock = mock<DiscoveryService>();
+    envServiceMock = mock<EnvService>({
+      getEnv: jest.fn().mockReturnValue({
+        logoutRedirectUrl: '\test',
+      }),
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LogoutController],
       providers: [
-        EnvService,
+        { provide: EnvService, useValue: envServiceMock },
+        { provide: DiscoveryService, useValue: discoveryServiceMock },
         { provide: CookiesService, useValue: cookiesServiceMock },
         {
           provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
           useValue: logoutCallbackMock,
         },
       ],
+      imports: [HttpModule],
     }).compile();
 
     controller = module.get<LogoutController>(LogoutController);
-    envService = module.get<EnvService>(EnvService);
     requestMock = mock<Request>();
     responseMock = mock<Response>();
   });
@@ -72,12 +81,6 @@ describe('LogoutController', () => {
   });
 
   describe('getLogoutRedirectUrl', function () {
-    beforeEach(function () {
-      jest.spyOn(envService, 'getEnv').mockReturnValue({
-        logoutRedirectUrl: '\test',
-      });
-    });
-
     it('should redirect to the client logout site when the backend is done and no error', async () => {
       // Act
       await controller.logout(requestMock, responseMock);

@@ -211,27 +211,24 @@ describe('ConfigController', () => {
   });
 
   describe('getEntityConfig', () => {
-
     it('should get the config for a not registered entity provider', async () => {
       // Arrange
-      jest
-          .spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
       const result = controller.getEntityConfig(
-          requestMock,
-          responseMock,
-          { entity: 'no-provider' },
-          acceptLanguage
+        requestMock,
+        responseMock,
+        { entity: 'no-provider' },
+        acceptLanguage
       );
 
       // Assert
       await expect(result).resolves.toEqual({
         entityContext: {},
-        providers: []
+        providers: [],
       });
     });
-
 
     it('should handle getNodes error', async () => {
       // Arrange
