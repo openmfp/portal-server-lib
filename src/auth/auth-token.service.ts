@@ -4,9 +4,9 @@ import { Request, Response } from 'express';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { CookiesService } from '../services/cookies.service';
+import { CookiesService } from '../services';
 
-export interface AuthTokenResponse {
+export interface AuthTokenData {
   access_token: string;
   expires_in: string;
   refresh_token: string;
@@ -34,7 +34,7 @@ export class AuthTokenService {
     request: Request,
     response: Response,
     code: string
-  ): Promise<AuthTokenResponse> {
+  ): Promise<AuthTokenData> {
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
     const redirectUri = this.getRedirectUri(request);
 
@@ -57,7 +57,7 @@ export class AuthTokenService {
     request: Request,
     response: Response,
     refreshToken: string
-  ): Promise<AuthTokenResponse> {
+  ): Promise<AuthTokenData> {
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
 
     const body = new URLSearchParams({
@@ -72,14 +72,14 @@ export class AuthTokenService {
     response: Response,
     currentAuthEnv: ServerAuthVariables,
     body: URLSearchParams
-  ): Promise<AuthTokenResponse> {
+  ): Promise<AuthTokenData> {
     const authorization = `${Buffer.from(
       `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`
     ).toString('base64')}`;
 
     const tokenFetchResult = await firstValueFrom(
       this.httpService
-        .post<AuthTokenResponse>(currentAuthEnv.oauthTokenUrl, body, {
+        .post<AuthTokenData>(currentAuthEnv.oauthTokenUrl, body, {
           headers: {
             Authorization: `Basic ${authorization}`,
             'content-type': 'application/x-www-form-urlencoded',

@@ -1,19 +1,34 @@
 import { EnvVariablesServiceImpl } from './env-variables.service';
-import { AuthDataService, AuthTokenResponse } from '../auth';
+import { AuthDataService, AuthTokenData } from '../auth';
 import { Request, Response } from 'express';
+import { EnvService } from './env.service';
 
 describe('EnvVariablesServiceImpl', () => {
   let envVariablesService: EnvVariablesServiceImpl;
+  let envServiceMock: EnvService;
   let authDataServiceMock: jest.Mocked<AuthDataService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
+
+  const currentAuthEnv = {
+    oauthServerUrl: 'oauthServerUrl',
+    oauthTokenUrl: 'oauthTokenUrl',
+    clientId: 'clientId',
+  };
 
   beforeEach(() => {
     authDataServiceMock = {
       provideAuthData: jest.fn(),
     } as any;
 
-    envVariablesService = new EnvVariablesServiceImpl(authDataServiceMock);
+    envServiceMock = {
+      getCurrentAuthEnv: jest.fn().mockReturnValue(currentAuthEnv),
+    } as any;
+
+    envVariablesService = new EnvVariablesServiceImpl(
+      authDataServiceMock,
+      envServiceMock
+    );
 
     mockRequest = {};
     mockResponse = {};
@@ -21,7 +36,7 @@ describe('EnvVariablesServiceImpl', () => {
 
   describe('getEnv', () => {
     it('should call authDataService.provideAuthData', async () => {
-      await envVariablesService.getEnv(
+      const result = await envVariablesService.getEnv(
         mockRequest as Request,
         mockResponse as Response
       );
@@ -32,11 +47,11 @@ describe('EnvVariablesServiceImpl', () => {
       );
     });
 
-    it('should return the result from authDataService.provideAuthData', async () => {
+    it('should return the result from authDataService.provideAuthData and current auth envs', async () => {
       const mockAuthData = {
         access_token: 'testAccessToken',
         refresh_token: 'testRefreshToken',
-      } as AuthTokenResponse;
+      } as AuthTokenData;
       authDataServiceMock.provideAuthData.mockResolvedValue(mockAuthData);
 
       const result = await envVariablesService.getEnv(
@@ -44,7 +59,7 @@ describe('EnvVariablesServiceImpl', () => {
         mockResponse as Response
       );
 
-      expect(result).toEqual(mockAuthData);
+      expect(result).toEqual({ authData: mockAuthData, ...currentAuthEnv });
     });
 
     it('should handle errors from authDataService.provideAuthData', async () => {

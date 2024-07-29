@@ -9,10 +9,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CookiesService } from '../services/cookies.service';
+import { CookiesService } from '../services';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthTokenService, AuthTokenResponse } from './auth-token.service';
+import { AuthTokenService, AuthTokenData } from './auth-token.service';
 
 @Controller('/rest/auth')
 export class AuthController {
@@ -28,7 +28,7 @@ export class AuthController {
   async auth(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<AuthTokenResponse> {
+  ): Promise<AuthTokenData> {
     const code = request.query.code;
     if (!code) {
       throw new HttpException(
@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     try {
-      const authTokenResponse: AuthTokenResponse =
+      const authTokenResponse: AuthTokenData =
         await this.authTokenService.exchangeTokenForCode(
           request,
           response,
@@ -62,7 +62,7 @@ export class AuthController {
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<AuthTokenResponse> {
+  ): Promise<AuthTokenData> {
     const authCookie = this.cookiesService.getAuthCookie(request);
     if (!authCookie) {
       throw new HttpException(
@@ -72,7 +72,7 @@ export class AuthController {
     }
 
     try {
-      const authTokenResponse: AuthTokenResponse =
+      const authTokenResponse: AuthTokenData =
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
@@ -95,7 +95,7 @@ export class AuthController {
   private async handleTokenRetrieval(
     request: Request,
     response: Response,
-    authTokenResponse: AuthTokenResponse
+    authTokenResponse: AuthTokenData
   ) {
     await this.authCallbackService.handleSuccess(
       request,
@@ -106,8 +106,8 @@ export class AuthController {
   }
 
   private filterAuthTokenResponseForFrontend(
-    authTokenResponse: AuthTokenResponse
-  ): AuthTokenResponse {
+    authTokenResponse: AuthTokenData
+  ): AuthTokenData {
     delete authTokenResponse.refresh_token;
     delete authTokenResponse.refresh_expires_in;
     return authTokenResponse;

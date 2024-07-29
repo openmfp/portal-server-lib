@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
-import { AuthTokenResponse, AuthTokenService } from './auth-token.service';
+import { AuthTokenData, AuthTokenService } from './auth-token.service';
 import { Request, Response } from 'express';
 import nock from 'nock';
 import { EnvService } from '../env';
@@ -60,7 +60,7 @@ describe('AuthTokenService', () => {
       requestMock.hostname = hostname;
     });
 
-    function assertResponseAndCookies(authTokenResponse: AuthTokenResponse) {
+    function assertResponseAndCookies(authTokenResponse: AuthTokenData) {
       expect(authTokenResponse.refresh_token).toBe(refreshTokenValue);
       expect(authTokenResponse.id_token).toBe(idTokenValue);
       expect(authTokenResponse.access_token).toBe(accessTokenValue);

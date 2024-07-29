@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthTokenResponse } from '../auth';
+import { AuthTokenData } from '../auth';
 import { Request, Response } from 'express';
 
 const authCookie = 'openmfp_auth_cookie';
@@ -11,10 +11,7 @@ export class CookiesService {
     return cookies && cookies[authCookie];
   }
 
-  public setAuthCookie(
-    response: Response,
-    authTokenResponse: AuthTokenResponse
-  ) {
+  public setAuthCookie(response: Response, authTokenResponse: AuthTokenData) {
     response.cookie(authCookie, authTokenResponse.refresh_token, {
       httpOnly: true,
       secure: true,

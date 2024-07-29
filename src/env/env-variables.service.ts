@@ -1,5 +1,13 @@
 import { Request, Response } from 'express';
-import { AuthDataService } from '../auth';
+import { AuthDataService, AuthTokenData } from '../auth';
+import { EnvService } from './env.service';
+
+export interface EnvConfigVariables {
+  authData: AuthTokenData;
+  oauthServerUrl: string;
+  oauthTokenUrl: string;
+  clientId: string;
+}
 
 export interface EnvVariablesService {
   getEnv: (
@@ -9,16 +17,26 @@ export interface EnvVariablesService {
 }
 
 export class EnvVariablesServiceImpl implements EnvVariablesService {
-  constructor(private authDataService: AuthDataService) {}
+  constructor(
+    private authDataService: AuthDataService,
+    private envService: EnvService
+  ) {}
 
   async getEnv(
     request: Request,
     response: Response
-  ): Promise<Record<string, any>> {
+  ): Promise<EnvConfigVariables> {
+    const { oauthServerUrl, oauthTokenUrl, clientId } =
+      await this.envService.getCurrentAuthEnv(request);
     const authData = await this.authDataService.provideAuthData(
       request,
       response
     );
-    return Promise.resolve(authData);
+    return Promise.resolve({
+      authData,
+      oauthServerUrl,
+      oauthTokenUrl,
+      clientId,
+    });
   }
 }
