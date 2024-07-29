@@ -27,7 +27,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     response: Response
   ): Promise<EnvConfigVariables> {
     const { oauthServerUrl, oauthTokenUrl, clientId } =
-      this.envService.getCurrentAuthEnv(request);
+      await this.envService.getCurrentAuthEnv(request);
     const authData = await this.authDataService.provideAuthData(
       request,
       response
