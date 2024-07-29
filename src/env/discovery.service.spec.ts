@@ -85,7 +85,7 @@ describe('DiscoveryService', () => {
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 101, OIDC endpoint: example.com'
       );
     });
 
@@ -112,7 +112,7 @@ describe('DiscoveryService', () => {
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com'
       );
     });
 
@@ -134,7 +134,7 @@ describe('DiscoveryService', () => {
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com'
       );
     });
   });

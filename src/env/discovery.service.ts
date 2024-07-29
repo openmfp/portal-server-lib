@@ -35,7 +35,7 @@ export class DiscoveryService {
     }
 
     throw new Error(
-      `Invalid response from discovery service: OIDC endpoint: ${oidcUrl}`
+      `Invalid response from discovery service: Response status: ${oidcResult.status}, OIDC endpoint: ${oidcUrl}`
     );
   }
 }
