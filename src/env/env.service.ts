@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
+import { DiscoveryService } from '.';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;
@@ -25,6 +26,8 @@ interface BaseDomainsToIdp {
 
 @Injectable()
 export class EnvService {
+  constructor(private discoveryService: DiscoveryService) {}
+
   public getEnv(): EnvVariables {
     return {
       idpNames: this.getIdpNames(),
@@ -53,13 +56,15 @@ export class EnvService {
     return result;
   }
 
-  public getCurrentAuthEnv(request: Request): ServerAuthVariables {
+  public async getCurrentAuthEnv(
+    request: Request
+  ): Promise<ServerAuthVariables> {
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
       (x) => x.baseDomain === request.hostname
     );
     if (defaultTenant) {
-      return this.getAuthEnv(defaultTenant.idpName);
+      return await this.getAuthEnv(defaultTenant.idpName);
     }
 
     for (const baseDomainToIdp of baseDomainsToIdps) {
@@ -70,7 +75,7 @@ export class EnvService {
       }
 
       if (regExpExecArray.length > 1) {
-        return this.getAuthEnv(regExpExecArray[1]);
+        return await this.getAuthEnv(regExpExecArray[1]);
       }
     }
 
@@ -83,7 +88,7 @@ export class EnvService {
     );
   }
 
-  private getAuthEnv(idpName: string): ServerAuthVariables {
+  private async getAuthEnv(idpName: string): Promise<ServerAuthVariables> {
     const env = this.getEnv();
 
     if (!env.idpNames.includes(idpName)) {
@@ -91,8 +96,17 @@ export class EnvService {
     }
 
     const idpEnvName = this.getIdpEnvName(idpName);
-    const oauthServerUrl = process.env[`AUTH_SERVER_URL_${idpEnvName}`];
-    const oauthTokenUrl = process.env[`TOKEN_URL_${idpEnvName}`];
+
+    const oidc = await this.discoveryService.getOIDC(idpEnvName);
+    const oauthServerUrl =
+      oidc && oidc.authorization_endpoint
+        ? oidc.authorization_endpoint
+        : process.env[`AUTH_SERVER_URL_${idpEnvName}`];
+    const oauthTokenUrl =
+      oidc && oidc.token_endpoint
+        ? oidc.token_endpoint
+        : process.env[`TOKEN_URL_${idpEnvName}`];
+
     const clientId = process.env[`OIDC_CLIENT_ID_${idpEnvName}`];
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
     const clientSecret = process.env[clientSecretEnvVar];

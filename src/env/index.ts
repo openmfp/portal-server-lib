@@ -4,3 +4,4 @@ export {
   EnvVariablesService,
   EnvVariablesServiceImpl,
 } from './env-variables.service';
+export { DiscoveryService } from './discovery.service';

@@ -75,23 +75,24 @@ describe('AuthController', () => {
   it('should log the error if there is a problem retrieving the token', async () => {
     // arrange
     const getTokenForCode = jest.spyOn(
-        authTokenService,
-        'exchangeTokenForCode'
+      authTokenService,
+      'exchangeTokenForCode'
     );
     requestMock.query = { code: 'foo' };
     getTokenForCode.mockRejectedValue(new Error('error'));
 
     // act
-    await expect(controller.auth(requestMock, responseMock)).rejects.toThrow(Error);
+    await expect(controller.auth(requestMock, responseMock)).rejects.toThrow(
+      Error
+    );
 
     // assert
     expect(getTokenForCode).toHaveBeenCalledWith(
-        requestMock,
-        responseMock,
-        'foo'
+      requestMock,
+      responseMock,
+      'foo'
     );
   });
-
 
   it('should return a bad request when there was no code provided', async () => {
     // arrange
