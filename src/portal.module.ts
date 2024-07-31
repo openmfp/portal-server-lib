@@ -50,6 +50,11 @@ import { HeaderParserService, CookiesService } from './services';
 
 export interface PortalModuleOptions {
   /**
+   * Providers that need to be known to this module, to create an instance of the other controllers, that are added here.
+   */
+  additionalControllers?: any[];
+
+  /**
    * Providers that need to be known to this module, to create an instance of the other providers, that are added here.
    */
   additionalProviders?: Provider[];
@@ -116,7 +121,7 @@ export interface PortalModuleOptions {
 @Module({})
 export class PortalModule {
   static create(options: PortalModuleOptions): DynamicModule {
-    const controllers: any[] = [
+    let controllers: any[] = [
       AuthController,
       HealthController,
       EnvController,
@@ -176,6 +181,10 @@ export class PortalModule {
           options.luigiDataService || ContentConfigurationLuigiDataService,
       },
     ];
+
+    if (options.additionalControllers) {
+      controllers = controllers.concat(options.additionalControllers);
+    }
 
     if (options.additionalProviders) {
       providers = providers.concat(options.additionalProviders);
