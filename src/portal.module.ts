@@ -50,12 +50,12 @@ import { HeaderParserService, CookiesService } from './services';
 
 export interface PortalModuleOptions {
   /**
-   * Providers that need to be known to this module, to create an instance of the other controllers, that are added here.
+   * A set of additional controllers to be registered in the module.
    */
   additionalControllers?: any[];
 
   /**
-   * Providers that need to be known to this module, to create an instance of the other providers, that are added here.
+   * A set of additional providers to be registered in the module.
    */
   additionalProviders?: Provider[];
 
