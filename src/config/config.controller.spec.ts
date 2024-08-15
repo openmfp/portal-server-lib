@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigController } from './config.controller';
 import { PortalModule } from '../portal.module';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { TenantService } from '../auth/tenant.service';
+import { TenantService } from '../auth';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
-import { HeaderParserService } from '../services/header-parser.service';
+import { HeaderParserService } from '../services';
 import { ServiceProvider } from './model/luigi.node';
 import { PortalContextProvider } from './context/portal-context-provider';
 import {
@@ -32,10 +32,9 @@ describe('ConfigController', () => {
   let requestMock: Request;
   let responseMock: Response;
   let tenantProvider: TenantService;
-  let frameContextProvider: PortalContextProvider;
+  let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  let entityContextProviders: EntityContextProviders;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
@@ -66,7 +65,7 @@ describe('ConfigController', () => {
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
     tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    frameContextProvider = module.get<PortalContextProvider>(
+    portalContextProvider = module.get<PortalContextProvider>(
       PORTAL_CONTEXT_INJECTION_TOKEN
     );
 
@@ -99,6 +98,14 @@ describe('ConfigController', () => {
         .spyOn(luigiConfigNodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
 
+      const context = { url1: 'url1' };
+      jest.spyOn(portalContextProvider, 'getContextValues').mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolve(context);
+          })
+      );
+
       const config = await controller.getConfig(
         requestMock,
         responseMock,
@@ -106,12 +113,14 @@ describe('ConfigController', () => {
       );
 
       expect(config.providers).toBe(resultingNodes);
+      expect(config.frameContext).toEqual(context);
+      expect(config.portalContext).toEqual(context);
       expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
         tenant: mockTenant,
       });
     });
 
-    it('should handle frameContextProvider error', async () => {
+    it('should handle portalContextProvider error', async () => {
       // Arrange
       const error = new Error('this is a test error');
 
@@ -124,7 +133,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(frameContextProvider, 'getContextValues')
+        .spyOn(portalContextProvider, 'getContextValues')
         .mockRejectedValue(error);
 
       // Act
@@ -154,7 +163,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(frameContextProvider, 'getContextValues')
+        .spyOn(portalContextProvider, 'getContextValues')
         .mockImplementation(
           () => new Promise((resolve) => setTimeout(resolve, 0))
         );
@@ -192,7 +201,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(frameContextProvider, 'getContextValues')
+        .spyOn(portalContextProvider, 'getContextValues')
         .mockImplementation(
           () => new Promise((resolve) => setTimeout(resolve, 0))
         );

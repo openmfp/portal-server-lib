@@ -13,14 +13,14 @@ import {
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
-import { HeaderParserService } from '../services/header-parser.service';
+import { HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
   TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
-import { TenantService } from '../auth/tenant.service';
+import { TenantService } from '../auth';
 import { PortalContextProvider } from './context/portal-context-provider';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
@@ -30,7 +30,7 @@ import {
   EntityNotFoundException,
 } from './context/entity-context-provider';
 import { ModuleRef } from '@nestjs/core';
-import { PortalConfig, ServiceProvider } from './model/luigi.node';
+import { PortalConfig } from './model/luigi.node';
 
 @Controller('/rest/config')
 export class ConfigController {
@@ -86,7 +86,7 @@ export class ConfigController {
       const featureToggles = ConfigController.getOrThrow(
         await featureTogglePromise
       );
-      const frameContext = ConfigController.getOrThrow(
+      const portalContext = ConfigController.getOrThrow(
         await portalContextPromise
       );
       const { tenantId, providers } = ConfigController.getOrThrow(
@@ -96,7 +96,8 @@ export class ConfigController {
       return {
         providers,
         tenantId,
-        frameContext,
+        frameContext: portalContext,
+        portalContext,
         featureToggles,
       };
     } catch (e) {
