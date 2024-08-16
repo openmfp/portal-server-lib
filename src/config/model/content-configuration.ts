@@ -31,5 +31,5 @@ export interface ExtendedData {
 export interface ContentConfiguration extends ExtendedData {
   name: string;
   creationTimestamp: string;
-  luigiConfigFragment: LuigiConfigFragment[];
+  luigiConfigFragment: LuigiConfigFragment;
 }
