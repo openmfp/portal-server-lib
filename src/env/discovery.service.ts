@@ -10,11 +10,17 @@ interface OIDC {
 
 @Injectable()
 export class DiscoveryService {
+  private oidcResult: OIDC;
+
   constructor(private httpService: HttpService) {}
 
   public async getOIDC(idpEnvName: string): Promise<OIDC> {
     const oidcUrl = process.env[`DISCOVERY_ENDPOINT_${idpEnvName}`];
     if (!oidcUrl) return null;
+
+    if (this.oidcResult) {
+      return this.oidcResult;
+    }
 
     const oidcResult = await firstValueFrom(
       this.httpService.get<OIDC>(oidcUrl).pipe(
@@ -30,6 +36,7 @@ export class DiscoveryService {
       const oidc = oidcResult.data;
 
       if (oidc.authorization_endpoint && oidc.token_endpoint) {
+        this.oidcResult = oidc;
         return oidc;
       }
     }
