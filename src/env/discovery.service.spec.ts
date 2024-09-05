@@ -52,6 +52,11 @@ describe('DiscoveryService', () => {
         'example.com/authorization_endpoint'
       );
       expect(oidc.token_endpoint).toEqual('example.com/token_endpoint');
+      expect(service['oidcResultPerIdp']['APP']).toEqual({
+        authorization_endpoint: 'example.com/authorization_endpoint',
+        token_endpoint: 'example.com/token_endpoint',
+      });
+      expect(service['oidcResultPerIdp']['APP2']).toBeUndefined();
     });
 
     it('should not get oauthServerUrl and oauthTokenUrl and throw error when httpService returns error', async () => {
@@ -136,6 +141,7 @@ describe('DiscoveryService', () => {
       await expect(service.getOIDC('APP')).rejects.toThrow(
         'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com'
       );
+      expect(service['oidcResultPerIdp']['APP']).toBeUndefined();
     });
   });
 });
