@@ -9,8 +9,6 @@ import {
   AuthDataService,
   AuthTokenService,
   NoopAuthCallback,
-  EmptyTenantService,
-  TenantService,
 } from './auth';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
@@ -22,7 +20,6 @@ import {
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-  TENANT_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import {
@@ -77,15 +74,10 @@ export interface PortalModuleOptions {
   logoutCallbackProvider?: Type<LogoutCallback>;
 
   /**
-   * Service providing tenant id.
-   */
-  tenantProvider?: Type<TenantService>;
-
-  /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  frameContextProvider?: Type<PortalContextProvider>;
+  portalContextProvider?: Type<PortalContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -156,12 +148,8 @@ export class PortalModule {
         useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
       {
-        provide: TENANT_PROVIDER_INJECTION_TOKEN,
-        useClass: options.tenantProvider || EmptyTenantService,
-      },
-      {
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
-        useClass: options.frameContextProvider || EmptyPortalContextProvider,
+        useClass: options.portalContextProvider || EmptyPortalContextProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,

@@ -12,10 +12,7 @@ export {
   EntityNotFoundException,
   EntityContextProvider,
 } from './context/entity-context-provider';
-export {
-  PortalContextProvider,
-  ProvidersResult,
-} from './context/portal-context-provider';
+export { PortalContextProvider } from './context/portal-context-provider';
 export { FeatureTogglesProvider } from './context/feature-toggles-provider';
 export { IntentResolveService } from './luigi/luigi-data/intent-resolve.service';
 export { ConfigController } from './config.controller';

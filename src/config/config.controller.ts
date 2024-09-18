@@ -13,14 +13,12 @@ import {
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
-import { HeaderParserService } from '../services/header-parser.service';
+import { HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
-  TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
-import { TenantService } from '../auth/tenant.service';
 import { PortalContextProvider } from './context/portal-context-provider';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
@@ -40,8 +38,6 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
-    @Inject(TENANT_PROVIDER_INJECTION_TOKEN)
-    private tenantProvider: TenantService,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
@@ -61,13 +57,12 @@ export class ConfigController {
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    const providersAndTenantPromise = this.getProvidersAndTenant(
-      request,
-      acceptLanguage
-    ).catch((e: Error) => {
-      this.logger.error(e);
-      return e;
-    });
+    const providersPromise = this.getProviders(request, acceptLanguage).catch(
+      (e: Error) => {
+        this.logger.error(e);
+        return e;
+      }
+    );
     const featureTogglePromise = this.featureTogglesProvider
       .getFeatureToggles()
       .catch((e: Error) => {
@@ -76,7 +71,7 @@ export class ConfigController {
       });
 
     const portalContextPromise = this.portalContextProvider
-      .getContextValues(request, response, providersAndTenantPromise)
+      .getContextValues(request, response, providersPromise)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -86,17 +81,14 @@ export class ConfigController {
       const featureToggles = ConfigController.getOrThrow(
         await featureTogglePromise
       );
-      const frameContext = ConfigController.getOrThrow(
+      const portalContext = ConfigController.getOrThrow(
         await portalContextPromise
       );
-      const { tenantId, providers } = ConfigController.getOrThrow(
-        await providersAndTenantPromise
-      );
+      const providers = ConfigController.getOrThrow(await providersPromise);
 
       return {
         providers,
-        tenantId,
-        frameContext,
+        portalContext,
         featureToggles,
       };
     } catch (e) {
@@ -108,20 +100,18 @@ export class ConfigController {
     }
   }
 
-  private async getProvidersAndTenant(
+  private async getProviders(
     request: Request,
     acceptLanguage: string
-  ) {
+  ): Promise<ServiceProvider[]> {
     const token = this.headerParser.extractBearerToken(request);
-    const tenantId = await this.tenantProvider.provideTenant(request);
 
     const providers = await this.luigiConfigNodesService.getNodes(
       token,
       [],
-      acceptLanguage,
-      { tenant: tenantId }
+      acceptLanguage
     );
-    return { tenantId, providers };
+    return providers;
   }
 
   @Get(':entity')

@@ -3,16 +3,14 @@ import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { LuigiConfigNodesService } from '../src/config/luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { TenantService } from '../src/auth/tenant.service';
-import { HeaderParserService } from '../src/services/header-parser.service';
-import { FeatureTogglesProvider } from '../src/config/context/feature-toggles-provider';
 import {
+  LuigiConfigNodesService,
+  HeaderParserService,
+  FeatureTogglesProvider,
+  ServiceProvider,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PortalModule,
-  TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../src';
-import { ServiceProvider } from '../src/config/model/luigi.node';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -24,7 +22,6 @@ describe('ConfigController', () => {
   let nodesService: LuigiConfigNodesService;
   let getEntityContextMock: jest.Mock;
   let requestMock: Request;
-  let tenantProvider: TenantService;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
@@ -54,15 +51,10 @@ describe('ConfigController', () => {
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
-    tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
 
     jest
       .spyOn(featureTogglesProvider, 'getFeatureToggles')
       .mockResolvedValue({});
-
-    jest
-      .spyOn(tenantProvider, 'provideTenant')
-      .mockReturnValue(Promise.resolve(mockTenant));
 
     jest
       .spyOn(headerParserService, 'extractBearerToken')
