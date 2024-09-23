@@ -175,8 +175,7 @@ export interface ServiceProvider {
 
 export interface PortalConfig {
   providers: ServiceProvider[];
-  tenantId: string;
-  frameContext: Record<string, any>;
+  portalContext: Record<string, any>;
   featureToggles: Record<string, boolean>;
 }
 

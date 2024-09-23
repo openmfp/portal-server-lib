@@ -3,4 +3,3 @@ export { AuthController } from './auth.controller';
 export * from './auth.callback';
 export { AuthTokenService, AuthTokenData } from './auth-token.service';
 export { AuthCallback } from './auth.callback';
-export { TenantService, EmptyTenantService } from './tenant.service';

@@ -4,14 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigController } from './config.controller';
 import { PortalModule } from '../portal.module';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { TenantService } from '../auth/tenant.service';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
-  TENANT_PROVIDER_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
-import { HeaderParserService } from '../services/header-parser.service';
+import { HeaderParserService } from '../services';
 import { ServiceProvider } from './model/luigi.node';
 import { PortalContextProvider } from './context/portal-context-provider';
 import {
@@ -31,8 +29,7 @@ describe('ConfigController', () => {
   let getEntityContextMock: jest.Mock;
   let requestMock: Request;
   let responseMock: Response;
-  let tenantProvider: TenantService;
-  let frameContextProvider: PortalContextProvider;
+  let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   let entityContextProviders: EntityContextProviders;
@@ -65,18 +62,13 @@ describe('ConfigController', () => {
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
-    tenantProvider = module.get<TenantService>(TENANT_PROVIDER_INJECTION_TOKEN);
-    frameContextProvider = module.get<PortalContextProvider>(
+    portalContextProvider = module.get<PortalContextProvider>(
       PORTAL_CONTEXT_INJECTION_TOKEN
     );
 
     jest
       .spyOn(featureTogglesProvider, 'getFeatureToggles')
       .mockResolvedValue({});
-
-    jest
-      .spyOn(tenantProvider, 'provideTenant')
-      .mockReturnValue(Promise.resolve(mockTenant));
 
     jest
       .spyOn(headerParserService, 'extractBearerToken')
@@ -106,12 +98,10 @@ describe('ConfigController', () => {
       );
 
       expect(config.providers).toBe(resultingNodes);
-      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
-        tenant: mockTenant,
-      });
+      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage);
     });
 
-    it('should handle frameContextProvider error', async () => {
+    it('should handle portalContextProvider error', async () => {
       // Arrange
       const error = new Error('this is a test error');
 
@@ -124,7 +114,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(frameContextProvider, 'getContextValues')
+        .spyOn(portalContextProvider, 'getContextValues')
         .mockRejectedValue(error);
 
       // Act
@@ -154,7 +144,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(frameContextProvider, 'getContextValues')
+        .spyOn(portalContextProvider, 'getContextValues')
         .mockImplementation(
           () => new Promise((resolve) => setTimeout(resolve, 0))
         );
@@ -168,45 +158,6 @@ describe('ConfigController', () => {
 
       // Assert
       await expect(result).rejects.toEqual(error);
-    });
-
-    it('should handle tenantProvider error', async () => {
-      // Arrange
-      const forbiddenException = new ForbiddenException('you shall not pass');
-
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
-
-      jest
-        .spyOn(tenantProvider, 'provideTenant')
-        .mockImplementation(
-          () =>
-            new Promise((resolve, reject) =>
-              setTimeout(reject.bind(reject, forbiddenException), 0)
-            )
-        );
-
-      jest
-        .spyOn(featureTogglesProvider, 'getFeatureToggles')
-        .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0))
-        );
-
-      jest
-        .spyOn(frameContextProvider, 'getContextValues')
-        .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0))
-        );
-
-      // Act
-      const result = controller.getConfig(
-        requestMock,
-        responseMock,
-        acceptLanguage
-      );
-
-      // Assert
-      await expect(result).resolves.toBeUndefined();
-      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
     });
   });
 
