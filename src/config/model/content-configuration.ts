@@ -1,5 +1,6 @@
 import { HelpContext, LuigiNode } from './luigi.node';
 import { BreadcrumbBadge } from './breadcrumb-badge';
+import { LuigiUserSettings } from './user-settings';
 
 export interface LuigiNodeDefaults {
   entityType?: string;
@@ -11,10 +12,24 @@ export interface Dictionary {
   textDictionary: Record<string, string>;
 }
 
+export interface LuigiAppConfig {
+  urlTemplateParams: Record<string, any>;
+  navMode?: string;
+  urlTemplateId?: string;
+}
+
+export interface ViewGroup {
+  preloadSuffix?: string;
+  requiredIFramePermissions?: Record<string, string>;
+}
+
 export interface LuigiConfigData {
+  viewGroup?: ViewGroup;
   nodeDefaults?: LuigiNodeDefaults;
   nodes: LuigiNode[];
   texts?: Dictionary[];
+  targetAppConfig?: Record<string, any>;
+  userSettings?: LuigiUserSettings;
 }
 
 export interface LuigiConfigFragment {
@@ -31,5 +46,5 @@ export interface ExtendedData {
 export interface ContentConfiguration extends ExtendedData {
   name: string;
   creationTimestamp: string;
-  luigiConfigFragment: LuigiConfigFragment[];
+  luigiConfigFragment: LuigiConfigFragment;
 }

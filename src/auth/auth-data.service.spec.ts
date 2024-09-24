@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CookiesService } from '../services/cookies.service';
+import { CookiesService } from '../services';
 import { AuthDataService } from './auth-data.service';
 import { PortalModule } from '../portal.module';
 import { mock, MockProxy } from 'jest-mock-extended';
