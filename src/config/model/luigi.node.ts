@@ -1,5 +1,5 @@
 import { BreadcrumbBadge } from './breadcrumb-badge';
-import { LuigiUserSettings } from './user-settings';
+import { LuigiUserSettings } from './luigi-user-settings';
 
 export interface LuigiNodeCategory {
   label: string;
