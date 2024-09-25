@@ -20,7 +20,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     provider: RawServiceProvider,
     language: string,
     extendedData?: ExtendedData,
-    url?: string
+    localContentConfigurationUrl?: string
   ): Promise<LuigiNode[]> {
     const nodeArrays = provider.contentConfiguration.map((config) => {
       let luigiConfigData: LuigiConfigData = config.luigiConfigFragment.data;
@@ -29,14 +29,17 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
         luigiConfigData = this.translateTexts(luigiConfigData, language);
       }
 
-      return this.processLuigiConfigData(luigiConfigData, url);
+      return this.processLuigiConfigData(
+        luigiConfigData,
+        localContentConfigurationUrl
+      );
     });
 
     const nodes: LuigiNode[] = [];
     for (const nodeArray of nodeArrays) {
       nodeArray.map((node) => {
         nodes.push(
-          this.addExtendedCdmDataToChildrenRecursively(node, extendedData)
+          this.addExtendedDataToChildrenRecursively(node, extendedData)
         );
       });
     }
@@ -45,7 +48,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
 
   private processLuigiConfigData(
     luigiConfigData: LuigiConfigData,
-    url: string | undefined
+    localContentConfigurationUrl: string | undefined
   ): LuigiNode[] {
     const luigiAppConfig: LuigiAppConfig = {
       navMode: 'inplace',
@@ -63,7 +66,9 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       luigiConfigData,
       luigiAppConfig,
       luigiIntentInboundList,
-      url != undefined ? URI.parse(url) : undefined
+      localContentConfigurationUrl != undefined
+        ? URI.parse(localContentConfigurationUrl)
+        : undefined
     );
   }
 
@@ -71,15 +76,15 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     luigiConfigData: LuigiConfigData,
     appConfig: LuigiAppConfig,
     luigiIntentInboundList: CrossNavigationInbounds,
-    cdmUri: URIComponents | undefined
+    localContentConfigurationUri: URIComponents | undefined
   ): LuigiNode[] {
     if (luigiConfigData && luigiConfigData.nodes) {
       const nodes: LuigiNode[] = [];
       let urlTemplateUrl = '';
-      if (cdmUri != undefined) {
-        const schemeAndHost = `${cdmUri.scheme}://${cdmUri.host}`;
-        const localUrl = cdmUri.port
-          ? `${schemeAndHost}:${cdmUri.port}`
+      if (localContentConfigurationUri != undefined) {
+        const schemeAndHost = `${localContentConfigurationUri.scheme}://${localContentConfigurationUri.host}`;
+        const localUrl = localContentConfigurationUri.port
+          ? `${schemeAndHost}:${localContentConfigurationUri.port}`
           : schemeAndHost;
         urlTemplateUrl = appConfig?.urlTemplateParams?.url || localUrl;
       }
@@ -191,26 +196,25 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     });
   }
 
-  private addExtendedCdmDataToChildrenRecursively(
+  private addExtendedDataToChildrenRecursively(
     node: LuigiNode,
-    cdmExtendedData: ExtendedData
+    extendedData: ExtendedData
   ): LuigiNode {
     const children = node.children as LuigiNode[];
     if (children && children.length > 0) {
       children.map((child, index, originalChildren) => {
-        originalChildren[index] = this.addExtendedCdmDataToChildrenRecursively(
+        originalChildren[index] = this.addExtendedDataToChildrenRecursively(
           child,
-          cdmExtendedData
+          extendedData
         );
       });
     }
 
     const isMissingMandatoryData =
-      cdmExtendedData?.isMissingMandatoryData || undefined;
-    const helpContext = cdmExtendedData?.helpContext || undefined;
-    const breadcrumbBadge = cdmExtendedData?.breadcrumbBadge || undefined;
-    const extensionClassName =
-      this.getExtensionClassNameForNode(cdmExtendedData);
+      extendedData?.isMissingMandatoryData || undefined;
+    const helpContext = extendedData?.helpContext || undefined;
+    const breadcrumbBadge = extendedData?.breadcrumbBadge || undefined;
+    const extensionClassName = this.getExtensionClassNameForNode(extendedData);
     const context =
       node.context || extensionClassName
         ? { ...node.context, extensionClassName }
@@ -227,13 +231,13 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
   // Only add the extension class name to a node if it's missing mandatory data
   // because we need it for navigation purposes
   private getExtensionClassNameForNode(
-    cdmExtendedData: ExtendedData
+    extendedData: ExtendedData
   ): string | undefined {
     if (
-      cdmExtendedData?.isMissingMandatoryData &&
-      cdmExtendedData?.extensionClassName
+      extendedData?.isMissingMandatoryData &&
+      extendedData?.extensionClassName
     ) {
-      return cdmExtendedData?.extensionClassName;
+      return extendedData?.extensionClassName;
     }
 
     return undefined;
