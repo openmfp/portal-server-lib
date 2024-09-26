@@ -35,7 +35,7 @@ export class EnvService {
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
-      localFrontendPort: process.env.FRONTEND_PORT || '8000',
+      localFrontendPort: process.env.FRONTEND_PORT || '4300',
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
         ','
       ),
