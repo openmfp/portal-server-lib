@@ -6,3 +6,4 @@ export * from './env';
 export * from './config';
 export * from './services';
 export * from './logout';
+export * from './local-nodes';

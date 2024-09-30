@@ -6,6 +6,7 @@ import { HealthController } from './health';
 import { LogoutController } from './logout';
 import { PortalModule } from './portal.module';
 import { DynamicModule, Provider } from '@nestjs/common';
+import { LocalNodesController } from './local-nodes';
 
 describe('PortalModule', () => {
   it('should create portal module', () => {
@@ -14,6 +15,7 @@ describe('PortalModule', () => {
     expect(portalModule.controllers).toStrictEqual([
       AuthController,
       HealthController,
+      LocalNodesController,
       EnvController,
       LogoutController,
       ConfigController,

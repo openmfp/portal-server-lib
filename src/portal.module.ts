@@ -22,6 +22,7 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
+import { LocalNodesController } from './local-nodes';
 import {
   EnvController,
   EnvVariablesServiceImpl,
@@ -116,6 +117,7 @@ export class PortalModule {
     let controllers: any[] = [
       AuthController,
       HealthController,
+      LocalNodesController,
       EnvController,
       LogoutController,
       ConfigController,
@@ -131,6 +133,7 @@ export class PortalModule {
       IntentResolveService,
       AuthDataService,
       AuthTokenService,
+      ContentConfigurationLuigiDataService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,
