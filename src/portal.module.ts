@@ -10,6 +10,9 @@ import {
   AuthTokenService,
   NoopAuthCallback,
 } from './auth';
+import { ConfigTransferNodeService } from './config/luigi/luigi-data/config-transfer-node.service';
+import { NodeExtendedDataService } from './config/luigi/luigi-data/node-extended-data.service';
+import { TextsTranslateService } from './config/luigi/luigi-data/texts-translate.service';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -129,6 +132,9 @@ export class PortalModule {
       CookiesService,
       LuigiConfigNodesService,
       IntentResolveService,
+      TextsTranslateService,
+      ConfigTransferNodeService,
+      NodeExtendedDataService,
       AuthDataService,
       AuthTokenService,
       {
