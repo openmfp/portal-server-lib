@@ -1,4 +1,5 @@
 import { BreadcrumbBadge } from './breadcrumb-badge';
+import { LuigiUserSettings } from './luigi-user-settings';
 
 export interface LuigiNodeCategory {
   label: string;
@@ -13,10 +14,6 @@ export interface LuigiNodeIFramePermissions {
   sandbox?: string[];
 }
 
-export interface LuigiUserSettingsConfig {
-  groups: Record<string, LuigiUserSettingsGroup>;
-}
-
 export interface EntityDefinition {
   id: string;
   dynamicFetchId?: string;
@@ -28,23 +25,6 @@ export interface EntityDefinition {
     entityListNavigationContext: string;
     sapIllusSVG: string;
   };
-}
-
-export interface LuigiUserSettingsGroup {
-  label?: string;
-  sublabel?: string;
-  title?: string;
-  icon?: string;
-  viewUrl?: string;
-  settings?: Record<string, LuigiUserSetting>;
-}
-
-export interface LuigiUserSetting {
-  type: string;
-  label?: string;
-  style?: string;
-  options?: string[];
-  isEditable?: boolean;
 }
 
 export interface LuigiIntent {
@@ -88,7 +68,7 @@ export interface LuigiUrlParameterPermissions {
 export interface PortalLuigiNodeExtensions {
   _preloadUrl?: string;
   // cfg.vizConfig?.userSettings is copied to every node with this parameter
-  _userSettingsConfig?: LuigiUserSettingsConfig;
+  _userSettingsConfig?: LuigiUserSettings;
   // cfg.vizConfig?.viewGroup?.requiredIFramePermissions; is copied to every node with this parameter
   _requiredIFramePermissionsForViewGroup?: LuigiNodeIFramePermissions;
   // internal navigation ordering
@@ -114,6 +94,7 @@ export interface PortalLuigiNodeExtensions {
   globalNav?: boolean | string;
   breadcrumbBadge?: BreadcrumbBadge;
   url?: string;
+  isMissingMandatoryData?: boolean; // experimental
 
   // order portal nodes by navigation slots
   navSlot?: string;

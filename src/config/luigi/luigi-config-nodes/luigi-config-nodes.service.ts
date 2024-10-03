@@ -38,7 +38,6 @@ export class LuigiConfigNodesService {
     fetchedProvider: ServiceProviderResponse,
     acceptLanguage: string
   ): Promise<ServiceProvider[]> {
-    const serviceProviders: ServiceProvider[] = [];
     const rawServiceProviders = fetchedProvider.serviceProviders;
     const promises = rawServiceProviders.map((provider) =>
       this.luigiDataService
@@ -61,6 +60,7 @@ export class LuigiConfigNodesService {
 
     const luigiDataPromises = await Promise.allSettled(promises);
 
+    const serviceProviders: ServiceProvider[] = [];
     for (const luigiData of luigiDataPromises) {
       if (luigiData.status === 'rejected') {
         continue;

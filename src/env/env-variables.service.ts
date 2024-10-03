@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthDataService, AuthTokenData } from '../auth';
 import { EnvService } from './env.service';
@@ -16,6 +17,7 @@ export interface EnvVariablesService {
   ) => Promise<Record<string, any>>;
 }
 
+@Injectable()
 export class EnvVariablesServiceImpl implements EnvVariablesService {
   constructor(
     private authDataService: AuthDataService,
