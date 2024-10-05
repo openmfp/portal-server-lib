@@ -40,7 +40,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
         luigiConfigData,
         localContentConfigurationUrl
       );
-    });
+    }); //.flat();
 
     const nodes: LuigiNode[] = [];
     for (const nodeArray of nodeArrays) {
