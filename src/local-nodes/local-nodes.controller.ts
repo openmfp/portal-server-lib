@@ -5,7 +5,7 @@ import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
   LuigiNode,
-} from 'src/config';
+} from '../config';
 
 @Controller('/rest/localnodes')
 export class LocalNodesController {
