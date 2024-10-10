@@ -20,8 +20,13 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      const language: string = request.query.language;
-      const data: { value: ContentConfiguration }[] = JSON.parse(request.query.contentConfigurations);
+      const language: string = request.query.language as string;
+      let data: { value: ContentConfiguration }[] = [];
+      if (request.query.contentConfigurations) {
+        data = JSON.parse(request.query.contentConfigurations as string) as {
+          value: ContentConfiguration;
+        }[];
+      }
       const contentConfigurations = data.map((cc) => cc.value);
 
       const nodes: LuigiNode[] = await this.luigiDataService.getLuigiData(
