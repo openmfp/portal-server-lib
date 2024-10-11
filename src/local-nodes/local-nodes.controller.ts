@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
-import { of } from 'rxjs';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
@@ -11,7 +10,7 @@ import {
 export class LocalNodesController {
   constructor(
     private logger: Logger,
-    private luigiDataService: ContentConfigurationLuigiDataService
+    private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
   ) {}
 
   @Get()
@@ -21,28 +20,28 @@ export class LocalNodesController {
   ): Promise<LuigiNode[]> {
     try {
       const language: string = request.query.language as string;
-      let data: { value: ContentConfiguration }[] = [];
+      let contentConfigurations: ContentConfiguration[] = [];
       if (request.query.contentConfigurations) {
-        data = JSON.parse(request.query.contentConfigurations as string) as {
-          value: ContentConfiguration;
-        }[];
+        contentConfigurations = JSON.parse(
+          request.query.contentConfigurations as string
+        ) as ContentConfiguration[];
       }
-      const contentConfigurations = data.map((cc) => cc.value);
 
-      const nodes: LuigiNode[] = await this.luigiDataService.getLuigiData(
-        {
-          name: 'localContentConfiguration',
-          displayName: 'localContentConfiguration',
-          contentConfiguration: contentConfigurations,
-          config: {},
-          creationTimestamp: Date.now().toString(),
-        },
-        language
-      );
+      const nodes: LuigiNode[] =
+        await this.contentConfigurationLuigiDataService.getLuigiData(
+          {
+            name: 'localContentConfiguration',
+            displayName: 'localContentConfiguration',
+            contentConfiguration: contentConfigurations,
+            config: {},
+            creationTimestamp: Date.now().toString(),
+          },
+          language
+        );
 
-      return of(nodes).toPromise();
+      return nodes;
     } catch (e) {
-      this.logger.error(`local nodes error: ${String(e)}`);
+      this.logger.error(`local nodes processing error: ${String(e)}`);
     }
   }
 }

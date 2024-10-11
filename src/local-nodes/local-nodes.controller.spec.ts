@@ -75,9 +75,7 @@ describe('LocalNodesController', () => {
       requestMock = mock<Request>();
       requestMock.query = {
         language: 'any',
-        contentConfigurations: JSON.stringify([
-          { value: contentConfigurationToTest },
-        ]),
+        contentConfigurations: JSON.stringify([contentConfigurationToTest]),
       };
 
       //Act
