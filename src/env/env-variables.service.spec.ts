@@ -16,6 +16,13 @@ describe('EnvVariablesServiceImpl', () => {
     clientId: 'clientId',
   };
 
+  const env = {
+    validWebcomponentUrls: 'validWebcomponentUrls',
+    logoutRedirectUrl: 'logoutRedirectUrl',
+    isLocal: true,
+    developmentInstance: true,
+  };
+
   beforeEach(() => {
     authDataServiceMock = {
       provideAuthData: jest.fn(),
@@ -23,6 +30,7 @@ describe('EnvVariablesServiceImpl', () => {
 
     envServiceMock = {
       getCurrentAuthEnv: jest.fn().mockReturnValue(currentAuthEnv),
+      getEnv: jest.fn().mockReturnValue(env),
     } as any;
 
     envVariablesService = new EnvVariablesServiceImpl(
@@ -59,7 +67,14 @@ describe('EnvVariablesServiceImpl', () => {
         mockResponse as Response
       );
 
-      expect(result).toEqual({ authData: mockAuthData, ...currentAuthEnv });
+      expect(result).toEqual({
+        authData: mockAuthData,
+        ...currentAuthEnv,
+        validWebcomponentUrls: 'validWebcomponentUrls',
+        logoutRedirectUrl: 'logoutRedirectUrl',
+        isLocal: true,
+        developmentInstance: true,
+      });
     });
 
     it('should handle errors from authDataService.provideAuthData', async () => {
