@@ -19,12 +19,10 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      const language: string = request.query.language as string;
+      const language: string = request.body.language as string;
       let contentConfigurations: ContentConfiguration[] = [];
-      if (request.query.contentConfigurations) {
-        contentConfigurations = JSON.parse(
-          request.query.contentConfigurations as string
-        ) as ContentConfiguration[];
+      if (request.body.contentConfigurations) {
+        contentConfigurations = request.body.contentConfigurations as ContentConfiguration[];
       }
 
       const nodes: LuigiNode[] =
