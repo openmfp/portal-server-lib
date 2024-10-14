@@ -41,6 +41,7 @@ export interface ExtendedData {
   extensionClassName?: string;
   helpContext?: HelpContext;
   breadcrumbBadge?: BreadcrumbBadge;
+  devUrl?: string;
 }
 
 export interface ContentConfiguration extends ExtendedData {
