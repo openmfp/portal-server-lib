@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Controller, Get, Logger, Req, Res } from '@nestjs/common';
+import { Controller, Get, Logger, Post, Req, Res } from '@nestjs/common';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
@@ -13,12 +13,13 @@ export class LocalNodesController {
     private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
   ) {}
 
-  @Get()
+  @Post()
   async getLocalNodes(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
+      console.log(request.query);
       const language: string = request.query.language as string;
       let contentConfigurations: ContentConfiguration[] = [];
       if (request.query.contentConfigurations) {
