@@ -30,6 +30,12 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
   ): Promise<EnvConfigVariables> {
     const { oauthServerUrl, oauthTokenUrl, clientId } =
       await this.envService.getCurrentAuthEnv(request);
+    const {
+      validWebcomponentUrls,
+      logoutRedirectUrl,
+      isLocal,
+      developmentInstance,
+    } = this.envService.getEnv();
     const authData = await this.authDataService.provideAuthData(
       request,
       response
@@ -39,6 +45,10 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       oauthServerUrl,
       oauthTokenUrl,
       clientId,
+      validWebcomponentUrls,
+      logoutRedirectUrl,
+      isLocal,
+      developmentInstance,
     });
   }
 }
