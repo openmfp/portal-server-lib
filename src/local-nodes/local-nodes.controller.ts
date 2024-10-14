@@ -19,7 +19,6 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      console.log(request.query);
       const language: string = request.query.language as string;
       let contentConfigurations: ContentConfiguration[] = [];
       if (request.query.contentConfigurations) {
