@@ -139,6 +139,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
+              devUrl: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodes: [
@@ -163,8 +164,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const result = await service.getLuigiData(
           mockProvider,
           'en',
-          undefined,
-          'https://app.example.com'
+          undefined
         );
 
         expect(result[0].viewGroup).toContain(
@@ -178,6 +178,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
+              devUrl: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodes: [
@@ -204,8 +205,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const result = await service.getLuigiData(
           mockProvider,
           'en',
-          undefined,
-          'https://app.example.com'
+          undefined
         );
 
         expect(result[0].compound.children[0].viewUrl).toBe(
@@ -222,6 +222,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
+              devUrl: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodeDefaults: {
