@@ -161,11 +161,7 @@ describe('ContentConfigurationLuigiDataService', () => {
           ],
         } as any as RawServiceProvider;
 
-        const result = await service.getLuigiData(
-          mockProvider,
-          'en',
-          undefined
-        );
+        const result = await service.getLuigiData(mockProvider, 'en');
 
         expect(result[0].viewGroup).toContain(
           'https://app.example.com#https://example.com#main'
@@ -202,11 +198,7 @@ describe('ContentConfigurationLuigiDataService', () => {
           ],
         } as any as RawServiceProvider;
 
-        const result = await service.getLuigiData(
-          mockProvider,
-          'en',
-          undefined
-        );
+        const result = await service.getLuigiData(mockProvider, 'en');
 
         expect(result[0].compound.children[0].viewUrl).toBe(
           'https://app.example.com/child1'

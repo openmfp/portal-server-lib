@@ -20,10 +20,8 @@ export class LocalNodesController {
   ): Promise<LuigiNode[]> {
     try {
       const language: string = request.body.language as string;
-      let contentConfigurations: ContentConfiguration[] = [];
-      if (request.body.contentConfigurations) {
-        contentConfigurations = request.body.contentConfigurations as ContentConfiguration[];
-      }
+      const contentConfigurations: ContentConfiguration[] =
+        request.body.contentConfigurations || [];
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
