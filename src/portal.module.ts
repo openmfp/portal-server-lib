@@ -6,7 +6,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import {
   AuthCallback,
   AuthController,
-  AuthDataService,
   AuthTokenService,
   NoopAuthCallback,
 } from './auth';
@@ -135,7 +134,6 @@ export class PortalModule {
       TextsTranslateService,
       ConfigTransferNodeService,
       NodeExtendedDataService,
-      AuthDataService,
       AuthTokenService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
