@@ -4,12 +4,11 @@ import {
   Req,
   Inject,
   Res,
-  HttpException,
-  HttpStatus,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CookiesService } from '../services';
+import { AuthGuard, AuthCodeGuard, CookiesService } from '../services';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthTokenService, AuthTokenData } from './auth-token.service';
@@ -24,25 +23,18 @@ export class AuthController {
     private logger: Logger
   ) {}
 
+  @UseGuards(AuthCodeGuard)
   @Post('')
   async auth(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<AuthTokenData> {
-    const code = request.query.code;
-    if (!code) {
-      throw new HttpException(
-        "no 'code' was provided in the query",
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     try {
       const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForCode(
           request,
           response,
-          code.toString()
+          request.query.code.toString()
         );
 
       return await this.handleTokenRetrieval(request, response, authTokenData);
@@ -55,24 +47,19 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Post('refresh')
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<AuthTokenData> {
-    const authCookie = this.cookiesService.getAuthCookie(request);
-    if (!authCookie) {
-      throw new HttpException(
-        'the user is not logged in',
-        HttpStatus.BAD_REQUEST
-      );
-    }
     try {
+      const refreshToken = this.cookiesService.getAuthCookie(request);
       const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
-          authCookie
+          refreshToken
         );
       return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {

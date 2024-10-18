@@ -10,10 +10,11 @@ import {
   ForbiddenException,
   HttpStatus,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
-import { CookiesService, HeaderParserService } from '../services';
+import { AuthGuard, HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -44,21 +45,20 @@ export class ConfigController {
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
     private featureTogglesProvider: FeatureTogglesProvider,
-    moduleRef: ModuleRef,
-    private cookiesService: CookiesService
+    moduleRef: ModuleRef
   ) {
     for (const [entity, eCP] of Object.entries(entityContextProviders)) {
       this.entityContextProviders[entity] = moduleRef.get(eCP);
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async getConfig(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    const authCookie = this.cookiesService.getAuthCookie(request);
     const providersPromise = this.getProviders(request, acceptLanguage).catch(
       (e: Error) => {
         this.logger.error(e);
@@ -116,6 +116,7 @@ export class ConfigController {
     return providers;
   }
 
+  @UseGuards(AuthGuard)
   @Get(':entity')
   async getEntityConfig(
     @Req() request: Request,

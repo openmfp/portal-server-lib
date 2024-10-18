@@ -86,15 +86,78 @@ describe('ConfigController', () => {
         .mockReturnValue(Promise.resolve(resultingNodes));
 
       const validEntity = 'project';
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { body } = await request(app.getHttpServer())
         .get(`/rest/config/${validEntity}`)
+        .set('Cookie', 'openmfp_auth_cookie=openmfp_auth_cookie_value')
         .accept(acceptLanguage)
         .expect(200);
 
       expect(getNodesMock).toBeCalled();
       expect(getEntityContextMock).toBeCalled();
       expect(body).toStrictEqual({ providers: resultingNodes, entityContext });
+    });
+
+    it('should fail due to the call not being authorized, no openmfp_auth_cookie', async () => {
+      const getNodesMock = jest.spyOn(nodesService, 'getNodes');
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/project`)
+        .accept(acceptLanguage)
+        .expect(400)
+        .expect((response) => {
+          expect(response.body.message).toEqual('User is not logged in.');
+        });
+
+      expect(getNodesMock).not.toHaveBeenCalled();
+      expect(getEntityContextMock).not.toHaveBeenCalled();
+    });
+
+    it('should fail due to the call not being authorized, no proper cookie', async () => {
+      const getNodesMock = jest.spyOn(nodesService, 'getNodes');
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/project`)
+        .set('Cookie', 'auth_cookie=some_cookie_value')
+        .accept(acceptLanguage)
+        .expect(400)
+        .expect((response) => {
+          expect(response.body.message).toEqual('User is not logged in.');
+        });
+
+      expect(getNodesMock).not.toHaveBeenCalled();
+      expect(getEntityContextMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('GET /rest/config', () => {
+    it('should fail due to the call not being authorized, no openmfp_auth_cookie', async () => {
+      await request(app.getHttpServer())
+        .get(`/rest/config`)
+        .accept(acceptLanguage)
+        .expect(400)
+        .expect((response) => {
+          expect(response.body.message).toEqual('User is not logged in.');
+        });
+    });
+
+    it('should fail due to the call not being authorized, no proper cookie', async () => {
+      await request(app.getHttpServer())
+        .get(`/rest/config`)
+        .set('Cookie', 'auth_cookie=some_cookie_value')
+        .accept(acceptLanguage)
+        .expect(400)
+        .expect((response) => {
+          expect(response.body.message).toEqual('User is not logged in.');
+        });
+    });
+
+    it('should pass with proper openmfp cookie', async () => {
+      await request(app.getHttpServer())
+        .get(`/rest/config`)
+        .set('Cookie', 'auth_cookie=some_cookie_value')
+        .set('Cookie', 'openmfp_auth_cookie=openmfp_auth_cookie_value')
+        .accept(acceptLanguage)
+        .expect(200);
     });
   });
 
