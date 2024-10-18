@@ -38,17 +38,14 @@ export class AuthController {
     }
 
     try {
-      const authTokenResponse: AuthTokenData =
+      const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForCode(
           request,
           response,
           code.toString()
         );
-      return await this.handleTokenRetrieval(
-        request,
-        response,
-        authTokenResponse
-      );
+
+      return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while retrieving token, logging out: ${e}`);
       // logout to trigger a fresh login flow
@@ -70,19 +67,14 @@ export class AuthController {
         HttpStatus.BAD_REQUEST
       );
     }
-
     try {
-      const authTokenResponse: AuthTokenData =
+      const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
           authCookie
         );
-      return await this.handleTokenRetrieval(
-        request,
-        response,
-        authTokenResponse
-      );
+      return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while refreshing token, logging out: ${e}`);
       // logout to trigger a fresh login flow

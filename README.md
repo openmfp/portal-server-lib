@@ -64,19 +64,15 @@ This library exposes a Nest module as an api and needs a main project to run.
 
 ### Import the module
 
-You need to install as well the cookie-parser middleware and enable it NestJS application with the call `app.use(cookieParser());`.
-
 ```ts
 import { NestFactory } from '@nestjs/core';
 import { PortalModule } from '@portal/server-lib';
-import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(
     PortalModule.create({
      healthChecker: OpenHealthChecker,
   }));
-  app.use(cookieParser());
   await app.listen(process.env.PORT || 3000);
 }
 
