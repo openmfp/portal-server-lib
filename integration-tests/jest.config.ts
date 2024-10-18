@@ -3,7 +3,7 @@ import { baseConfig } from '../base.jest.config';
 module.exports = {
   ...baseConfig,
   rootDir: '..',
-  testRegex: '.integration-spec.ts$',
+  testRegex: '.integration.spec.ts$',
   reporters: [
     'default',
     [
