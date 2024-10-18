@@ -1,4 +1,11 @@
-import { DynamicModule, Logger, Module, Type } from '@nestjs/common';
+import {
+  DynamicModule,
+  Logger,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  Type,
+} from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
@@ -48,6 +55,7 @@ import {
   ServiceProviderService,
 } from './config';
 import { HeaderParserService, CookiesService } from './services';
+import cookieParser from 'cookie-parser';
 
 export interface PortalModuleOptions {
   /**
@@ -115,7 +123,11 @@ export interface PortalModuleOptions {
 }
 
 @Module({})
-export class PortalModule {
+export class PortalModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*');
+  }
+
   static create(options: PortalModuleOptions): DynamicModule {
     let controllers: any[] = [
       AuthController,
