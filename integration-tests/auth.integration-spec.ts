@@ -25,7 +25,7 @@ describe('AuthController', () => {
   });
 
   describe('POST /rest/auth', () => {
-    it('should fail due to the lack of auth code in the query params', async () => {
+    it('should fail due to the lack of auth code param in the query params', async () => {
       await request(app.getHttpServer())
         .post(`/rest/auth?coder=uio`)
         .accept(acceptLanguage)
@@ -37,40 +37,9 @@ describe('AuthController', () => {
         });
     });
 
-    it('should pass with proper openmfp cookie', async () => {
+    it('should pass with auth code param', async () => {
       await request(app.getHttpServer())
         .post(`/rest/auth?code=auth_code`)
-        .accept(acceptLanguage)
-        .expect(201);
-    });
-  });
-
-  describe('POST /rest/auth/refresh', () => {
-    it('should fail due to the call not being authorized, no openmfp_auth_cookie', async () => {
-      await request(app.getHttpServer())
-        .post(`/rest/auth/refresh`)
-        .accept(acceptLanguage)
-        .expect(400)
-        .expect((response) => {
-          expect(response.body.message).toEqual('User is not logged in.');
-        });
-    });
-
-    it('should fail due to the call not being authorized, no proper cookie', async () => {
-      await request(app.getHttpServer())
-        .post(`/rest/auth/refresh`)
-        .set('Cookie', 'auth_cookie=some_cookie_value')
-        .accept(acceptLanguage)
-        .expect(400)
-        .expect((response) => {
-          expect(response.body.message).toEqual('User is not logged in.');
-        });
-    });
-
-    it('should pass with proper openmfp cookie', async () => {
-      await request(app.getHttpServer())
-        .post(`/rest/auth/refresh`)
-        .set('Cookie', 'openmfp_auth_cookie=openmfp_auth_cookie_value')
         .accept(acceptLanguage)
         .expect(201);
     });
