@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
-import { AuthGuard, HeaderParserService } from '../services';
+import { HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -52,7 +52,6 @@ export class ConfigController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   async getConfig(
     @Req() request: Request,
@@ -116,7 +115,6 @@ export class ConfigController {
     return providers;
   }
 
-  @UseGuards(AuthGuard)
   @Get(':entity')
   async getEntityConfig(
     @Req() request: Request,

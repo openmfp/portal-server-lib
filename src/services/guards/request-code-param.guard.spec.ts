@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
-import { AuthCodeGuard } from './auth-code.guard'; // Adjust the import path as needed
+import { RequestCodeParamGuard } from './request-code-param.guard'; // Adjust the import path as needed
 
-describe('AuthCodeGuard', () => {
-  let guard: AuthCodeGuard;
+describe('RequestCodeParamGuard', () => {
+  let guard: RequestCodeParamGuard;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthCodeGuard],
+      providers: [RequestCodeParamGuard],
     }).compile();
 
-    guard = module.get<AuthCodeGuard>(AuthCodeGuard);
+    guard = module.get<RequestCodeParamGuard>(RequestCodeParamGuard);
   });
 
   it('should be defined', () => {
