@@ -57,7 +57,7 @@ describe('LocalNodesController', () => {
   describe('getLocalNodes', () => {
     it('should get no local nodes when no parameters', async () => {
       //Arrange
-      const expectedResult: LuigiNode[] = [{}];
+      const expectedResult: LuigiNode[] = undefined;
       jest
         .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
         .mockResolvedValue(Promise.resolve(expectedResult));
