@@ -2,7 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { LocalNodesController } from './local-nodes.controller';
+import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
   ContentConfigurationLuigiDataService,
   IntentResolveService,
@@ -18,7 +18,7 @@ describe('LocalNodesController', () => {
   let controller: LocalNodesController;
   let module: TestingModule;
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
-  let requestMock: Request;
+  let body: Request;
   let responseMock: Response;
 
   beforeEach(async () => {
@@ -36,7 +36,7 @@ describe('LocalNodesController', () => {
       imports: [HttpModule],
     }).compile();
 
-    requestMock = mock<Request>();
+    body = mock<ConfigDto>();
     responseMock = mock<Response>();
     contentConfigurationLuigiDataServiceMock =
       module.get<ContentConfigurationLuigiDataService>(
@@ -63,7 +63,7 @@ describe('LocalNodesController', () => {
         .mockResolvedValue(Promise.resolve(expectedResult));
 
       //Act
-      const result = await controller.getLocalNodes(requestMock, responseMock);
+      const result = await controller.getLocalNodes(body, responseMock);
 
       //Assert
       expect(result).toStrictEqual(expectedResult);
@@ -72,14 +72,14 @@ describe('LocalNodesController', () => {
     it('should get local nodes', async () => {
       //Arrange
 
-      requestMock = mock<Request>();
-      requestMock.body = {
+      body = mock<ConfigDto>();
+      body = {
         language: 'any',
         contentConfigurations: [contentConfigurationToTest],
       };
 
       //Act
-      const result = await controller.getLocalNodes(requestMock, responseMock);
+      const result = await controller.getLocalNodes(body, responseMock);
 
       //Assert
       expect(result).toStrictEqual(expectedResultFormProcessing);

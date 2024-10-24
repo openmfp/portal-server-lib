@@ -1,10 +1,28 @@
 import { Request, Response } from 'express';
-import { Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpStatus,
+  Logger,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
   LuigiNode,
 } from '../config';
+import { IsArray, IsNotEmpty } from 'class-validator';
+
+export class ConfigDto {
+  @IsNotEmpty()
+  language: string;
+
+  @IsArray()
+  @IsNotEmpty({ each: true })
+  contentConfigurations: ContentConfiguration[];
+}
 
 @Controller('/rest/localnodes')
 export class LocalNodesController {
@@ -15,21 +33,13 @@ export class LocalNodesController {
 
   @Post()
   async getLocalNodes(
-    @Req() request: Request,
+    @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      if (
-        !request.body ||
-        !request.body.language ||
-        !request.body.contentConfigurations
-      ) {
-        throw 'Could not reach data required for local nodes processing';
-      }
-
-      const language: string = request.body.language as string;
+      const language: string = config.language as string;
       const contentConfigurations: ContentConfiguration[] =
-        request.body.contentConfigurations || [];
+        config.contentConfigurations || [];
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
