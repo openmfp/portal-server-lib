@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Controller, Get, Logger, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Logger, Post, Req, Res } from '@nestjs/common';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
@@ -19,6 +19,14 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
+      if (
+        !request.body ||
+        !request.body.language ||
+        !request.body.contentConfigurations
+      ) {
+        throw 'Could not reach data required for local nodes processing';
+      }
+
       const language: string = request.body.language as string;
       const contentConfigurations: ContentConfiguration[] =
         request.body.contentConfigurations || [];
@@ -36,8 +44,10 @@ export class LocalNodesController {
         );
 
       return nodes;
-    } catch (e) {
-      this.logger.error(`local nodes processing error: ${String(e)}`);
+    } catch (e: any) {
+      this.logger.error(`Could not process local content configuration: ${e}`);
+      response.status(HttpStatus.BAD_REQUEST);
+      return undefined;
     }
   }
 }
