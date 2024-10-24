@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {
   Body,
   Controller,
+  HttpException,
   HttpStatus,
   Logger,
   Post,
@@ -56,8 +57,10 @@ export class LocalNodesController {
       return nodes;
     } catch (e: any) {
       this.logger.error(`Could not process local content configuration: ${e}`);
-      response.status(HttpStatus.BAD_REQUEST);
-      return undefined;
+      throw new HttpException(
+        'Could not process local content configuration',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }
