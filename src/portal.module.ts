@@ -13,7 +13,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import {
   AuthCallback,
   AuthController,
-  AuthDataService,
   AuthTokenService,
   NoopAuthCallback,
 } from './auth';
@@ -149,7 +148,6 @@ export class PortalModule implements NestModule {
       TextsTranslateService,
       ConfigTransferNodeService,
       NodeExtendedDataService,
-      AuthDataService,
       AuthTokenService,
       ContentConfigurationLuigiDataService,
       {

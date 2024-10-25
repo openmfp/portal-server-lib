@@ -31,7 +31,7 @@ In order to be able to use the library following environment properties have to 
 | Property name           | Description                                                                                                                                                                                                 |
 |-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HEALTH_CHECK_INTERVAL   | The interval in *milliseconds* at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                         |
-| LOGOUT_REDIRECT_URL   | The url to redirect user after logout action, by default */logout*.                                                          |
+| LOGOUT_REDIRECT_URL     | The url to redirect user after logout action, by default */logout*.                                                                                                                                         |
 | ENVIRONMENT             | This property indicates the environment in which the application is running, *local* indicates development environment.                                                                                     |
 | DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
 | FRONTEND_PORT           | Set the port number on which the frontend of the application will run in *local* environment.                                                                                                               |
@@ -68,11 +68,14 @@ This library exposes a Nest module as an api and needs a main project to run.
 import { NestFactory } from '@nestjs/core';
 import { PortalModule } from '@portal/server-lib';
 
-const app = await NestFactory.create(
+async function bootstrap() {
+  const app = await NestFactory.create(
     PortalModule.create({
      healthChecker: OpenHealthChecker,
-  }),
-);
+  }));
+  await app.listen(process.env.PORT || 3000);
+}
 
 // bootstrap the app
+bootstrap();
 ```
