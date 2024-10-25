@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   HttpStatus,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';

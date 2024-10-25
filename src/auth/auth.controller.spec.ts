@@ -7,7 +7,6 @@ import { PortalModule } from '../portal.module';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { AuthTokenData, AuthTokenService } from './auth-token.service';
-import { HttpException } from '@nestjs/common';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -94,31 +93,6 @@ describe('AuthController', () => {
     );
   });
 
-  it('should return a bad request when there was no code provided', async () => {
-    // arrange
-    const callback = jest.spyOn(authCallback, 'handleSuccess');
-    const getTokenForCode = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForCode'
-    );
-    requestMock.query = {};
-
-    // act
-    const response = controller.auth(requestMock, responseMock);
-
-    // assert
-    await expect(response).rejects.toThrow(HttpException);
-    await expect(response).rejects.toThrow(
-      "no 'code' was provided in the query"
-    );
-    expect(callback).not.toHaveBeenCalledWith(requestMock);
-    expect(getTokenForCode).not.toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      'foo'
-    );
-  });
-
   it('should refresh the token', async () => {
     // arrange
     const exchangeTokenForRefreshToken = jest.spyOn(
@@ -152,26 +126,6 @@ describe('AuthController', () => {
       'authCookie'
     );
     expect(tokenResponse.refresh_token).toBeUndefined();
-  });
-
-  it('should return a bad request when there was no auth cookie provided', async () => {
-    // arrange
-    const exchangeTokenForRefreshToken = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForRefreshToken'
-    );
-    const getAuthCookie = jest.spyOn(cookiesService, 'getAuthCookie');
-    getAuthCookie.mockReturnValue(undefined);
-    const callback = jest.spyOn(authCallback, 'handleSuccess');
-
-    // act
-    const response = controller.refresh(requestMock, responseMock);
-
-    // assert
-    await expect(response).rejects.toThrow(HttpException);
-    await expect(response).rejects.toThrow('the user is not logged in');
-    expect(callback).not.toHaveBeenCalledWith(requestMock);
-    expect(exchangeTokenForRefreshToken).not.toHaveBeenCalled();
   });
 
   it('should remove the auth cookies on auth server error', async () => {

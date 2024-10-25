@@ -86,9 +86,9 @@ describe('ConfigController', () => {
         .mockReturnValue(Promise.resolve(resultingNodes));
 
       const validEntity = 'project';
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { body } = await request(app.getHttpServer())
         .get(`/rest/config/${validEntity}`)
+        .set('Cookie', 'openmfp_auth_cookie=openmfp_auth_cookie_value')
         .accept(acceptLanguage)
         .expect(200);
 
