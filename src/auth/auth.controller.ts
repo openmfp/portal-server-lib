@@ -6,6 +6,7 @@ import {
   Res,
   Logger,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RequestCodeParamGuard, CookiesService } from '../services';
@@ -47,13 +48,17 @@ export class AuthController {
     }
   }
 
-  @Post('refresh')
+  @Get('refresh')
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
   ): Promise<AuthTokenData> {
     try {
       const refreshToken = this.cookiesService.getAuthCookie(request);
+      if (!refreshToken) {
+        return undefined;
+      }
+
       const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
