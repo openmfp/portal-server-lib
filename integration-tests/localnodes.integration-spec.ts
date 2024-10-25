@@ -5,6 +5,7 @@ import {
   PortalModule,
   ContentConfigurationLuigiDataService,
   LuigiNode,
+  ContentConfiguration,
 } from '../src';
 
 describe('LocalnodesController', () => {
@@ -27,8 +28,49 @@ describe('LocalnodesController', () => {
   });
 
   describe('POST /rest/localnodes param validation', () => {
-    it('should return BadRequest on invalid entity name', async () => {
-      await request(app.getHttpServer()).post(`/rest/localnodes`).expect(400);
+    it('should return BadRequest on invalid params when no params', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({})
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when no contentConfigurations', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          location: '',
+          contentConfigurations: [{}],
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when no contentConfigurations', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          language: 'any',
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when no language', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          contentConfigurations: [{}],
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when contentConfigurations empty', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          language: 'any',
+          contentConfigurations: [null],
+        })
+        .expect(400);
     });
 
     it('should call the getLuigiData method on valid params', async () => {
