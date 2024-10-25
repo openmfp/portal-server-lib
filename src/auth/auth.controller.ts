@@ -30,17 +30,14 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response
   ): Promise<AuthTokenData> {
     try {
-      const authTokenResponse: AuthTokenData =
+      const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForCode(
           request,
           response,
           request.query.code.toString()
         );
-      return await this.handleTokenRetrieval(
-        request,
-        response,
-        authTokenResponse
-      );
+
+      return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while retrieving token, logging out: ${e}`);
       // logout to trigger a fresh login flow
@@ -57,17 +54,13 @@ export class AuthController {
   ): Promise<AuthTokenData> {
     try {
       const refreshToken = this.cookiesService.getAuthCookie(request);
-      const authTokenResponse: AuthTokenData =
+      const authTokenData: AuthTokenData =
         await this.authTokenService.exchangeTokenForRefreshToken(
           request,
           response,
           refreshToken
         );
-      return await this.handleTokenRetrieval(
-        request,
-        response,
-        authTokenResponse
-      );
+      return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while refreshing token, logging out: ${e}`);
       // logout to trigger a fresh login flow

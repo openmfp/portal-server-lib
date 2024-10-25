@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthDataService, AuthTokenData } from '../auth';
-import { EnvService } from './env.service';
+import { EnvService, EnvVariables } from './env.service';
 
-export interface EnvConfigVariables {
-  authData: AuthTokenData;
+export interface EnvConfigVariables extends EnvVariables {
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -19,10 +17,7 @@ export interface EnvVariablesService {
 
 @Injectable()
 export class EnvVariablesServiceImpl implements EnvVariablesService {
-  constructor(
-    private authDataService: AuthDataService,
-    private envService: EnvService
-  ) {}
+  constructor(private envService: EnvService) {}
 
   async getEnv(
     request: Request,
@@ -36,12 +31,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       isLocal,
       developmentInstance,
     } = this.envService.getEnv();
-    const authData = await this.authDataService.provideAuthData(
-      request,
-      response
-    );
-    return Promise.resolve({
-      authData,
+    return {
       oauthServerUrl,
       oauthTokenUrl,
       clientId,
@@ -49,6 +39,6 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       logoutRedirectUrl,
       isLocal,
       developmentInstance,
-    });
+    };
   }
 }
