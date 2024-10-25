@@ -38,20 +38,16 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      const language: string = config.language as string;
-      const contentConfigurations: ContentConfiguration[] =
-        config.contentConfigurations || [];
-
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
           {
             name: 'localContentConfiguration',
             displayName: 'localContentConfiguration',
-            contentConfiguration: contentConfigurations,
+            contentConfiguration: config.contentConfigurations,
             config: {},
             creationTimestamp: Date.now().toString(),
           },
-          language
+          config.language
         );
 
       return nodes;
