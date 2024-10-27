@@ -9,6 +9,7 @@ import {
   Get,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { EnvService } from '../env';
 import { RequestCodeParamGuard, CookiesService } from '../services';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
@@ -21,6 +22,7 @@ export class AuthController {
     private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
     private authTokenService: AuthTokenService,
+    private envService: EnvService,
     private logger: Logger
   ) {}
 
@@ -41,9 +43,7 @@ export class AuthController {
       return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while retrieving token, logging out: ${e}`);
-      // logout to trigger a fresh login flow
-      await this.authCallbackService.handleFailure(request, response);
-      this.cookiesService.removeAuthCookie(response);
+      await this.handleAuthError(request, response);
       throw e;
     }
   }
@@ -68,9 +68,7 @@ export class AuthController {
       return await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(`error while refreshing token, logging out: ${e}`);
-      // logout to trigger a fresh login flow
-      await this.authCallbackService.handleFailure(request, response);
-      this.cookiesService.removeAuthCookie(response);
+      await this.handleAuthError(request, response);
       throw e;
     }
   }
@@ -88,9 +86,22 @@ export class AuthController {
     return this.filterAuthTokenResponseForFrontend(authTokenResponse);
   }
 
+  private async handleAuthError(
+    request: Request,
+    response: Response
+  ): Promise<void> {
+    await this.authCallbackService.handleFailure(request, response);
+    this.cookiesService.removeAuthCookie(response);
+
+    // logout to trigger a fresh login flow
+    const { logoutRedirectUrl } = this.envService.getEnv();
+    response.redirect(logoutRedirectUrl);
+  }
+
   private filterAuthTokenResponseForFrontend(
     authTokenResponse: AuthTokenData
   ): AuthTokenData {
+    console.log(authTokenResponse);
     delete authTokenResponse.refresh_token;
     delete authTokenResponse.refresh_expires_in;
     return authTokenResponse;
