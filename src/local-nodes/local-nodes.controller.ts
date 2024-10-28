@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import {
   Body,
   Controller,
@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Logger,
   Post,
-  Req,
   Res,
 } from '@nestjs/common';
 import {
@@ -14,13 +13,15 @@ import {
   ContentConfigurationLuigiDataService,
   LuigiNode,
 } from '../config';
-import { IsArray, IsNotEmpty } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class ConfigDto {
+  @IsString()
   @IsNotEmpty()
   language: string;
 
   @IsArray()
+  @ArrayMinSize(1)
   @IsNotEmpty({ each: true })
   contentConfigurations: ContentConfiguration[];
 }

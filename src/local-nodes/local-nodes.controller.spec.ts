@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
@@ -52,6 +52,28 @@ describe('LocalNodesController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  it('should return HttpException when getLuigiData throws error', async () => {
+    //Arrange
+    const expectedResult: LuigiNode[] = undefined;
+    jest
+      .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
+      .mockImplementation(() => {
+        throw new Error();
+      });
+
+    //Act
+    try {
+      await controller.getLocalNodes(body, responseMock);
+    } catch (error: any) {
+      //Assert
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+      expect(error.message).toBe(
+        'Could not process local content configuration'
+      );
+    }
   });
 
   describe('getLocalNodes', () => {

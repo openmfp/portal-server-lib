@@ -5,7 +5,6 @@ import {
   PortalModule,
   ContentConfigurationLuigiDataService,
   LuigiNode,
-  ContentConfiguration,
 } from '../src';
 
 describe('LocalnodesController', () => {
@@ -39,26 +38,17 @@ describe('LocalnodesController', () => {
       await request(app.getHttpServer())
         .post(`/rest/localnodes`)
         .send({
-          location: '',
-          contentConfigurations: [{}],
-        })
-        .expect(400);
-    });
-
-    it('should return BadRequest on invalid params when no contentConfigurations', async () => {
-      await request(app.getHttpServer())
-        .post(`/rest/localnodes`)
-        .send({
           language: 'any',
         })
         .expect(400);
     });
 
-    it('should return BadRequest on invalid params when no language', async () => {
+    it('should return BadRequest on invalid params when contentConfigurations contains not null or empty', async () => {
       await request(app.getHttpServer())
         .post(`/rest/localnodes`)
         .send({
-          contentConfigurations: [{}],
+          language: 'any',
+          contentConfigurations: [{}, null],
         })
         .expect(400);
     });
@@ -68,7 +58,36 @@ describe('LocalnodesController', () => {
         .post(`/rest/localnodes`)
         .send({
           language: 'any',
-          contentConfigurations: [null],
+          contentConfigurations: [],
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when contentConfigurations not array', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          language: 'any',
+          contentConfigurations: {},
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when language is empty', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          location: '',
+          contentConfigurations: [{}],
+        })
+        .expect(400);
+    });
+
+    it('should return BadRequest on invalid params when no language', async () => {
+      await request(app.getHttpServer())
+        .post(`/rest/localnodes`)
+        .send({
+          contentConfigurations: [{}],
         })
         .expect(400);
     });
