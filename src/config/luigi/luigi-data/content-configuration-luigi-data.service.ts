@@ -25,22 +25,19 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
   async getLuigiData(
     provider: RawServiceProvider,
     language: string,
-    extendedData?: ExtendedData,
-    localContentConfigurationUrl?: string
+    extendedData?: ExtendedData
   ): Promise<LuigiNode[]> {
     const nodeArrays: LuigiNode[] = provider.contentConfiguration
       .map((config) => {
-        let luigiConfigData: LuigiConfigData = config.luigiConfigFragment.data;
+        const luigiConfigData: LuigiConfigData =
+          config.luigiConfigFragment.data;
 
         this.textsTranslateService.translateTexts(
           config.luigiConfigFragment,
           language
         );
 
-        return this.processLuigiConfigData(
-          luigiConfigData,
-          localContentConfigurationUrl
-        );
+        return this.processLuigiConfigData(luigiConfigData, config.devUrl);
       })
       .flat();
 
