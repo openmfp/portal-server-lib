@@ -213,7 +213,6 @@ export class PortalModule implements NestModule {
     return {
       module: PortalModule,
       imports: moduleImports,
-      exports: [HttpModule],
       controllers,
       providers,
     };
