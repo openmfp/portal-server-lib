@@ -101,7 +101,6 @@ export class AuthController {
   private filterAuthTokenResponseForFrontend(
     authTokenResponse: AuthTokenData
   ): AuthTokenData {
-    console.log(authTokenResponse);
     delete authTokenResponse.refresh_token;
     delete authTokenResponse.refresh_expires_in;
     return authTokenResponse;
