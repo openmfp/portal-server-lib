@@ -58,8 +58,6 @@ export class AuthTokenService {
     response: Response,
     refreshToken: string
   ): Promise<AuthTokenData> {
-    throw new Error('check');
-
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
 
     const body = new URLSearchParams({
