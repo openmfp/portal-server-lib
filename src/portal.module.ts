@@ -31,6 +31,7 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
+import { LocalNodesController } from './local-nodes';
 import {
   EnvController,
   EnvVariablesServiceImpl,
@@ -130,6 +131,7 @@ export class PortalModule implements NestModule {
     let controllers: any[] = [
       AuthController,
       HealthController,
+      LocalNodesController,
       EnvController,
       LogoutController,
       ConfigController,
@@ -147,6 +149,7 @@ export class PortalModule implements NestModule {
       ConfigTransferNodeService,
       NodeExtendedDataService,
       AuthTokenService,
+      ContentConfigurationLuigiDataService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,
