@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EnvService } from '../env';
 import { CookiesService } from '../services';
 import { AuthController } from './auth.controller';
 import { PortalModule } from '../portal.module';
