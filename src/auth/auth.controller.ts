@@ -9,7 +9,6 @@ import {
   Get,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EnvService } from '../env';
 import { RequestCodeParamGuard, CookiesService } from '../services';
 import { AuthCallback } from './auth.callback';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
@@ -23,8 +22,7 @@ export class AuthController {
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
-    private authTokenService: AuthTokenService,
-    private envService: EnvService
+    private authTokenService: AuthTokenService
   ) {}
 
   @UseGuards(RequestCodeParamGuard)
@@ -91,8 +89,6 @@ export class AuthController {
     response: Response
   ): Promise<void> {
     // logout to trigger a fresh login flow
-    const { logoutRedirectUrl } = this.envService.getEnv();
-    response.redirect(logoutRedirectUrl);
     this.cookiesService.removeAuthCookie(response);
 
     try {

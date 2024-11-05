@@ -17,16 +17,10 @@ describe('AuthController', () => {
   let authTokenServiceMock: jest.Mocked<AuthTokenService> =
     mock<AuthTokenService>();
   let cookiesServiceMock: jest.Mocked<CookiesService> = mock<CookiesService>();
-  let envServiceMock: jest.Mocked<EnvService> = mock<EnvService>();
   const logoutRedirectUrl = 'logoutRedirectUrl';
 
   beforeEach(async () => {
     jest.resetAllMocks();
-
-    envServiceMock.getEnv.mockReturnValue({
-      logoutRedirectUrl,
-      healthCheckInterval: 100,
-    });
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
@@ -37,8 +31,6 @@ describe('AuthController', () => {
       .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
       .useValue(cookiesServiceMock)
-      .overrideProvider(EnvService)
-      .useValue(envServiceMock)
       .compile();
     controller = module.get<AuthController>(AuthController);
   });
@@ -96,7 +88,6 @@ describe('AuthController', () => {
 
       // assert
       expect(response).toBeUndefined();
-      expect(responseMock.redirect).toHaveBeenCalledWith(logoutRedirectUrl);
       expect(getTokenForCode).toHaveBeenCalledWith(
         requestMock,
         responseMock,
@@ -160,7 +151,6 @@ describe('AuthController', () => {
     it('should remove the auth cookies on auth server error', async () => {
       // arrange
       const logoutRedirectUrl = 'logoutRedirectUrl';
-      envServiceMock.getEnv.mockReturnValue({ logoutRedirectUrl });
       cookiesServiceMock.getAuthCookie.mockReturnValue('authCookie');
       authTokenServiceMock.exchangeTokenForRefreshToken.mockRejectedValue(
         new Error('error')
@@ -182,7 +172,6 @@ describe('AuthController', () => {
       expect(
         authTokenServiceMock.exchangeTokenForRefreshToken
       ).toHaveBeenCalledWith(requestMock, responseMock, 'authCookie');
-      expect(responseMock.redirect).toHaveBeenCalledWith(logoutRedirectUrl);
       expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
         responseMock
       );
