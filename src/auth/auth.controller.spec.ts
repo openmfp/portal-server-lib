@@ -16,7 +16,6 @@ describe('AuthController', () => {
   let authTokenServiceMock: jest.Mocked<AuthTokenService> =
     mock<AuthTokenService>();
   let cookiesServiceMock: jest.Mocked<CookiesService> = mock<CookiesService>();
-  const logoutRedirectUrl = 'logoutRedirectUrl';
 
   beforeEach(async () => {
     jest.resetAllMocks();
