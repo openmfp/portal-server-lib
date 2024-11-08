@@ -88,7 +88,6 @@ export class AuthController {
     request: Request,
     response: Response
   ): Promise<void> {
-    // logout to trigger a fresh login flow
     this.cookiesService.removeAuthCookie(response);
 
     try {
