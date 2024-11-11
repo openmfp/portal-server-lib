@@ -6,6 +6,7 @@ import {
   Res,
   Logger,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RequestCodeParamGuard, CookiesService } from '../services';
@@ -15,12 +16,13 @@ import { AuthTokenService, AuthTokenData } from './auth-token.service';
 
 @Controller('/rest/auth')
 export class AuthController {
+  private logger: Logger = new Logger(AuthController.name);
+
   constructor(
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
     private cookiesService: CookiesService,
-    private authTokenService: AuthTokenService,
-    private logger: Logger
+    private authTokenService: AuthTokenService
   ) {}
 
   @UseGuards(RequestCodeParamGuard)
@@ -28,46 +30,45 @@ export class AuthController {
   async auth(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<AuthTokenData> {
+  ): Promise<AuthTokenData | void> {
+    let authTokenData: AuthTokenData = null;
     try {
-      const authTokenData: AuthTokenData =
-        await this.authTokenService.exchangeTokenForCode(
-          request,
-          response,
-          request.query.code.toString()
-        );
-
-      return await this.handleTokenRetrieval(request, response, authTokenData);
+      authTokenData = await this.authTokenService.exchangeTokenForCode(
+        request,
+        response,
+        request.query.code.toString()
+      );
     } catch (e: any) {
-      this.logger.error(`error while retrieving token, logging out: ${e}`);
-      // logout to trigger a fresh login flow
-      await this.authCallbackService.handleFailure(request, response);
-      this.cookiesService.removeAuthCookie(response);
-      throw e;
+      this.logger.error(
+        `Error while retrieving token from code, logging out: ${e}`
+      );
+      return await this.handleAuthError(request, response);
     }
+    return await this.handleTokenRetrieval(request, response, authTokenData);
   }
 
-  @Post('refresh')
+  @Get('refresh')
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response
-  ): Promise<AuthTokenData> {
-    try {
-      const refreshToken = this.cookiesService.getAuthCookie(request);
-      const authTokenData: AuthTokenData =
-        await this.authTokenService.exchangeTokenForRefreshToken(
-          request,
-          response,
-          refreshToken
-        );
-      return await this.handleTokenRetrieval(request, response, authTokenData);
-    } catch (e: any) {
-      this.logger.error(`error while refreshing token, logging out: ${e}`);
-      // logout to trigger a fresh login flow
-      await this.authCallbackService.handleFailure(request, response);
-      this.cookiesService.removeAuthCookie(response);
-      throw e;
+  ): Promise<AuthTokenData | void> {
+    const refreshToken = this.cookiesService.getAuthCookie(request);
+    if (!refreshToken) {
+      return;
     }
+
+    let authTokenData: AuthTokenData = null;
+    try {
+      authTokenData = await this.authTokenService.exchangeTokenForRefreshToken(
+        request,
+        response,
+        refreshToken
+      );
+    } catch (e: any) {
+      this.logger.error(`Error while refreshing token, logging out: ${e}`);
+      return await this.handleAuthError(request, response);
+    }
+    return await this.handleTokenRetrieval(request, response, authTokenData);
   }
 
   private async handleTokenRetrieval(
@@ -81,6 +82,22 @@ export class AuthController {
       authTokenResponse
     );
     return this.filterAuthTokenResponseForFrontend(authTokenResponse);
+  }
+
+  private async handleAuthError(
+    request: Request,
+    response: Response
+  ): Promise<void> {
+    this.cookiesService.removeAuthCookie(response);
+
+    try {
+      await this.authCallbackService.handleFailure(request, response);
+    } catch (e) {
+      this.logger.error(
+        'Error while executing auth callback handle failure: ',
+        e
+      );
+    }
   }
 
   private filterAuthTokenResponseForFrontend(

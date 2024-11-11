@@ -10,150 +10,169 @@ import { AuthTokenData, AuthTokenService } from './auth-token.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authCallback: AuthCallback;
-  let requestMock: Request;
-  let responseMock: Response;
-  let authTokenService: AuthTokenService;
-  let cookiesService: CookiesService;
+  let authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
+  let requestMock: Request = mock<Request>();
+  let responseMock: Response = mock<Response>();
+  let authTokenServiceMock: jest.Mocked<AuthTokenService> =
+    mock<AuthTokenService>();
+  let cookiesServiceMock: jest.Mocked<CookiesService> = mock<CookiesService>();
 
   beforeEach(async () => {
-    authTokenService = mock<AuthTokenService>();
-    cookiesService = mock<CookiesService>();
+    jest.resetAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     })
+      .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
+      .useValue(authCallbackMock)
       .overrideProvider(AuthTokenService)
-      .useValue(authTokenService)
+      .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
-      .useValue(cookiesService)
+      .useValue(cookiesServiceMock)
       .compile();
     controller = module.get<AuthController>(AuthController);
-    authCallback = module.get<AuthCallback>(AUTH_CALLBACK_INJECTION_TOKEN);
-    requestMock = mock<Request>();
-    responseMock = mock<Response>();
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should get the config for tenant', async () => {
-    // arrange
-    const callback = jest.spyOn(authCallback, 'handleSuccess');
-    const getTokenForCode = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForCode'
-    );
-    requestMock.query = { code: 'foo' };
-    const idToken = 'id_token';
-    const authTokenResponse = {
-      id_token: idToken,
-      refresh_token: 'ref',
-      expires_in: '12312',
-      access_token: 'access',
-    } as AuthTokenData;
-    getTokenForCode.mockResolvedValue(authTokenResponse);
+  describe('auth', () => {
+    it('should get the config for tenant', async () => {
+      // arrange
+      const callback = jest.spyOn(authCallbackMock, 'handleSuccess');
+      const getTokenForCode = jest.spyOn(
+        authTokenServiceMock,
+        'exchangeTokenForCode'
+      );
+      requestMock.query = { code: 'foo' };
+      const idToken = 'id_token';
+      const authTokenResponse = {
+        id_token: idToken,
+        refresh_token: 'ref',
+        expires_in: '12312',
+        access_token: 'access',
+      } as AuthTokenData;
+      getTokenForCode.mockResolvedValue(authTokenResponse);
 
-    // act
-    const tokenResponse = await controller.auth(requestMock, responseMock);
+      // act
+      const tokenResponse = await controller.auth(requestMock, responseMock);
 
-    // assert
-    expect(callback).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      authTokenResponse
-    );
-    expect(getTokenForCode).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      'foo'
-    );
-    expect(tokenResponse.refresh_token).toBeUndefined();
+      // assert
+      expect(callback).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        authTokenResponse
+      );
+      expect(getTokenForCode).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        'foo'
+      );
+      expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
+    });
+
+    it('should log the error if there is a problem retrieving the token', async () => {
+      // arrange
+      const getTokenForCode = jest.spyOn(
+        authTokenServiceMock,
+        'exchangeTokenForCode'
+      );
+      requestMock.query = { code: 'foo' };
+      getTokenForCode.mockRejectedValue(new Error('error'));
+
+      // act
+      const response = await controller.auth(requestMock, responseMock);
+
+      // assert
+      expect(response).toBeUndefined();
+      expect(getTokenForCode).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        'foo'
+      );
+    });
+
+    it('should ', () => {});
   });
 
-  it('should log the error if there is a problem retrieving the token', async () => {
-    // arrange
-    const getTokenForCode = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForCode'
-    );
-    requestMock.query = { code: 'foo' };
-    getTokenForCode.mockRejectedValue(new Error('error'));
+  describe('refresh', () => {
+    it('should return undefined if there is no refresh token in the request', async () => {
+      // arrange
+      cookiesServiceMock.getAuthCookie.mockReturnValue(null);
 
-    // act
-    await expect(controller.auth(requestMock, responseMock)).rejects.toThrow(
-      Error
-    );
+      // act
+      const response = await controller.refresh(requestMock, responseMock);
 
-    // assert
-    expect(getTokenForCode).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      'foo'
-    );
-  });
+      //
+      expect(response).toBeUndefined();
+      expect(
+        authTokenServiceMock.exchangeTokenForRefreshToken
+      ).not.toHaveBeenCalled();
+    });
 
-  it('should refresh the token', async () => {
-    // arrange
-    const exchangeTokenForRefreshToken = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForRefreshToken'
-    );
-    const getAuthCookie = jest.spyOn(cookiesService, 'getAuthCookie');
-    getAuthCookie.mockReturnValue('authCookie');
-    const callback = jest.spyOn(authCallback, 'handleSuccess');
-    const idToken = 'id_token';
-    const authTokenResponse = {
-      id_token: idToken,
-      refresh_token: 'ref',
-      expires_in: '12312',
-      access_token: 'access',
-    } as AuthTokenData;
-    exchangeTokenForRefreshToken.mockResolvedValue(authTokenResponse);
+    it('should refresh the token', async () => {
+      // arrange
+      const exchangeTokenForRefreshToken = jest.spyOn(
+        authTokenServiceMock,
+        'exchangeTokenForRefreshToken'
+      );
+      const getAuthCookie = jest.spyOn(cookiesServiceMock, 'getAuthCookie');
+      getAuthCookie.mockReturnValue('authCookie');
+      const callback = jest.spyOn(authCallbackMock, 'handleSuccess');
+      const idToken = 'id_token';
+      const authTokenResponse = {
+        id_token: idToken,
+        refresh_token: 'ref',
+        expires_in: '12312',
+        access_token: 'access',
+      } as AuthTokenData;
+      exchangeTokenForRefreshToken.mockResolvedValue(authTokenResponse);
 
-    // act
-    const tokenResponse = await controller.refresh(requestMock, responseMock);
+      // act
+      const tokenResponse = await controller.refresh(requestMock, responseMock);
 
-    // assert
-    expect(callback).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      authTokenResponse
-    );
-    expect(exchangeTokenForRefreshToken).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      'authCookie'
-    );
-    expect(tokenResponse.refresh_token).toBeUndefined();
-  });
+      // assert
+      expect(callback).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        authTokenResponse
+      );
+      expect(exchangeTokenForRefreshToken).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        'authCookie'
+      );
+      expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
+    });
 
-  it('should remove the auth cookies on auth server error', async () => {
-    // arrange
-    const exchangeTokenForRefreshToken = jest.spyOn(
-      authTokenService,
-      'exchangeTokenForRefreshToken'
-    );
-    const removeAuthCookies = jest.spyOn(cookiesService, 'removeAuthCookie');
-    const getAuthCookie = jest.spyOn(cookiesService, 'getAuthCookie');
-    getAuthCookie.mockReturnValue('authCookie');
-    const handleFailure = jest.spyOn(authCallback, 'handleFailure');
-    const handleSuccess = jest.spyOn(authCallback, 'handleSuccess');
-    exchangeTokenForRefreshToken.mockRejectedValue(new Error('error'));
+    it('should remove the auth cookies on auth server error', async () => {
+      // arrange
+      const logoutRedirectUrl = 'logoutRedirectUrl';
+      cookiesServiceMock.getAuthCookie.mockReturnValue('authCookie');
+      authTokenServiceMock.exchangeTokenForRefreshToken.mockRejectedValue(
+        new Error('error')
+      );
+      authCallbackMock.handleFailure.mockRejectedValue(
+        new Error('handleFailure')
+      );
 
-    // act
-    const response = controller.refresh(requestMock, responseMock);
+      // act
+      const response = await controller.refresh(requestMock, responseMock);
 
-    // assert
-    await expect(response).rejects.toThrow(Error);
-    await expect(response).rejects.toThrow('error');
-    expect(handleSuccess).not.toHaveBeenCalled();
-    expect(handleFailure).toHaveBeenCalledWith(requestMock, responseMock);
-    expect(exchangeTokenForRefreshToken).toHaveBeenCalledWith(
-      requestMock,
-      responseMock,
-      'authCookie'
-    );
-    expect(removeAuthCookies).toHaveBeenCalledWith(responseMock);
+      // assert
+      expect(response).toBeUndefined();
+      expect(authCallbackMock.handleSuccess).not.toHaveBeenCalled();
+      expect(authCallbackMock.handleFailure).toHaveBeenCalledWith(
+        requestMock,
+        responseMock
+      );
+      expect(
+        authTokenServiceMock.exchangeTokenForRefreshToken
+      ).toHaveBeenCalledWith(requestMock, responseMock, 'authCookie');
+      expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
+        responseMock
+      );
+    });
   });
 });
