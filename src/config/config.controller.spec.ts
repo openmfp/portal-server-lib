@@ -33,7 +33,6 @@ describe('ConfigController', () => {
   let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
   beforeEach(async () => {

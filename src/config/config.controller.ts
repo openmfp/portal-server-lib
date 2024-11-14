@@ -58,12 +58,15 @@ export class ConfigController {
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    const providersPromise = this.getProviders(request, acceptLanguage).catch(
-      (e: Error) => {
+    const token = this.headerParser.extractBearerToken(request);
+
+    const providersPromise = this.luigiConfigNodesService
+      .getNodes(token, [], acceptLanguage)
+      .catch((e: Error) => {
         this.logger.error(e);
         return e;
-      }
-    );
+      });
+
     const featureTogglePromise = this.featureTogglesProvider
       .getFeatureToggles()
       .catch((e: Error) => {
@@ -91,20 +94,6 @@ export class ConfigController {
       portalContext,
       featureToggles,
     };
-  }
-
-  private async getProviders(
-    request: Request,
-    acceptLanguage: string
-  ): Promise<ServiceProvider[]> {
-    const token = this.headerParser.extractBearerToken(request);
-
-    const providers = await this.luigiConfigNodesService.getNodes(
-      token,
-      [],
-      acceptLanguage
-    );
-    return providers;
   }
 
   @Get(':entity')
