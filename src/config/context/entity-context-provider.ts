@@ -7,7 +7,7 @@ export interface EntityContextProvider {
   ): Promise<Record<string, any>>;
 }
 
-export class EntityNotFoundException extends Error {
+class EntityException extends Error {
   entityType: string;
   entityId: string;
 
@@ -17,6 +17,10 @@ export class EntityNotFoundException extends Error {
     this.entityId = entityId;
   }
 }
+
+export class EntityNotFoundException extends EntityException {}
+
+export class EntityAccessForbiddenException extends EntityException {}
 
 export type EntityContextProviders = Record<
   string,

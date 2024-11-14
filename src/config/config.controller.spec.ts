@@ -13,6 +13,7 @@ import { HeaderParserService } from '../services';
 import { ServiceProvider } from './model/luigi.node';
 import { PortalContextProvider } from './context/portal-context-provider';
 import {
+  EntityAccessForbiddenException,
   EntityContextProviders,
   EntityNotFoundException,
 } from './context/entity-context-provider';
@@ -225,6 +226,30 @@ describe('ConfigController', () => {
       // Assert
       await expect(result).resolves.toBeUndefined();
       expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+    });
+
+    it('should handle EntityAccessForbiddenException', async () => {
+      // Arrange
+      const entity = 'project';
+      const entityAccessForbiddenException = new EntityAccessForbiddenException(
+        entity,
+        'id'
+      );
+      getEntityContextMock.mockRejectedValue(entityAccessForbiddenException);
+
+      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+
+      // Act
+      const result = controller.getEntityConfig(
+        requestMock,
+        responseMock,
+        { entity },
+        acceptLanguage
+      );
+
+      // Assert
+      await expect(result).resolves.toBeUndefined();
+      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
     });
   });
 });

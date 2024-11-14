@@ -10,7 +10,6 @@ import {
   ForbiddenException,
   HttpStatus,
   Logger,
-  UseGuards,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
@@ -24,6 +23,7 @@ import { PortalContextProvider } from './context/portal-context-provider';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
+  EntityAccessForbiddenException,
   EntityContextProvider,
   EntityContextProviders,
   EntityNotFoundException,
@@ -95,7 +95,7 @@ export class ConfigController {
     } catch (e) {
       if (e instanceof ForbiddenException) {
         response.status(HttpStatus.FORBIDDEN);
-        return undefined;
+        return;
       }
       throw e;
     }
@@ -147,7 +147,10 @@ export class ConfigController {
     } catch (e) {
       if (e instanceof NotFoundException) {
         response.status(HttpStatus.NOT_FOUND);
-        return undefined;
+        return;
+      } else if (e instanceof ForbiddenException) {
+        response.status(HttpStatus.FORBIDDEN);
+        return;
       }
       throw e;
     }
@@ -157,6 +160,8 @@ export class ConfigController {
     if (v instanceof Error) {
       if (v instanceof EntityNotFoundException) {
         throw new NotFoundException();
+      } else if (v instanceof EntityAccessForbiddenException) {
+        throw new ForbiddenException();
       }
       throw v;
     }
