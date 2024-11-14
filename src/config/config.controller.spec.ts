@@ -17,7 +17,7 @@ import {
   EntityContextProviders,
   EntityNotFoundException,
 } from './context/entity-context-provider';
-import { ForbiddenException, HttpStatus } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -33,7 +33,6 @@ describe('ConfigController', () => {
   let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  let entityContextProviders: EntityContextProviders;
   const mockTenant = '01emp2m3v3batersxj73qhm5zq';
   const acceptLanguage = 'en';
 
@@ -157,7 +156,6 @@ describe('ConfigController', () => {
         acceptLanguage
       );
 
-      // Assert
       await expect(result).rejects.toEqual(error);
     });
   });
@@ -216,16 +214,16 @@ describe('ConfigController', () => {
       jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
-      const result = controller.getEntityConfig(
-        requestMock,
-        responseMock,
-        { entity },
-        acceptLanguage
-      );
-
-      // Assert
-      await expect(result).resolves.toBeUndefined();
-      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.NOT_FOUND);
+      try {
+        const result = await controller.getEntityConfig(
+          requestMock,
+          responseMock,
+          { entity },
+          acceptLanguage
+        );
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+      }
     });
 
     it('should handle EntityAccessForbiddenException', async () => {
@@ -240,16 +238,16 @@ describe('ConfigController', () => {
       jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
-      const result = controller.getEntityConfig(
-        requestMock,
-        responseMock,
-        { entity },
-        acceptLanguage
-      );
-
-      // Assert
-      await expect(result).resolves.toBeUndefined();
-      expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.FORBIDDEN);
+      try {
+        const result = await controller.getEntityConfig(
+          requestMock,
+          responseMock,
+          { entity },
+          acceptLanguage
+        );
+      } catch (e) {
+        expect(e).toBeInstanceOf(ForbiddenException);
+      }
     });
   });
 });

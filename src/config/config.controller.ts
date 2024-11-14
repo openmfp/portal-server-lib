@@ -78,27 +78,19 @@ export class ConfigController {
         return e;
       });
 
-    try {
-      const featureToggles = ConfigController.getOrThrow(
-        await featureTogglePromise
-      );
-      const portalContext = ConfigController.getOrThrow(
-        await portalContextPromise
-      );
-      const providers = ConfigController.getOrThrow(await providersPromise);
+    const featureToggles = ConfigController.getOrThrow(
+      await featureTogglePromise
+    );
+    const portalContext = ConfigController.getOrThrow(
+      await portalContextPromise
+    );
+    const providers = ConfigController.getOrThrow(await providersPromise);
 
-      return {
-        providers,
-        portalContext,
-        featureToggles,
-      };
-    } catch (e) {
-      if (e instanceof ForbiddenException) {
-        response.status(HttpStatus.FORBIDDEN);
-        return;
-      }
-      throw e;
-    }
+    return {
+      providers,
+      portalContext,
+      featureToggles,
+    };
   }
 
   private async getProviders(
@@ -139,21 +131,10 @@ export class ConfigController {
         })
       : Promise.resolve({});
 
-    try {
-      return {
-        providers: ConfigController.getOrThrow(await providersPromise),
-        entityContext: ConfigController.getOrThrow(await entityContextPromise),
-      };
-    } catch (e) {
-      if (e instanceof NotFoundException) {
-        response.status(HttpStatus.NOT_FOUND);
-        return;
-      } else if (e instanceof ForbiddenException) {
-        response.status(HttpStatus.FORBIDDEN);
-        return;
-      }
-      throw e;
-    }
+    return {
+      providers: ConfigController.getOrThrow(await providersPromise),
+      entityContext: ConfigController.getOrThrow(await entityContextPromise),
+    };
   }
 
   static getOrThrow<T>(v: T | Error): T {
