@@ -129,9 +129,9 @@ export class ConfigController {
   static getOrThrow<T>(v: T | Error): T {
     if (v instanceof Error) {
       if (v instanceof EntityNotFoundException) {
-        throw new NotFoundException();
+        throw new NotFoundException(v);
       } else if (v instanceof EntityAccessForbiddenException) {
-        throw new ForbiddenException();
+        throw new ForbiddenException(v);
       }
       throw v;
     }
