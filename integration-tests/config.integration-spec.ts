@@ -2,7 +2,12 @@ import { Request } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  ForbiddenException,
+  INestApplication,
+  NotFoundException,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   LuigiConfigNodesService,
   HeaderParserService,
@@ -10,12 +15,20 @@ import {
   ServiceProvider,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PortalModule,
+  ServiceProviderService,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+  EntityNotFoundException,
 } from '../src';
+import { EntityAccessForbiddenException } from '../src/config/context/entity-context-provider';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
 
 const token = 'token';
+
+class ServiceProviderServiceMock implements ServiceProviderService {
+  getServiceProviders = jest.fn();
+}
 
 describe('ConfigController', () => {
   let app: INestApplication;
@@ -24,7 +37,7 @@ describe('ConfigController', () => {
   let requestMock: Request;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  const mockTenant = '01emp2m3v3batersxj73qhm5zq';
+  let serviceProviderServiceMock: ServiceProviderService;
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
@@ -33,6 +46,7 @@ describe('ConfigController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         PortalModule.create({
+          serviceProviderService: ServiceProviderServiceMock,
           entityContextProviders: {
             project: MockEntityProvider,
           },
@@ -46,6 +60,9 @@ describe('ConfigController', () => {
       ],
     }).compile();
 
+    serviceProviderServiceMock = module.get<ServiceProviderService>(
+      SERVICE_PROVIDER_INJECTION_TOKEN
+    );
     nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
@@ -69,7 +86,75 @@ describe('ConfigController', () => {
     await app.init();
   });
 
-  describe('GET /rest/config/:entity param validation', () => {
+  describe('GET /rest/config', () => {
+    it('should return 403 forbidden response status', async () => {
+      (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
+        new ForbiddenException()
+      );
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/`)
+        .accept(acceptLanguage)
+        .expect(403);
+    });
+
+    it('should return 404 not found response status', async () => {
+      (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
+        new NotFoundException()
+      );
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/`)
+        .accept(acceptLanguage)
+        .expect(404);
+    });
+
+    it('should return 500 internal error response status', async () => {
+      (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
+        new Error('any other error')
+      );
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/`)
+        .accept(acceptLanguage)
+        .expect(500);
+    });
+  });
+
+  describe('GET /rest/config/:entity', () => {
+    it('should return 403 forbidden response status', async () => {
+      jest
+        .spyOn(nodesService, 'getNodes')
+        .mockRejectedValue(new EntityAccessForbiddenException('e1', 'id1'));
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/project`)
+        .accept(acceptLanguage)
+        .expect(403);
+    });
+
+    it('should return 404 not found response status', async () => {
+      jest
+        .spyOn(nodesService, 'getNodes')
+        .mockRejectedValue(new EntityNotFoundException('e1', 'id1'));
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/project`)
+        .accept(acceptLanguage)
+        .expect(404);
+    });
+
+    it('should return 500 internal error response status', async () => {
+      jest
+        .spyOn(nodesService, 'getNodes')
+        .mockRejectedValue(new Error('any other error'));
+
+      await request(app.getHttpServer())
+        .get(`/rest/config/project`)
+        .accept(acceptLanguage)
+        .expect(500);
+    });
+
     it('should return BadRequest on invalid entity name', async () => {
       const invalidEntity = ':project';
 

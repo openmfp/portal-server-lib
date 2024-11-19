@@ -7,14 +7,34 @@ export interface EntityContextProvider {
   ): Promise<Record<string, any>>;
 }
 
-export class EntityNotFoundException extends Error {
+class EntityException extends Error {
   entityType: string;
   entityId: string;
 
-  constructor(entityType: string, entityId: string) {
-    super(`${entityType} with id ${entityId} doesn't exist.`);
+  constructor(entityType: string, entityId: string, msg: string) {
+    super(msg);
     this.entityType = entityType;
     this.entityId = entityId;
+  }
+}
+
+export class EntityNotFoundException extends EntityException {
+  constructor(entityType: string, entityId: string) {
+    super(
+      entityType,
+      entityId,
+      `${entityType} with id ${entityId} doesn't exist.`
+    );
+  }
+}
+
+export class EntityAccessForbiddenException extends EntityException {
+  constructor(entityType: string, entityId: string) {
+    super(
+      entityType,
+      entityId,
+      `Access forbidden for ${entityType} with id ${entityId}.`
+    );
   }
 }
 

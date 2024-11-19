@@ -10,7 +10,6 @@ import {
   ForbiddenException,
   HttpStatus,
   Logger,
-  UseGuards,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import { Request, Response } from 'express';
@@ -24,6 +23,7 @@ import { PortalContextProvider } from './context/portal-context-provider';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
+  EntityAccessForbiddenException,
   EntityContextProvider,
   EntityContextProviders,
   EntityNotFoundException,
@@ -58,12 +58,15 @@ export class ConfigController {
     @Res({ passthrough: true }) response: Response,
     @Headers('Accept-language') acceptLanguage: string
   ): Promise<PortalConfig> {
-    const providersPromise = this.getProviders(request, acceptLanguage).catch(
-      (e: Error) => {
+    const token = this.headerParser.extractBearerToken(request);
+
+    const providersPromise = this.luigiConfigNodesService
+      .getNodes(token, [], acceptLanguage)
+      .catch((e: Error) => {
         this.logger.error(e);
         return e;
-      }
-    );
+      });
+
     const featureTogglePromise = this.featureTogglesProvider
       .getFeatureToggles()
       .catch((e: Error) => {
@@ -78,41 +81,19 @@ export class ConfigController {
         return e;
       });
 
-    try {
-      const featureToggles = ConfigController.getOrThrow(
-        await featureTogglePromise
-      );
-      const portalContext = ConfigController.getOrThrow(
-        await portalContextPromise
-      );
-      const providers = ConfigController.getOrThrow(await providersPromise);
-
-      return {
-        providers,
-        portalContext,
-        featureToggles,
-      };
-    } catch (e) {
-      if (e instanceof ForbiddenException) {
-        response.status(HttpStatus.FORBIDDEN);
-        return undefined;
-      }
-      throw e;
-    }
-  }
-
-  private async getProviders(
-    request: Request,
-    acceptLanguage: string
-  ): Promise<ServiceProvider[]> {
-    const token = this.headerParser.extractBearerToken(request);
-
-    const providers = await this.luigiConfigNodesService.getNodes(
-      token,
-      [],
-      acceptLanguage
+    const featureToggles = ConfigController.getOrThrow(
+      await featureTogglePromise
     );
-    return providers;
+    const portalContext = ConfigController.getOrThrow(
+      await portalContextPromise
+    );
+    const providers = ConfigController.getOrThrow(await providersPromise);
+
+    return {
+      providers,
+      portalContext,
+      featureToggles,
+    };
   }
 
   @Get(':entity')
@@ -139,24 +120,18 @@ export class ConfigController {
         })
       : Promise.resolve({});
 
-    try {
-      return {
-        providers: ConfigController.getOrThrow(await providersPromise),
-        entityContext: ConfigController.getOrThrow(await entityContextPromise),
-      };
-    } catch (e) {
-      if (e instanceof NotFoundException) {
-        response.status(HttpStatus.NOT_FOUND);
-        return undefined;
-      }
-      throw e;
-    }
+    return {
+      providers: ConfigController.getOrThrow(await providersPromise),
+      entityContext: ConfigController.getOrThrow(await entityContextPromise),
+    };
   }
 
   static getOrThrow<T>(v: T | Error): T {
     if (v instanceof Error) {
       if (v instanceof EntityNotFoundException) {
-        throw new NotFoundException();
+        throw new NotFoundException(v);
+      } else if (v instanceof EntityAccessForbiddenException) {
+        throw new ForbiddenException(v);
       }
       throw v;
     }
