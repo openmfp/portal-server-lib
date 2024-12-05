@@ -23,10 +23,8 @@ export class NodeExtendedDataService {
     const helpContext = extendedData?.helpContext || undefined;
     const breadcrumbBadge = extendedData?.breadcrumbBadge || undefined;
     const extensionClassName = this.getExtensionClassNameForNode(extendedData);
-    const context =
-      node.context || extensionClassName
-        ? { ...node.context, extensionClassName }
-        : undefined;
+    const context = { ...node.context, extensionClassName };
+
     return {
       ...node,
       helpContext,

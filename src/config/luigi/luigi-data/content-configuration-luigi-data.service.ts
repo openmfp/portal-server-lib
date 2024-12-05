@@ -6,7 +6,7 @@ import {
   LuigiNodeDefaults,
   LuigiAppConfig,
 } from '../../model/content-configuration';
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
+import { LuigiNode } from '../../model/luigi.node';
 import { ConfigTransferNodeService } from './config-transfer-node.service';
 import { LuigiDataService } from './luigi-data.service';
 import * as URI from 'uri-js';
@@ -77,7 +77,6 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     localContentConfigurationUri: URIComponents | undefined
   ): LuigiNode[] {
     if (luigiConfigData && luigiConfigData.nodes) {
-      const nodes: LuigiNode[] = [];
       let urlTemplateUrl = '';
       if (localContentConfigurationUri != undefined) {
         const schemeAndHost = `${localContentConfigurationUri.scheme}://${localContentConfigurationUri.host}`;
@@ -87,16 +86,14 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
         urlTemplateUrl = appConfig?.urlTemplateParams?.url || localUrl;
       }
 
-      luigiConfigData.nodes.forEach((node) => {
-        nodes.push(
-          this.createNode(
-            node,
-            appConfig,
-            urlTemplateUrl,
-            luigiConfigData.nodeDefaults
-          )
-        );
-      });
+      const nodes: LuigiNode[] = luigiConfigData.nodes.map((node) =>
+        this.createNode(
+          node,
+          appConfig,
+          urlTemplateUrl,
+          luigiConfigData.nodeDefaults
+        )
+      );
 
       this.configTransferNodeService.transferConfig(
         nodes,
