@@ -5,16 +5,23 @@ import {
   PortalModule,
   ContentConfigurationLuigiDataService,
   LuigiNode,
+  ContentConfigurationValidatorService,
 } from '../src';
 
 describe('LocalnodesController', () => {
   let app: INestApplication;
+  let contentConfigurationValidatorService: ContentConfigurationValidatorService;
   let contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     }).compile();
+
+    contentConfigurationValidatorService =
+      module.get<ContentConfigurationValidatorService>(
+        ContentConfigurationValidatorService
+      );
 
     contentConfigurationLuigiDataService =
       module.get<ContentConfigurationLuigiDataService>(

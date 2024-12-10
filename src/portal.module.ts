@@ -52,6 +52,7 @@ import {
   LuigiConfigNodesService,
   EmptyServiceProviderService,
   ServiceProviderService,
+  ContentConfigurationValidatorService,
 } from './config';
 import { HeaderParserService, CookiesService } from './services';
 import cookieParser from 'cookie-parser';
@@ -150,6 +151,7 @@ export class PortalModule implements NestModule {
       NodeExtendedDataService,
       AuthTokenService,
       ContentConfigurationLuigiDataService,
+      ContentConfigurationValidatorService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,

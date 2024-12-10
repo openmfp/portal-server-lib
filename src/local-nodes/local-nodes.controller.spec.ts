@@ -5,6 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
   ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
   IntentResolveService,
   LuigiNode,
 } from '../config';
@@ -17,6 +18,7 @@ import { Request, Response } from 'express';
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
   let module: TestingModule;
+  let contentConfigurationValidatorServiceMock: ContentConfigurationValidatorService;
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
@@ -27,6 +29,7 @@ describe('LocalNodesController', () => {
       controllers: [LocalNodesController],
       providers: [
         Logger,
+        ContentConfigurationValidatorService,
         ContentConfigurationLuigiDataService,
         TextsTranslateService,
         ConfigTransferNodeService,
@@ -38,10 +41,17 @@ describe('LocalNodesController', () => {
 
     body = mock<ConfigDto>();
     responseMock = mock<Response>();
+
+    contentConfigurationValidatorServiceMock =
+      module.get<ContentConfigurationValidatorService>(
+        ContentConfigurationValidatorService
+      );
+
     contentConfigurationLuigiDataServiceMock =
       module.get<ContentConfigurationLuigiDataService>(
         ContentConfigurationLuigiDataService
       );
+      
     controller = module.get<LocalNodesController>(LocalNodesController);
   });
 
