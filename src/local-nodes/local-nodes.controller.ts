@@ -11,6 +11,7 @@ import {
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
   LuigiNode,
 } from '../config';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
@@ -30,6 +31,7 @@ export class ConfigDto {
 export class LocalNodesController {
   constructor(
     private logger: Logger,
+    private contentConfigurationValidatorService: ContentConfigurationValidatorService,
     private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
   ) {}
 
@@ -39,6 +41,10 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
+      this.contentConfigurationValidatorService
+        .validateContentConfiguration(
+          config.contentConfigurations);
+
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
           {

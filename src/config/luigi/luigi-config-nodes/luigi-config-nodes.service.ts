@@ -26,11 +26,11 @@ export class LuigiConfigNodesService {
     context?: Record<string, any>
   ): Promise<ServiceProvider[]> {
     const serviceProviders =
-      await this.serviceProviderService.getServiceProviders(
-        token,
-        entities,
-        context
-      );
+    await this.serviceProviderService.getServiceProviders(
+      token,
+      entities,
+      context
+    );
     return this.getNodesFromProvider(serviceProviders, acceptLanguage);
   }
 
