@@ -34,9 +34,9 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
           language
         );
 
-        return this.processLuigiConfigData(
+        return this.createNodes(
           config.luigiConfigFragment.data,
-          config.devUrl
+          config.devUrl != undefined ? URI.parse(config.devUrl) : undefined
         );
       })
       .flat();
@@ -50,11 +50,11 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     return nodes;
   }
 
-  private processLuigiConfigData(
+  private createNodes(
     luigiConfigData: LuigiConfigData,
-    localContentConfigurationUrl: string | undefined
+    localContentConfigurationUri: URIComponents | undefined
   ): LuigiNode[] {
-    const luigiAppConfig: LuigiAppConfig = {
+    const appConfig: LuigiAppConfig = {
       navMode: 'inplace',
       urlTemplateId: 'urltemplate.url',
       urlTemplateParams: {
@@ -62,20 +62,6 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       },
     };
 
-    return this.createNodes(
-      luigiConfigData,
-      luigiAppConfig,
-      localContentConfigurationUrl != undefined
-        ? URI.parse(localContentConfigurationUrl)
-        : undefined
-    );
-  }
-
-  private createNodes(
-    luigiConfigData: LuigiConfigData,
-    appConfig: LuigiAppConfig,
-    localContentConfigurationUri: URIComponents | undefined
-  ): LuigiNode[] {
     if (luigiConfigData && luigiConfigData.nodes) {
       let urlTemplateUrl = '';
       if (localContentConfigurationUri != undefined) {
