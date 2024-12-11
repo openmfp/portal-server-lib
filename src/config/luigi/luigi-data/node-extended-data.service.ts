@@ -18,20 +18,17 @@ export class NodeExtendedDataService {
       });
     }
 
-    const isMissingMandatoryData =
-      extendedData?.isMissingMandatoryData || undefined;
-    const helpContext = extendedData?.helpContext || undefined;
-    const breadcrumbBadge = extendedData?.breadcrumbBadge || undefined;
+    let context = { ...node.context };
     const extensionClassName = this.getExtensionClassNameForNode(extendedData);
-    const context =
-      node.context || extensionClassName
-        ? { ...node.context, extensionClassName }
-        : undefined;
+    if (extensionClassName) {
+      context.extensionClassName = extensionClassName;
+    }
+
     return {
       ...node,
-      helpContext,
-      isMissingMandatoryData,
-      breadcrumbBadge,
+      helpContext: extendedData?.helpContext,
+      isMissingMandatoryData: extendedData?.isMissingMandatoryData,
+      breadcrumbBadge: extendedData?.breadcrumbBadge,
       context,
     };
   }

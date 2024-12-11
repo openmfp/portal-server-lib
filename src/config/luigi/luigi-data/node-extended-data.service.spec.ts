@@ -120,6 +120,8 @@ describe('NodeExtendedDataService', () => {
       );
 
       expect(result).toEqual({
+        context: {},
+        isMissingMandatoryData: false,
         label: 'Node',
       });
     });
@@ -158,7 +160,7 @@ describe('NodeExtendedDataService', () => {
         extendedData
       );
 
-      expect(result).toEqual({ label: 'Node' });
+      expect(result).toEqual({ label: 'Node', context: {} });
     });
 
     it('should add extended data to nodes', () => {
