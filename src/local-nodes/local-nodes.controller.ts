@@ -29,7 +29,7 @@ export class ConfigDto {
 
 @Controller('/rest/localnodes')
 export class LocalNodesController {
-  constructor(
+  constructor(    
     private logger: Logger,
     private contentConfigurationValidatorService: ContentConfigurationValidatorService,
     private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
@@ -41,6 +41,7 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
+
       this.contentConfigurationValidatorService
         .validateContentConfiguration(
           config.contentConfigurations);

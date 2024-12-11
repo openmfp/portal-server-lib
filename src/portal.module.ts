@@ -29,9 +29,14 @@ import {
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
+  LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
-import { LocalNodesController } from './local-nodes';
+import { 
+  EmptyLocalNodesValidatorProvider, 
+  LocalNodesController, 
+  LocalNodesValidatorProvider 
+} from './local-nodes';
 import {
   EnvController,
   EnvVariablesServiceImpl,
@@ -86,10 +91,15 @@ export interface PortalModuleOptions {
   logoutCallbackProvider?: Type<LogoutCallback>;
 
   /**
+   * Makes it possible to validate local nodes configuration
+   */
+  portalContextProvider?: Type<PortalContextProvider>;
+
+  /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  portalContextProvider?: Type<PortalContextProvider>;
+  localNodesValidatorProvider?: Type<LocalNodesValidatorProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -171,6 +181,10 @@ export class PortalModule implements NestModule {
       {
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
         useClass: options.portalContextProvider || EmptyPortalContextProvider,
+      },
+      {
+        provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
+        useClass: options.localNodesValidatorProvider || EmptyLocalNodesValidatorProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
