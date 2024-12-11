@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { LocalNodesValidatorProvider } from "./local-nodes-validator-provider";
-import { ContentConfiguration } from "../config";
+import { LocalNodesValidatorProvider, ValidationInput, ValidationResult } from ".";
 
 @Injectable()
 export class EmptyLocalNodesValidatorProvider implements LocalNodesValidatorProvider {
-  validateContentConfiguration(contentConfigurations: ContentConfiguration[]): Promise<any> {
-    return Promise.resolve();
+  validateContentConfiguration(validationInput: ValidationInput): Promise<ValidationResult> {
+    return Promise.resolve({ parsedConfiguration: validationInput.contentConfiguration });
   }
 }
