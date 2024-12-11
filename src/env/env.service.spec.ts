@@ -2,9 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
 import { EnvService } from './env.service';
 import { Request } from 'express';
-import { HttpService } from '@nestjs/axios';
-import { of, throwError } from 'rxjs';
-import { AxiosError } from 'axios';
 import { DiscoveryService } from '.';
 
 describe('EnvService', () => {
