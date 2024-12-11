@@ -18,16 +18,11 @@ describe('ContentConfigurationLuigiDataService', () => {
         ContentConfigurationLuigiDataService,
         ConfigTransferNodeService,
         NodeExtendedDataService,
+        TextsTranslateService,
         {
           provide: IntentResolveService,
           useValue: {
             resolve: jest.fn(),
-          },
-        },
-        {
-          provide: TextsTranslateService,
-          useValue: {
-            translateTexts: jest.fn(),
           },
         },
       ],
@@ -40,6 +35,41 @@ describe('ContentConfigurationLuigiDataService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('text translations', () => {
+    it('should translate the placeholder and have it in the returned nodes', async () => {
+      const config: RawServiceProvider = {
+        contentConfiguration: [
+          {
+            name: 'dummy',
+            luigiConfigFragment: {
+              data: {
+                nodes: [
+                  {
+                    pathSegment: 'overview',
+                    label: '{{catalog}}',
+                    entityType: 'main',
+                  },
+                ],
+                texts: [
+                  {
+                    locale: 'en',
+                    textDictionary: {
+                      catalog: 'Overview',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      } as any;
+
+      const result = await service.getLuigiData(config, 'en');
+
+      expect(result[0].label).toBe('Overview');
+    });
   });
 
   describe('getLuigiData', () => {

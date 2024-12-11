@@ -29,15 +29,15 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
   ): Promise<LuigiNode[]> {
     const nodeArrays: LuigiNode[] = provider.contentConfiguration
       .map((config) => {
-        const luigiConfigData: LuigiConfigData =
-          config.luigiConfigFragment.data;
-
         this.textsTranslateService.translateTexts(
           config.luigiConfigFragment,
           language
         );
 
-        return this.processLuigiConfigData(luigiConfigData, config.devUrl);
+        return this.processLuigiConfigData(
+          config.luigiConfigFragment.data,
+          config.devUrl
+        );
       })
       .flat();
 
