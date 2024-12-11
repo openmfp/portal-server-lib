@@ -12,8 +12,10 @@ import {
 import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
-import { mock } from 'jest-mock-extended';
+import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
+import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../injection-tokens';
+import { EmptyLocalNodesValidatorProvider } from './empty-local-nodes-validator-provider';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -22,12 +24,18 @@ describe('LocalNodesController', () => {
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
+  let localNodesValidatorMock: MockProxy<EmptyLocalNodesValidatorProvider>;
 
   beforeEach(async () => {
+    localNodesValidatorMock = mock<EmptyLocalNodesValidatorProvider>();
     jest.useFakeTimers();
     module = await Test.createTestingModule({
       controllers: [LocalNodesController],
       providers: [
+        {
+          provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
+          useValue: localNodesValidatorMock,
+        },
         Logger,
         ContentConfigurationValidatorService,
         ContentConfigurationLuigiDataService,

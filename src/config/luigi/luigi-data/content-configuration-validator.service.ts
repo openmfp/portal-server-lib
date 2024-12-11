@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ContentConfiguration } from 'src/config/model/content-configuration';
-import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from 'src/injection-tokens';
-import { LocalNodesValidatorProvider } from 'src/local-nodes';
+import { ContentConfiguration } from '../../../config/model/content-configuration';
+import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../../../injection-tokens';
+import { LocalNodesValidatorProvider } from '../../../local-nodes';
 
 @Injectable()
 export class ContentConfigurationValidatorService {
@@ -14,13 +14,7 @@ export class ContentConfigurationValidatorService {
   }
 
   public validateContentConfiguration(contentConfigurations: ContentConfiguration[]): void {
-    
-    const localNodesValidatorPromise = this.localNodesValidatorProvider
-      .validateContentConfiguration()
-      .catch((e: Error) => {
-        this.logger.error(e);
-        return e;
-      });
+    this.localNodesValidatorProvider.validateContentConfiguration(contentConfigurations);
   }
 
 }

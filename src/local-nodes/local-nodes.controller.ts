@@ -43,8 +43,7 @@ export class LocalNodesController {
     try {
 
       this.contentConfigurationValidatorService
-        .validateContentConfiguration(
-          config.contentConfigurations);
+        .validateContentConfiguration(config.contentConfigurations);
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(

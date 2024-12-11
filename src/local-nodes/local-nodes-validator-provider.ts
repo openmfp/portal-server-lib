@@ -1,3 +1,5 @@
+import { ContentConfiguration } from "../config";
+
 export interface LocalNodesValidatorProvider {
-  validateContentConfiguration(): Promise<any>;
+  validateContentConfiguration(contentConfigurations: ContentConfiguration[]): Promise<any>;
 }
