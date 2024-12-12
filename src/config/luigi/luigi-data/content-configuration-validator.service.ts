@@ -27,6 +27,7 @@ export class ContentConfigurationValidatorService {
       this.logger.error(
         `Error while validating Content-Configuration: ${e}`
       );
+      throw e;
     }
   }
 }
