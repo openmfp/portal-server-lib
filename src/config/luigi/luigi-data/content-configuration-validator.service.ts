@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ContentConfiguration } from '../../../config/model/content-configuration';
 import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../../../injection-tokens';
 import { ContentType, LocalNodesValidatorProvider, ValidationResult } from '../../../local-nodes';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class ContentConfigurationValidatorService {
@@ -13,7 +14,7 @@ export class ContentConfigurationValidatorService {
   ) {
   }
 
-  public async validateContentConfiguration(contentConfigurations: ContentConfiguration[]): Promise<ValidationResult[]> {
+  public async validateContentConfiguration(contentConfigurations: ContentConfiguration[]): Promise<AxiosResponse<ValidationResult, any>[]> {
     try{
       return Promise.all(contentConfigurations.map(async contentConfiguration => {
         return await this.localNodesValidatorProvider.validateContentConfiguration(
@@ -21,7 +22,7 @@ export class ContentConfigurationValidatorService {
             contentType: ContentType.JSON,
             contentConfiguration: contentConfiguration
           }
-        );
+        ).toPromise();
       }));
     } catch (e: any) {
       this.logger.error(

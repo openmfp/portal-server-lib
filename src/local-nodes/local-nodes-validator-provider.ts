@@ -1,4 +1,6 @@
+import { Observable } from "rxjs";
 import { ContentConfiguration } from "../config";
+import { AxiosResponse } from "axios";
 
 export enum ContentType {
   JSON = 'JSON',
@@ -20,5 +22,5 @@ export interface ValidationInput {
 }
 
 export interface LocalNodesValidatorProvider {
-  validateContentConfiguration(validationInput: ValidationInput): Promise<ValidationResult>;
+  validateContentConfiguration(validationInput: ValidationInput): Observable<AxiosResponse<ValidationResult, any>>;
 }

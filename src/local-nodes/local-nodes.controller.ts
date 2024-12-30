@@ -46,13 +46,14 @@ export class LocalNodesController {
         .validateContentConfiguration(config.contentConfigurations);
 
       validationResults.forEach(validationResult => {
-        if(validationResult.validationErrors && validationResult.validationErrors.length){
-          throw validationResult.validationErrors.map(validationError=>validationError.message).join(', ');
+        const data = validationResult.data;
+        if(data.validationErrors && data.validationErrors.length){
+          throw data.validationErrors.map(validationError=>validationError.message).join(', ');
         }
       });
 
       const contentConfigurations = validationResults.map(
-        validationResult=>validationResult.parsedConfiguration);
+        validationResult=>validationResult.data.parsedConfiguration);
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(

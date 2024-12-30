@@ -17,6 +17,7 @@ import { Request, Response } from 'express';
 import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../injection-tokens';
 import { EmptyLocalNodesValidatorProvider } from './empty-local-nodes-validator-provider';
 import { ValidationResult } from './local-nodes-validator-provider';
+import { AxiosResponse } from 'axios';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -99,9 +100,12 @@ describe('LocalNodesController', () => {
     it('should get no local nodes when no parameters', async () => {
       //Arrange
       const expectedResult: LuigiNode[] = undefined;
-      const validationResult: ValidationResult[] = [{
-        parsedConfiguration: undefined
-      }];
+      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
+        data: {
+          parsedConfiguration: undefined
+        },
+        status: 200,
+      } as AxiosResponse];
 
       jest
         .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
@@ -120,9 +124,12 @@ describe('LocalNodesController', () => {
 
     it('should get local nodes', async () => {
       //Arrange
-      const validationResult: ValidationResult[] = [{
-        parsedConfiguration: contentConfigurationToTest
-      }];
+      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
+        data: {
+          parsedConfiguration: contentConfigurationToTest
+        },
+        status: 200,
+      } as AxiosResponse];
       
       jest
         .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
