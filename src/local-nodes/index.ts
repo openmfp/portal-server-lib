@@ -1,8 +1,8 @@
 export { LocalNodesController } from './local-nodes.controller';
 export { 
-    LocalNodesValidatorProvider, 
+    ContentConfigurationValidatorProvider, 
     ValidationInput, 
     ValidationResult,
     ContentType 
-} from './local-nodes-validator-provider';
-export { EmptyLocalNodesValidatorProvider} from './empty-local-nodes-validator-provider';
+} from './content-configuration-validator-provider';
+export { LocalNodesValidatorProvider} from './local-nodes-validator-provider';

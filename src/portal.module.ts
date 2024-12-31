@@ -33,9 +33,9 @@ import {
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import { 
-  EmptyLocalNodesValidatorProvider, 
-  LocalNodesController, 
-  LocalNodesValidatorProvider 
+  ContentConfigurationValidatorProvider,
+  LocalNodesController,
+  LocalNodesValidatorProvider, 
 } from './local-nodes';
 import {
   EnvController,
@@ -99,7 +99,7 @@ export interface PortalModuleOptions {
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  localNodesValidatorProvider?: Type<LocalNodesValidatorProvider>;
+  localNodesValidatorProvider?: Type<ContentConfigurationValidatorProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -184,7 +184,7 @@ export class PortalModule implements NestModule {
       },
       {
         provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
-        useClass: options.localNodesValidatorProvider || EmptyLocalNodesValidatorProvider,
+        useClass: options.localNodesValidatorProvider || LocalNodesValidatorProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
