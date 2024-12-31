@@ -15,15 +15,16 @@ export class LocalNodesValidatorProvider implements ContentConfigurationValidato
     const context: Record<string, any> = {
       ccValidatorApiUrl: process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL,
     };
-    
     const config: AxiosRequestConfig = {
       headers: {
         'Content-Type': 'application/json',
       },
     };
+    const data = {
+      contentType: validationInput.contentType.toLowerCase(),
+      contentConfiguration: JSON.stringify(validationInput.contentConfiguration)
+    };
 
-    const data = JSON.stringify(validationInput);
-
-    return this.httpService.post<ValidationResult>(context.ccValidatorApiUrl, data,config);
+    return this.httpService.post<ValidationResult>(context.ccValidatorApiUrl, data, config);
   }
 }

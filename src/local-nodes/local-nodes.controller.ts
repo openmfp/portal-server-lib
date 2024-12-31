@@ -41,19 +41,19 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-
       const validationResults = await this.contentConfigurationValidatorService
-        .validateContentConfiguration(config.contentConfigurations);
-
+      .validateContentConfiguration(config.contentConfigurations);
+      
       validationResults.forEach(validationResult => {
         const data = validationResult.data;
         if(data.validationErrors && data.validationErrors.length){
-          throw data.validationErrors.map(validationError=>validationError.message).join(', ');
+          const joinedMessage = data.validationErrors.map(validationError=>validationError.message).join(', ');
+          throw joinedMessage;
         }
       });
 
-      const contentConfigurations = validationResults.map(
-        validationResult=>validationResult.data.parsedConfiguration);
+      const contentConfigurations = validationResults.map<ContentConfiguration>(
+        validationResult=>JSON.parse(validationResult.data.parsedConfiguration));
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
