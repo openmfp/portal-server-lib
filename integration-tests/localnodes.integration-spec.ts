@@ -7,6 +7,7 @@ import {
   LuigiNode,
   ContentConfigurationValidatorService,
 } from '../src';
+import { AxiosResponse } from 'axios';
 
 describe('LocalnodesController', () => {
   let app: INestApplication;
@@ -101,6 +102,21 @@ describe('LocalnodesController', () => {
 
     it('should call the getLuigiData method on valid params', async () => {
       const resultingNodes: LuigiNode[] = [];
+
+      const validateContentConfiguration = jest
+        .spyOn(contentConfigurationValidatorService, 'validateContentConfiguration')
+        .mockResolvedValue([
+          {
+            data: {
+              parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
+            },
+            status: 200,
+            statusText: null,
+            headers: null,
+            config: null,
+          } as AxiosResponse
+        ]);
+
       const getLuigiData = jest
         .spyOn(contentConfigurationLuigiDataService, 'getLuigiData')
         .mockReturnValue(Promise.resolve(resultingNodes));
@@ -114,6 +130,7 @@ describe('LocalnodesController', () => {
         })
         .expect(201);
 
+      expect(validateContentConfiguration).toBeCalled();
       expect(getLuigiData).toBeCalled();
       expect(body).toStrictEqual([]);
     });

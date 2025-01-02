@@ -15,9 +15,8 @@ import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extende
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../injection-tokens';
-import { ValidationResult } from './content-configuration-validator-provider';
 import { AxiosResponse } from 'axios';
-import { LocalNodesValidatorProvider } from './local-nodes-validator-provider';
+import { LocalNodesValidatorServiceImpl, ValidationResult } from './local-nodes-validator-service';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -26,10 +25,10 @@ describe('LocalNodesController', () => {
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
-  let localNodesValidatorMock: MockProxy<LocalNodesValidatorProvider>;
+  let localNodesValidatorMock: MockProxy<LocalNodesValidatorServiceImpl>;
 
   beforeEach(async () => {
-    localNodesValidatorMock = mock<LocalNodesValidatorProvider>();
+    localNodesValidatorMock = mock<LocalNodesValidatorServiceImpl>();
     jest.useFakeTimers();
     module = await Test.createTestingModule({
       controllers: [LocalNodesController],
@@ -102,7 +101,7 @@ describe('LocalNodesController', () => {
       const expectedResult: LuigiNode[] = undefined;
       const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
         data: {
-          parsedConfiguration: undefined
+          parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
         },
         status: 200,
       } as AxiosResponse];
@@ -122,11 +121,42 @@ describe('LocalNodesController', () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
-    it('should get local nodes', async () => {
+    it('should return HttpException when local nodes validator throws error', async () => {
       //Arrange
       const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
         data: {
-          parsedConfiguration: contentConfigurationToTest
+          "validationErrors": [
+              {
+                  "message": "The document is not valid:\n%s"
+              }
+          ]
+      },
+        status: 200,
+      } as AxiosResponse];
+
+      jest
+        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
+        .mockResolvedValue(Promise.resolve(validationResult));
+
+      //Act
+      try {
+        await controller.getLocalNodes(body, responseMock);
+      } catch (error: any) {
+        //Assert
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(error.message).toBe(
+          'Could not process local content configuration'
+        );
+      }
+    });
+
+    it('should get local nodes', async () => {
+      //Arrange
+      const contentConfiguration = JSON.stringify(contentConfigurationToTest);
+      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
+        data: {
+          parsedConfiguration: contentConfiguration
         },
         status: 200,
       } as AxiosResponse];
@@ -138,7 +168,7 @@ describe('LocalNodesController', () => {
       body = mock<ConfigDto>();
       body = {
         language: 'any',
-        contentConfigurations: [contentConfigurationToTest],
+        contentConfigurations: [contentConfiguration],
       };
 
       //Act

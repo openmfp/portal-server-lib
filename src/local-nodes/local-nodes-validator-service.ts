@@ -1,12 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { ValidationInput, ValidationResult } from ".";
 import { Observable } from "rxjs";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
-import { ContentConfigurationValidatorProvider } from "./content-configuration-validator-provider";
 import { HttpService } from "@nestjs/axios";
+import { ContentConfiguration } from "../config";
+
+export enum ContentType {
+  JSON = 'JSON',
+  YAML = 'YAML',
+}
+
+export interface ValidationResult {
+  parsedConfiguration?: string;
+  validationErrors?: ValidationMessage[];
+}
+
+export interface ValidationMessage {
+  message: string;
+}
+
+export interface ValidationInput {
+  contentType: string;
+  contentConfiguration: ContentConfiguration;
+}
+
+export interface LocalNodesValidatorService {
+  validateContentConfiguration(validationInput: ValidationInput): Observable<AxiosResponse<ValidationResult, any>>;
+}
 
 @Injectable()
-export class LocalNodesValidatorProvider implements ContentConfigurationValidatorProvider {
+export class LocalNodesValidatorServiceImpl implements LocalNodesValidatorService {
 
   constructor(private readonly httpService: HttpService) {
   }
