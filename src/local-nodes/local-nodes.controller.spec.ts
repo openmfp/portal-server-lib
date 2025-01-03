@@ -75,7 +75,6 @@ describe('LocalNodesController', () => {
 
   it('should return HttpException when getLuigiData throws error', async () => {
     //Arrange
-    const expectedResult: LuigiNode[] = undefined;
     jest
       .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
       .mockImplementation(() => {

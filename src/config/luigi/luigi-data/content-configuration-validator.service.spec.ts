@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
-import { LocalNodesValidatorService, LocalNodesValidatorServiceImpl, ValidationResult } from '../../../local-nodes';
+import { LocalNodesValidatorServiceImpl, ValidationResult } from '../../../local-nodes';
 import { Logger } from '@nestjs/common';
 import { ContentConfiguration, LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../../../';
 import { AxiosResponse } from 'axios';
@@ -66,7 +66,6 @@ describe('ContentConfigurationValidatorService', () => {
 
       //Assert
       expect(result).toEqual([expectedResult, expectedResult]);
-
     });
   });
 });

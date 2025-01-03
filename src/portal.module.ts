@@ -91,15 +91,16 @@ export interface PortalModuleOptions {
   logoutCallbackProvider?: Type<LogoutCallback>;
 
   /**
-   * Makes it possible to validate local nodes configuration
-   */
-  portalContextProvider?: Type<PortalContextProvider>;
+ * Will be called to execute additional logic, when custom content configuration is defined.
+ * The portal will take care of verifying validity of custom content configuration.
+ */
+  localNodesValidatorService?: Type<LocalNodesValidatorService>;
 
   /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'frameContext'
    */
-  LocalNodesValidatorService?: Type<LocalNodesValidatorService>;
+  portalContextProvider?: Type<PortalContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -184,7 +185,7 @@ export class PortalModule implements NestModule {
       },
       {
         provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
-        useClass: options.LocalNodesValidatorService || LocalNodesValidatorServiceImpl,
+        useClass: options.localNodesValidatorService || LocalNodesValidatorServiceImpl,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
