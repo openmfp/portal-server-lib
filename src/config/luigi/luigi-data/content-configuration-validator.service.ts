@@ -7,10 +7,11 @@ import { AxiosResponse } from 'axios';
 @Injectable()
 export class ContentConfigurationValidatorService {
 
+  private logger: Logger = new Logger(ContentConfigurationValidatorService.name);
+
   constructor(
     @Inject(LOCAL_NODES_VALIDATOR_INJECTION_TOKEN)
     private LocalNodesValidatorService: LocalNodesValidatorService,
-    private logger: Logger,
   ) {
   }
 

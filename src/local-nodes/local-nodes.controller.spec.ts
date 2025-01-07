@@ -4,6 +4,7 @@ import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
+  ContentConfiguration,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
   IntentResolveService,
@@ -161,18 +162,18 @@ describe('LocalNodesController', () => {
       } as AxiosResponse];
       
       jest
-        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
-        .mockResolvedValue(Promise.resolve(validationResult));
-
+      .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
+      .mockResolvedValue(Promise.resolve(validationResult));
+      
       body = mock<ConfigDto>();
       body = {
         language: 'any',
-        contentConfigurations: [contentConfiguration],
+        contentConfigurations: [contentConfigurationToTest as ContentConfiguration],
       };
-
+      
       //Act
       const result = await controller.getLocalNodes(body, responseMock);
-
+      
       //Assert
       expect(result).toStrictEqual(expectedResultFormProcessing);
     });

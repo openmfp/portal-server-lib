@@ -52,15 +52,12 @@ export class LocalNodesController {
         }
       });
 
-      const contentConfigurations = validationResults.map<ContentConfiguration>(
-        validationResult=>JSON.parse(validationResult.data.parsedConfiguration));
-
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
           {
             name: 'localContentConfiguration',
             displayName: 'localContentConfiguration',
-            contentConfiguration: contentConfigurations,
+            contentConfiguration: config.contentConfigurations,
             config: {},
             creationTimestamp: Date.now().toString(),
           },
