@@ -29,13 +29,11 @@ import {
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-  LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import { 
   LocalNodesController,
-  LocalNodesValidatorService, 
-  LocalNodesValidatorServiceImpl,
+  LocalNodesValidatorService,
 } from './local-nodes';
 import {
   EnvController,
@@ -89,12 +87,6 @@ export interface PortalModuleOptions {
    * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
    */
   logoutCallbackProvider?: Type<LogoutCallback>;
-
-  /**
- * Will be called to execute additional logic, when custom content configuration is defined.
- * The portal will take care of verifying validity of custom content configuration.
- */
-  localNodesValidatorService?: Type<LocalNodesValidatorService>;
 
   /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
@@ -163,6 +155,7 @@ export class PortalModule implements NestModule {
       AuthTokenService,
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
+      LocalNodesValidatorService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,
@@ -182,10 +175,6 @@ export class PortalModule implements NestModule {
       {
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
         useClass: options.portalContextProvider || EmptyPortalContextProvider,
-      },
-      {
-        provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
-        useClass: options.localNodesValidatorService || LocalNodesValidatorServiceImpl,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,

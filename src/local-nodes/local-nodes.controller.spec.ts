@@ -15,9 +15,8 @@ import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-tra
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Request, Response } from 'express';
-import { LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../injection-tokens';
 import { AxiosResponse } from 'axios';
-import { LocalNodesValidatorServiceImpl, ValidationResult } from './local-nodes-validator-service';
+import { LocalNodesValidatorService, ValidationResult } from './local-nodes-validator-service';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -26,16 +25,16 @@ describe('LocalNodesController', () => {
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
-  let localNodesValidatorMock: MockProxy<LocalNodesValidatorServiceImpl>;
+  let localNodesValidatorMock: MockProxy<LocalNodesValidatorService>;
 
   beforeEach(async () => {
-    localNodesValidatorMock = mock<LocalNodesValidatorServiceImpl>();
+    localNodesValidatorMock = mock<LocalNodesValidatorService>();
     jest.useFakeTimers();
     module = await Test.createTestingModule({
       controllers: [LocalNodesController],
       providers: [
         {
-          provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
+          provide: LocalNodesValidatorService,
           useValue: localNodesValidatorMock,
         },
         Logger,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
-import { LocalNodesValidatorService, LocalNodesValidatorServiceImpl, ValidationInput } from './local-nodes-validator-service';
+import { LocalNodesValidatorService, ValidationInput } from './local-nodes-validator-service';
 import { mock } from 'jest-mock-extended';
 import { of } from 'rxjs';
 import { AxiosResponse } from 'axios';
@@ -14,13 +14,13 @@ describe('LocalNodesValidatorService', () => {
     httpServiceMock = mock<HttpService>();
     
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LocalNodesValidatorServiceImpl, HttpService]
+      providers: [LocalNodesValidatorService, HttpService]
     })
     .overrideProvider(HttpService)
     .useValue(httpServiceMock)
     .compile();
 
-    service = module.get<LocalNodesValidatorService>(LocalNodesValidatorServiceImpl);
+    service = module.get<LocalNodesValidatorService>(LocalNodesValidatorService);
   });
 
   it('should be defined', () => {

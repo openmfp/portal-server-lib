@@ -3,6 +3,5 @@ export {
     ValidationInput, 
     ValidationResult,
     ContentType, 
-    LocalNodesValidatorService,
-    LocalNodesValidatorServiceImpl
+    LocalNodesValidatorService
 } from './local-nodes-validator-service';

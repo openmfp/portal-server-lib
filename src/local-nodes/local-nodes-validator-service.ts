@@ -23,12 +23,8 @@ export interface ValidationInput {
   contentConfiguration: ContentConfiguration;
 }
 
-export interface LocalNodesValidatorService {
-  validateContentConfiguration(validationInput: ValidationInput): Observable<AxiosResponse<ValidationResult, any>>;
-}
-
 @Injectable()
-export class LocalNodesValidatorServiceImpl implements LocalNodesValidatorService {
+export class LocalNodesValidatorService {
 
   constructor(private readonly httpService: HttpService) {
   }

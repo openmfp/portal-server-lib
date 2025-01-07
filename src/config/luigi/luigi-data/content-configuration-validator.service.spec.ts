@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
-import { LocalNodesValidatorServiceImpl, ValidationResult } from '../../../local-nodes';
+import { LocalNodesValidatorService, ValidationResult } from '../../../local-nodes';
 import { Logger } from '@nestjs/common';
-import { ContentConfiguration, LOCAL_NODES_VALIDATOR_INJECTION_TOKEN } from '../../../';
+import { ContentConfiguration } from '../../../';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { mock, MockProxy } from 'jest-mock-extended';
 
 describe('ContentConfigurationValidatorService', () => {
   let service: ContentConfigurationValidatorService;
-  let localNodesValidatorService: MockProxy<LocalNodesValidatorServiceImpl>;
+  let localNodesValidatorService: MockProxy<LocalNodesValidatorService>;
 
   beforeEach(async () => {
-    localNodesValidatorService = mock<LocalNodesValidatorServiceImpl>();
+    localNodesValidatorService = mock<LocalNodesValidatorService>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
-          provide: LOCAL_NODES_VALIDATOR_INJECTION_TOKEN,
+          provide: LocalNodesValidatorService,
           useValue: localNodesValidatorService,
         },
         Logger,
