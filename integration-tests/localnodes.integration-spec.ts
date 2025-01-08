@@ -104,18 +104,10 @@ describe('LocalnodesController', () => {
       const resultingNodes: LuigiNode[] = [];
 
       const validateContentConfiguration = jest
-        .spyOn(contentConfigurationValidatorService, 'validateContentConfiguration')
-        .mockResolvedValue([
-          {
-            data: {
-              parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
-            },
-            status: 200,
-            statusText: null,
-            headers: null,
-            config: null,
-          } as AxiosResponse
-        ]);
+        .spyOn(contentConfigurationValidatorService, 'validateContentConfigurations')
+        .mockResolvedValue([{
+            parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
+        }]);
 
       const getLuigiData = jest
         .spyOn(contentConfigurationLuigiDataService, 'getLuigiData')

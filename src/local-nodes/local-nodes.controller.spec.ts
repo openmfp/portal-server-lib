@@ -92,16 +92,13 @@ describe('LocalNodesController', () => {
     it('should get no local nodes when no parameters', async () => {
       //Arrange
       const expectedResult: LuigiNode[] = undefined;
-      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
-        data: {
+      const validationResults: ValidationResult[] = [{
           parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
-        },
-        status: 200,
-      } as AxiosResponse];
+      }];
 
       jest
-        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
-        .mockResolvedValue(Promise.resolve(validationResult));
+        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
+        .mockResolvedValue(Promise.resolve(validationResults));
 
       jest
         .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
@@ -116,20 +113,17 @@ describe('LocalNodesController', () => {
 
     it('should return HttpException when local nodes validator throws error', async () => {
       //Arrange
-      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
-        data: {
-          "validationErrors": [
+      const validationResults:  ValidationResult[] = [{
+        validationErrors: [
               {
                   "message": "The document is not valid:\n%s"
               }
           ]
-      },
-        status: 200,
-      } as AxiosResponse];
+      }];
 
       jest
-        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
-        .mockResolvedValue(Promise.resolve(validationResult));
+        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
+        .mockResolvedValue(Promise.resolve(validationResults));
 
       //Act
       try {
@@ -147,16 +141,13 @@ describe('LocalNodesController', () => {
     it('should get local nodes', async () => {
       //Arrange
       const contentConfiguration = JSON.stringify(contentConfigurationToTest);
-      const validationResult:  AxiosResponse<ValidationResult, any>[] = [{
-        data: {
-          parsedConfiguration: contentConfiguration
-        },
-        status: 200,
-      } as AxiosResponse];
+      const validationResults:  ValidationResult[] = [{
+        parsedConfiguration: contentConfiguration
+      }];
       
       jest
-      .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfiguration')
-      .mockResolvedValue(Promise.resolve(validationResult));
+      .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
+      .mockResolvedValue(Promise.resolve(validationResults));
       
       body = mock<ConfigDto>();
       body = {

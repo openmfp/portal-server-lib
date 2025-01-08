@@ -50,7 +50,7 @@ describe('ContentConfigurationValidatorService', () => {
         }
       ];
 
-      const expectedResult: AxiosResponse<ValidationResult, any> = {
+      const requestResult: AxiosResponse<ValidationResult, any> = {
         status: 200,
         statusText: '',
         data: {
@@ -61,13 +61,21 @@ describe('ContentConfigurationValidatorService', () => {
       };
 
       jest.spyOn(service, 'validateContentConfigurationRequest')
-      .mockReturnValue(of(expectedResult));
+      .mockReturnValue(of(requestResult));
+
+      const expectedResults: ValidationResult[] = [{
+        name: "example 1",
+        parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
+      },{
+        name: "example 2",
+        parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
+      }];
 
       //Act
-      const result = await service.validateContentConfiguration(contentConfigurations);
+      const result = await service.validateContentConfigurations(contentConfigurations);
 
       //Assert
-      expect(result).toEqual([expectedResult, expectedResult]);
+      expect(result).toEqual(expectedResults);
     });
   });
 

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ContentConfiguration } from '../../../config/model/content-configuration';
 import { HttpService } from '@nestjs/axios';
-import { Observable } from "rxjs";
+import { lastValueFrom, map, Observable } from "rxjs";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export enum ContentType {
@@ -12,6 +12,7 @@ export enum ContentType {
 export interface ValidationResult {
   parsedConfiguration?: string;
   validationErrors?: ValidationMessage[];
+  name?: string
 }
 
 export interface ValidationMessage {
@@ -33,9 +34,7 @@ export class ContentConfigurationValidatorService {
   }
   
   public validateContentConfigurationRequest(validationInput: ValidationInput): Observable<AxiosResponse<ValidationResult, any>> {
-    const context: Record<string, any> = {
-      ccValidatorApiUrl: process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL,
-    };
+    const ccValidatorApiUrl = process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL;
     const config: AxiosRequestConfig = {
       headers: {
         'Content-Type': 'application/json',
@@ -46,18 +45,23 @@ export class ContentConfigurationValidatorService {
       contentConfiguration: JSON.stringify(validationInput.contentConfiguration)
     };
 
-    return this.httpService.post<ValidationResult>(context.ccValidatorApiUrl, data, config);
+    return this.httpService.post<ValidationResult>(ccValidatorApiUrl, data, config);
   }
 
-  public async validateContentConfiguration(contentConfigurations: ContentConfiguration[]): Promise<AxiosResponse<ValidationResult, any>[]> {
+  public validateContentConfigurations(contentConfigurations: ContentConfiguration[]): Promise<ValidationResult[]> {
     try{
-      return Promise.all(contentConfigurations.map(async contentConfiguration => {
-        return await this.validateContentConfigurationRequest(
-          {
-            contentType: ContentType.JSON,
-            contentConfiguration: contentConfiguration
-          }
-        ).toPromise();
+      return Promise.all(contentConfigurations.map(contentConfiguration => { 
+        return lastValueFrom( 
+          this.validateContentConfigurationRequest({ 
+            contentType: ContentType.JSON, 
+            contentConfiguration: contentConfiguration 
+          }).pipe(map(response=>{
+            return {
+              name: contentConfiguration.name,
+              ...response.data,
+            }
+          })) 
+        ); 
       }));
     } catch (e: any) {
       this.logger.error(
