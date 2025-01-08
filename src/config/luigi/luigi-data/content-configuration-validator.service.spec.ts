@@ -1,28 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
-import { LocalNodesValidatorService, ValidationResult } from '../../../local-nodes';
+import { ContentConfigurationValidatorService, ValidationInput, ValidationResult } from './content-configuration-validator.service';
 import { Logger } from '@nestjs/common';
 import { ContentConfiguration } from '../../../';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
-import { mock, MockProxy } from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
+import { HttpService } from '@nestjs/axios';
 
 describe('ContentConfigurationValidatorService', () => {
   let service: ContentConfigurationValidatorService;
-  let localNodesValidatorService: MockProxy<LocalNodesValidatorService>;
+  let httpServiceMock: HttpService;
 
   beforeEach(async () => {
-    localNodesValidatorService = mock<LocalNodesValidatorService>();
+    httpServiceMock = mock<HttpService>();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        {
-          provide: LocalNodesValidatorService,
-          useValue: localNodesValidatorService,
-        },
+        HttpService,
         Logger,
         ContentConfigurationValidatorService,
       ],
-    }).compile();
+    })
+    .overrideProvider(HttpService)
+    .useValue(httpServiceMock)
+    .compile();
+    
     service = module.get<ContentConfigurationValidatorService>(
       ContentConfigurationValidatorService
     );
@@ -58,7 +60,7 @@ describe('ContentConfigurationValidatorService', () => {
         config: undefined,
       };
 
-      jest.spyOn(localNodesValidatorService, 'validateContentConfiguration')
+      jest.spyOn(service, 'validateContentConfigurationRequest')
       .mockReturnValue(of(expectedResult));
 
       //Act
@@ -68,4 +70,34 @@ describe('ContentConfigurationValidatorService', () => {
       expect(result).toEqual([expectedResult, expectedResult]);
     });
   });
+
+   describe('validateContentConfigurationRequest', () => {
+      it('should post request to validate data', async () => {
+            //Arrange
+            const response = {
+              data: {
+                parsedConfiguration: '',
+              },
+              status: 200,
+              statusText: null,
+              headers: null,
+              config: null,
+            } as AxiosResponse;
+  
+            const httpServiceMockGet = jest.spyOn(httpServiceMock, 'post');
+            httpServiceMockGet.mockReturnValue(
+              of(response)
+            );
+  
+            const validationInput: ValidationInput =  {
+              contentType: 'JSON',
+              contentConfiguration: undefined,
+            }
+  
+            //Act
+            const request = service.validateContentConfigurationRequest(validationInput).toPromise();
+            //Assert
+            await expect(request).resolves.toBe(response);
+          });
+    });
 });

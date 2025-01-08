@@ -9,14 +9,14 @@ import {
   ContentConfigurationValidatorService,
   IntentResolveService,
   LuigiNode,
+  ValidationResult,
 } from '../config';
 import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
-import { mock, MockProxy } from 'jest-mock-extended';
+import { mock} from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { AxiosResponse } from 'axios';
-import { LocalNodesValidatorService, ValidationResult } from './local-nodes-validator-service';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -25,18 +25,12 @@ describe('LocalNodesController', () => {
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
-  let localNodesValidatorMock: MockProxy<LocalNodesValidatorService>;
 
   beforeEach(async () => {
-    localNodesValidatorMock = mock<LocalNodesValidatorService>();
     jest.useFakeTimers();
     module = await Test.createTestingModule({
       controllers: [LocalNodesController],
       providers: [
-        {
-          provide: LocalNodesValidatorService,
-          useValue: localNodesValidatorMock,
-        },
         Logger,
         ContentConfigurationValidatorService,
         ContentConfigurationLuigiDataService,

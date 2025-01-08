@@ -41,16 +41,7 @@ export class LocalNodesController {
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[]> {
     try {
-      const validationResults = await this.contentConfigurationValidatorService
-      .validateContentConfiguration(config.contentConfigurations);
-      
-      validationResults.forEach(validationResult => {
-        const data = validationResult.data;
-        if(data.validationErrors && data.validationErrors.length){
-          const joinedMessage = data.validationErrors.map(validationError=>validationError.message).join(', ');
-          throw joinedMessage;
-        }
-      });
+      const validationResult = await this.validate(config.contentConfigurations);
 
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
@@ -72,5 +63,18 @@ export class LocalNodesController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  private async validate(contentConfigurations: ContentConfiguration[]): Promise<any> {
+    const validationResults = await this.contentConfigurationValidatorService
+    .validateContentConfiguration(contentConfigurations);
+    
+    validationResults.forEach(validationResult => {
+      const data = validationResult.data;
+      if(data.validationErrors && data.validationErrors.length){
+        const joinedMessage = data.validationErrors.map(validationError=>validationError.message).join(', ');
+        throw joinedMessage;
+      }
+    });
   }
 }

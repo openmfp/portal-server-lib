@@ -33,7 +33,6 @@ import {
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
 import { 
   LocalNodesController,
-  LocalNodesValidatorService,
 } from './local-nodes';
 import {
   EnvController,
@@ -155,7 +154,6 @@ export class PortalModule implements NestModule {
       AuthTokenService,
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
-      LocalNodesValidatorService,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,
@@ -192,7 +190,7 @@ export class PortalModule implements NestModule {
         provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
         useClass:
           options.luigiDataService || ContentConfigurationLuigiDataService,
-      },
+      },      
     ];
 
     if (options.additionalControllers) {
