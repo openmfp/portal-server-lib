@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.104.0",
+  "version": "0.105.0",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
@@ -73,7 +73,7 @@
     "ts-loader": "9.5.1",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.7.2",
+    "typescript": "5.7.3",
     "wait-on": "^8.0.0",
     "yalc": "^1.0.0-pre.53"
   }
