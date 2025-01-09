@@ -12,7 +12,7 @@ export enum ContentType {
 export interface ValidationResult {
   parsedConfiguration?: string;
   validationErrors?: ValidationMessage[];
-  name?: string;
+  devUrl?: string;
 }
 
 export interface ValidationMessage {
@@ -69,7 +69,7 @@ export class ContentConfigurationValidatorService {
             }).pipe(
               map((response) => {
                 return {
-                  name: contentConfiguration.name,
+                  devUrl: contentConfiguration.devUrl,
                   ...response.data,
                 };
               })
