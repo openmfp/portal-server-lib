@@ -31,9 +31,7 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens';
 import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
-import { 
-  LocalNodesController,
-} from './local-nodes';
+import { LocalNodesController } from './local-nodes';
 import {
   EnvController,
   EnvVariablesServiceImpl,
@@ -190,7 +188,7 @@ export class PortalModule implements NestModule {
         provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
         useClass:
           options.luigiDataService || ContentConfigurationLuigiDataService,
-      },      
+      },
     ];
 
     if (options.additionalControllers) {

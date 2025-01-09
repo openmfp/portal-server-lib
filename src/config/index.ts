@@ -22,10 +22,10 @@ export { EnvFeatureTogglesProvider } from './context/feature-toggles-provider';
 export { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 export { LuigiDataService } from './luigi/luigi-data/luigi-data.service';
 export { ContentConfigurationLuigiDataService } from './luigi/luigi-data/content-configuration-luigi-data.service';
-export { 
+export {
   ContentConfigurationValidatorService,
-  ContentType, 
-  ValidationInput, 
-  ValidationMessage, 
-  ValidationResult 
+  ContentType,
+  ValidationInput,
+  ValidationMessage,
+  ValidationResult,
 } from './luigi/luigi-data/content-configuration-validator.service';

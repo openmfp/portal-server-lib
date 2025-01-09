@@ -18,7 +18,7 @@ export class NodeExtendedDataService {
       });
     }
 
-    let context = { ...node.context };
+    const context = { ...node.context };
     const extensionClassName = this.getExtensionClassNameForNode(extendedData);
     if (extensionClassName) {
       context.extensionClassName = extensionClassName;

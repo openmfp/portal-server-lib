@@ -14,7 +14,7 @@ import {
 import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
-import { mock} from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { AxiosResponse } from 'axios';
 
@@ -54,7 +54,7 @@ describe('LocalNodesController', () => {
       module.get<ContentConfigurationLuigiDataService>(
         ContentConfigurationLuigiDataService
       );
-      
+
     controller = module.get<LocalNodesController>(LocalNodesController);
   });
 
@@ -92,12 +92,18 @@ describe('LocalNodesController', () => {
     it('should get no local nodes when no parameters', async () => {
       //Arrange
       const expectedResult: LuigiNode[] = undefined;
-      const validationResults: ValidationResult[] = [{
-          parsedConfiguration: "{\"name\":\"example\",\"luigiConfigFragment\":{\"data\":{\"nodes\":[],\"texts\":[]}}}",
-      }];
+      const validationResults: ValidationResult[] = [
+        {
+          parsedConfiguration:
+            '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
+        },
+      ];
 
       jest
-        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
         .mockResolvedValue(Promise.resolve(validationResults));
 
       jest
@@ -113,16 +119,21 @@ describe('LocalNodesController', () => {
 
     it('should return HttpException when local nodes validator throws error', async () => {
       //Arrange
-      const validationResults:  ValidationResult[] = [{
-        validationErrors: [
-              {
-                  "message": "The document is not valid:\n%s"
-              }
-          ]
-      }];
+      const validationResults: ValidationResult[] = [
+        {
+          validationErrors: [
+            {
+              message: 'The document is not valid:\n%s',
+            },
+          ],
+        },
+      ];
 
       jest
-        .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
         .mockResolvedValue(Promise.resolve(validationResults));
 
       //Act
@@ -141,23 +152,30 @@ describe('LocalNodesController', () => {
     it('should get local nodes', async () => {
       //Arrange
       const contentConfiguration = JSON.stringify(contentConfigurationToTest);
-      const validationResults:  ValidationResult[] = [{
-        parsedConfiguration: contentConfiguration
-      }];
-      
+      const validationResults: ValidationResult[] = [
+        {
+          parsedConfiguration: contentConfiguration,
+        },
+      ];
+
       jest
-      .spyOn(contentConfigurationValidatorServiceMock, 'validateContentConfigurations')
-      .mockResolvedValue(Promise.resolve(validationResults));
-      
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
+        .mockResolvedValue(Promise.resolve(validationResults));
+
       body = mock<ConfigDto>();
       body = {
         language: 'any',
-        contentConfigurations: [contentConfigurationToTest as ContentConfiguration],
+        contentConfigurations: [
+          contentConfigurationToTest as ContentConfiguration,
+        ],
       };
-      
+
       //Act
       const result = await controller.getLocalNodes(body, responseMock);
-      
+
       //Assert
       expect(result).toStrictEqual(expectedResultFormProcessing);
     });

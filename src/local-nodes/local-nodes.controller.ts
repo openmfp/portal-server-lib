@@ -30,7 +30,7 @@ export class ConfigDto {
 
 @Controller('/rest/localnodes')
 export class LocalNodesController {
-  constructor(    
+  constructor(
     private logger: Logger,
     private contentConfigurationValidatorService: ContentConfigurationValidatorService,
     private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
@@ -40,12 +40,12 @@ export class LocalNodesController {
   async getLocalNodes(
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: Response
-  ): Promise<LuigiNode[]|ValidationResult[]> {
+  ): Promise<LuigiNode[] | ValidationResult[]> {
     const validationResults = await this.validate(config.contentConfigurations);
-    if(validationResults.length) {
+    if (validationResults.length) {
       return validationResults;
     }
-    
+
     try {
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
@@ -69,13 +69,18 @@ export class LocalNodesController {
     }
   }
 
-  private async validate(contentConfigurations: ContentConfiguration[]): Promise<ValidationResult[]> {
-    const validationResults = await this.contentConfigurationValidatorService
-    .validateContentConfigurations(contentConfigurations);
-    
-    return validationResults
-      .filter(validationResult => 
-        validationResult.validationErrors && 
-        validationResult.validationErrors.length);
+  private async validate(
+    contentConfigurations: ContentConfiguration[]
+  ): Promise<ValidationResult[]> {
+    const validationResults =
+      await this.contentConfigurationValidatorService.validateContentConfigurations(
+        contentConfigurations
+      );
+
+    return validationResults.filter(
+      (validationResult) =>
+        validationResult.validationErrors &&
+        validationResult.validationErrors.length
+    );
   }
 }
