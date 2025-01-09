@@ -69,6 +69,20 @@ describe('LocalNodesController', () => {
 
   it('should return HttpException when getLuigiData throws error', async () => {
     //Arrange
+    const validationResults: ValidationResult[] = [
+      {
+        parsedConfiguration:
+          '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
+      },
+    ];
+
+    jest
+      .spyOn(
+        contentConfigurationValidatorServiceMock,
+        'validateContentConfigurations'
+      )
+      .mockResolvedValue(Promise.resolve(validationResults));
+
     jest
       .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
       .mockImplementation(() => {
