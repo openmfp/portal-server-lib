@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
+import { Logger } from '@nestjs/common';
 import {
-  ContentConfigurationValidatorService,
+  ContentConfiguration,
   ValidationInput,
   ValidationResult,
-} from './content-configuration-validator.service';
-import { Logger } from '@nestjs/common';
-import { ContentConfiguration } from '../../../';
+} from '../../../';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { mock } from 'jest-mock-extended';
