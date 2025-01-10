@@ -13,9 +13,12 @@ export interface Dictionary {
 }
 
 export interface LuigiAppConfig {
-  urlTemplateParams: Record<string, any>;
   navMode?: string;
   urlTemplateId?: string;
+  urlTemplateParams: {
+    url: any;
+    query: any;
+  };
 }
 
 export interface ViewGroup {
@@ -28,7 +31,7 @@ export interface LuigiConfigData {
   nodeDefaults?: LuigiNodeDefaults;
   nodes: LuigiNode[];
   texts?: Dictionary[];
-  targetAppConfig?: Record<string, any>;
+  targetAppConfig?: LuigiAppConfig;
   userSettings?: LuigiUserSettings;
 }
 

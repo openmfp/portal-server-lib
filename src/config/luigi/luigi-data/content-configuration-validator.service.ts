@@ -65,7 +65,7 @@ export class ContentConfigurationValidatorService {
           return lastValueFrom(
             this.validateContentConfigurationRequest({
               contentType: ContentType.JSON,
-              contentConfiguration: contentConfiguration,
+              contentConfiguration,
             }).pipe(
               map((response) => {
                 return {

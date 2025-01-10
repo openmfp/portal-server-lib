@@ -58,6 +58,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       navMode: 'inplace',
       urlTemplateId: 'urltemplate.url',
       urlTemplateParams: {
+        url: '',
         query: {},
       },
     };

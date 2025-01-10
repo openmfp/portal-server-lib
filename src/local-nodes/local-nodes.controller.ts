@@ -41,9 +41,11 @@ export class LocalNodesController {
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: Response
   ): Promise<LuigiNode[] | ValidationResult[]> {
-    const validationResults = await this.validate(config.contentConfigurations);
-    if (validationResults.length) {
-      return validationResults;
+    const validationResultsErrors = await this.validate(
+      config.contentConfigurations
+    );
+    if (validationResultsErrors.length) {
+      return validationResultsErrors;
     }
 
     try {
