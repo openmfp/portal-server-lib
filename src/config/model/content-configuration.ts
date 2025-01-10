@@ -13,10 +13,11 @@ export interface Dictionary {
 }
 
 export interface LuigiAppConfig {
+  _version?: string;
   navMode?: string;
   urlTemplateId?: string;
-  urlTemplateParams: {
-    url: any;
+  urlTemplateParams?: {
+    url?: any;
     query: any;
   };
   crossNavigation?: any;
