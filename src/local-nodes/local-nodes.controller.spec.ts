@@ -325,12 +325,10 @@ describe('LocalNodesController', () => {
         },
         targetAppConfig: {
           _version: '1.13.0',
-          'sap.integration': {
-            navMode: 'inplace',
-            urlTemplateId: 'urltemplate.url',
-            urlTemplateParams: {
-              query: {},
-            },
+          navMode: 'inplace',
+          urlTemplateId: 'urltemplate.url',
+          urlTemplateParams: {
+            query: {},
           },
         },
         viewGroup: {
