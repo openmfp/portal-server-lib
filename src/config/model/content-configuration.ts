@@ -19,6 +19,7 @@ export interface LuigiAppConfig {
     url: any;
     query: any;
   };
+  crossNavigation?: any;
 }
 
 export interface ViewGroup {
