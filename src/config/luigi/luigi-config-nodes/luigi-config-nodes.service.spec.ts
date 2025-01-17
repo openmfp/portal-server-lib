@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContentConfiguration } from '../../model/content-configuration';
-import { ContentConfigurationLuigiDataService } from '../luigi-data/content-configuration-luigi-data.service';
 import { LuigiDataService } from '../luigi-data/luigi-data.service';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service';
 import { PortalModule } from '../../../portal.module';

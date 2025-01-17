@@ -10,12 +10,13 @@ import { AuthTokenData, AuthTokenService } from './auth-token.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
-  let requestMock: Request = mock<Request>();
-  let responseMock: Response = mock<Response>();
-  let authTokenServiceMock: jest.Mocked<AuthTokenService> =
+  const authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
+  const requestMock: Request = mock<Request>();
+  const responseMock: Response = mock<Response>();
+  const authTokenServiceMock: jest.Mocked<AuthTokenService> =
     mock<AuthTokenService>();
-  let cookiesServiceMock: jest.Mocked<CookiesService> = mock<CookiesService>();
+  const cookiesServiceMock: jest.Mocked<CookiesService> =
+    mock<CookiesService>();
 
   beforeEach(async () => {
     jest.resetAllMocks();

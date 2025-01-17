@@ -11,7 +11,9 @@ import {
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
   LuigiNode,
+  ValidationResult,
 } from '../config';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
@@ -30,6 +32,7 @@ export class ConfigDto {
 export class LocalNodesController {
   constructor(
     private logger: Logger,
+    private contentConfigurationValidatorService: ContentConfigurationValidatorService,
     private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
   ) {}
 
@@ -37,7 +40,14 @@ export class LocalNodesController {
   async getLocalNodes(
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: Response
-  ): Promise<LuigiNode[]> {
+  ): Promise<LuigiNode[] | ValidationResult[]> {
+    const validationResultsErrors = await this.validate(
+      config.contentConfigurations
+    );
+    if (validationResultsErrors.length) {
+      return validationResultsErrors;
+    }
+
     try {
       const nodes: LuigiNode[] =
         await this.contentConfigurationLuigiDataService.getLuigiData(
@@ -59,5 +69,20 @@ export class LocalNodesController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  private async validate(
+    contentConfigurations: ContentConfiguration[]
+  ): Promise<ValidationResult[]> {
+    const validationResults =
+      await this.contentConfigurationValidatorService.validateContentConfigurations(
+        contentConfigurations
+      );
+
+    return validationResults.filter(
+      (validationResult) =>
+        validationResult.validationErrors &&
+        validationResult.validationErrors.length
+    );
   }
 }
