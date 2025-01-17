@@ -4,19 +4,24 @@ import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
+  ContentConfiguration,
   ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
   IntentResolveService,
   LuigiNode,
+  ValidationResult,
 } from '../config';
 import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
 import { mock } from 'jest-mock-extended';
 import { Request, Response } from 'express';
+import { AxiosResponse } from 'axios';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
   let module: TestingModule;
+  let contentConfigurationValidatorServiceMock: ContentConfigurationValidatorService;
   let contentConfigurationLuigiDataServiceMock: ContentConfigurationLuigiDataService;
   let body: Request;
   let responseMock: Response;
@@ -27,6 +32,7 @@ describe('LocalNodesController', () => {
       controllers: [LocalNodesController],
       providers: [
         Logger,
+        ContentConfigurationValidatorService,
         ContentConfigurationLuigiDataService,
         TextsTranslateService,
         ConfigTransferNodeService,
@@ -38,10 +44,17 @@ describe('LocalNodesController', () => {
 
     body = mock<ConfigDto>();
     responseMock = mock<Response>();
+
+    contentConfigurationValidatorServiceMock =
+      module.get<ContentConfigurationValidatorService>(
+        ContentConfigurationValidatorService
+      );
+
     contentConfigurationLuigiDataServiceMock =
       module.get<ContentConfigurationLuigiDataService>(
         ContentConfigurationLuigiDataService
       );
+
     controller = module.get<LocalNodesController>(LocalNodesController);
   });
 
@@ -56,7 +69,20 @@ describe('LocalNodesController', () => {
 
   it('should return HttpException when getLuigiData throws error', async () => {
     //Arrange
-    const expectedResult: LuigiNode[] = undefined;
+    const validationResults: ValidationResult[] = [
+      {
+        parsedConfiguration:
+          '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
+      },
+    ];
+
+    jest
+      .spyOn(
+        contentConfigurationValidatorServiceMock,
+        'validateContentConfigurations'
+      )
+      .mockResolvedValue(Promise.resolve(validationResults));
+
     jest
       .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
       .mockImplementation(() => {
@@ -80,6 +106,20 @@ describe('LocalNodesController', () => {
     it('should get no local nodes when no parameters', async () => {
       //Arrange
       const expectedResult: LuigiNode[] = undefined;
+      const validationResults: ValidationResult[] = [
+        {
+          parsedConfiguration:
+            '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
+        },
+      ];
+
+      jest
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
+        .mockResolvedValue(Promise.resolve(validationResults));
+
       jest
         .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
         .mockResolvedValue(Promise.resolve(expectedResult));
@@ -91,13 +131,60 @@ describe('LocalNodesController', () => {
       expect(result).toStrictEqual(expectedResult);
     });
 
+    it('should return HttpException when local nodes validator throws error', async () => {
+      //Arrange
+      const validationResults: ValidationResult[] = [
+        {
+          validationErrors: [
+            {
+              message: 'The document is not valid:\n%s',
+            },
+          ],
+        },
+      ];
+
+      jest
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
+        .mockResolvedValue(Promise.resolve(validationResults));
+
+      //Act
+      try {
+        await controller.getLocalNodes(body, responseMock);
+      } catch (error: any) {
+        //Assert
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(error.message).toBe(
+          'Could not process local content configuration'
+        );
+      }
+    });
+
     it('should get local nodes', async () => {
       //Arrange
+      const contentConfiguration = JSON.stringify(contentConfigurationToTest);
+      const validationResults: ValidationResult[] = [
+        {
+          parsedConfiguration: contentConfiguration,
+        },
+      ];
+
+      jest
+        .spyOn(
+          contentConfigurationValidatorServiceMock,
+          'validateContentConfigurations'
+        )
+        .mockResolvedValue(Promise.resolve(validationResults));
 
       body = mock<ConfigDto>();
       body = {
         language: 'any',
-        contentConfigurations: [contentConfigurationToTest],
+        contentConfigurations: [
+          contentConfigurationToTest as ContentConfiguration,
+        ],
       };
 
       //Act
@@ -207,6 +294,7 @@ describe('LocalNodesController', () => {
   ];
 
   const contentConfigurationToTest = {
+    creationTimestamp: undefined,
     name: 'extension-manager',
     contentType: 'json',
     luigiConfigFragment: {
@@ -237,12 +325,10 @@ describe('LocalNodesController', () => {
         },
         targetAppConfig: {
           _version: '1.13.0',
-          'sap.integration': {
-            navMode: 'inplace',
-            urlTemplateId: 'urltemplate.url',
-            urlTemplateParams: {
-              query: {},
-            },
+          navMode: 'inplace',
+          urlTemplateId: 'urltemplate.url',
+          urlTemplateParams: {
+            query: {},
           },
         },
         viewGroup: {

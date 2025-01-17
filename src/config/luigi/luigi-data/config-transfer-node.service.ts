@@ -35,8 +35,7 @@ export class ConfigTransferNodeService {
 
       // Resolve intentMapping information and pass through with the config transfer node
       const luigiIntentInboundList: CrossNavigationInbounds =
-        luigiConfigData.targetAppConfig?.appCrossNavigation?.crossNavigation
-          ?.inbounds;
+        luigiConfigData.targetAppConfig?.crossNavigation?.inbounds;
       this.intentResolveService.resolve(nodes, luigiIntentInboundList);
     }
   }

@@ -139,10 +139,8 @@ describe('ConfigTransferNodeService', () => {
       const nodes: LuigiNode[] = [{}];
       const luigiConfigData: LuigiConfigData = {
         targetAppConfig: {
-          appCrossNavigation: {
-            crossNavigation: {
-              inbounds: {} as CrossNavigationInbounds,
-            },
+          crossNavigation: {
+            inbounds: {} as CrossNavigationInbounds,
           },
         },
       } as any as LuigiConfigData;
@@ -152,8 +150,7 @@ describe('ConfigTransferNodeService', () => {
 
       expect(intentResolveServiceMock.resolve).toHaveBeenCalledWith(
         nodes,
-        luigiConfigData.targetAppConfig?.appCrossNavigation?.crossNavigation
-          ?.inbounds
+        luigiConfigData.targetAppConfig?.crossNavigation?.inbounds
       );
     });
   });

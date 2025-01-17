@@ -5,16 +5,24 @@ import {
   PortalModule,
   ContentConfigurationLuigiDataService,
   LuigiNode,
+  ContentConfigurationValidatorService,
 } from '../src';
+import { AxiosResponse } from 'axios';
 
 describe('LocalnodesController', () => {
   let app: INestApplication;
+  let contentConfigurationValidatorService: ContentConfigurationValidatorService;
   let contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
     }).compile();
+
+    contentConfigurationValidatorService =
+      module.get<ContentConfigurationValidatorService>(
+        ContentConfigurationValidatorService
+      );
 
     contentConfigurationLuigiDataService =
       module.get<ContentConfigurationLuigiDataService>(
@@ -94,6 +102,19 @@ describe('LocalnodesController', () => {
 
     it('should call the getLuigiData method on valid params', async () => {
       const resultingNodes: LuigiNode[] = [];
+
+      const validateContentConfiguration = jest
+        .spyOn(
+          contentConfigurationValidatorService,
+          'validateContentConfigurations'
+        )
+        .mockResolvedValue([
+          {
+            parsedConfiguration:
+              '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
+          },
+        ]);
+
       const getLuigiData = jest
         .spyOn(contentConfigurationLuigiDataService, 'getLuigiData')
         .mockReturnValue(Promise.resolve(resultingNodes));
@@ -107,6 +128,7 @@ describe('LocalnodesController', () => {
         })
         .expect(201);
 
+      expect(validateContentConfiguration).toBeCalled();
       expect(getLuigiData).toBeCalled();
       expect(body).toStrictEqual([]);
     });

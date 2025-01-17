@@ -37,8 +37,8 @@ describe('EnvVariablesServiceImpl', () => {
   describe('getEnv', () => {
     it('should return the result from authDataService.provideAuthData and current auth envs', async () => {
       const result = await envVariablesService.getEnv(
-        mockRequest as Request,
-        mockResponse as Response
+        mockRequest,
+        mockResponse
       );
 
       expect(result).toEqual({
@@ -51,10 +51,7 @@ describe('EnvVariablesServiceImpl', () => {
     });
 
     it('should return a promise', () => {
-      const result = envVariablesService.getEnv(
-        mockRequest as Request,
-        mockResponse as Response
-      );
+      const result = envVariablesService.getEnv(mockRequest, mockResponse);
       expect(result).toBeInstanceOf(Promise);
     });
   });

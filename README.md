@@ -25,6 +25,7 @@ In order to be able to use the library following environment properties have to 
 | TOKEN_URL_${idp}          | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
 | OIDC_CLIENT_ID_${idp}     | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
 | OIDC_CLIENT_SECRET_${idp} | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
+| CONTENT_CONFIGURATION_VALIDATOR_API_URL | Endpoint URL for custom content configuration validation. Endpoint returns useful error message when configuration is invalid.  |
 
 - **Optional**
 
@@ -48,6 +49,7 @@ AUTH_SERVER_URL_APP=https://example.com/auth
 TOKEN_URL_APP=https://example.com/token
 OIDC_CLIENT_ID_APP=app_client_id
 OIDC_CLIENT_SECRET_APP=app_client_secret
+CONTENT_CONFIGURATION_VALIDATOR_API_URL=https://example.com/validate
 
 HEALTH_CHECK_INTERVAL=
 LOGOUT_REDIRECT_URL="/logout"
