@@ -169,7 +169,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
-              devUrl: 'https://app.example.com',
+              url: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodes: [
@@ -204,7 +204,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
-              devUrl: 'https://app.example.com',
+              url: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodes: [
@@ -244,7 +244,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
             {
-              devUrl: 'https://app.example.com',
+              url: 'https://app.example.com',
               luigiConfigFragment: {
                 data: {
                   nodeDefaults: {

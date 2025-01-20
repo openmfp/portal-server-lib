@@ -8,7 +8,7 @@ export enum ContentType {
 export interface ValidationResult {
   parsedConfiguration?: string;
   validationErrors?: ValidationMessage[];
-  devUrl?: string;
+  url?: string;
 }
 
 export interface ValidationMessage {

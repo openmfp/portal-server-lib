@@ -54,7 +54,7 @@ export class ContentConfigurationValidatorService {
             }).pipe(
               map((response) => {
                 return {
-                  devUrl: contentConfiguration.devUrl,
+                  url: contentConfiguration.url,
                   ...response.data,
                 };
               })
