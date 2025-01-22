@@ -28,26 +28,27 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     extendedData?: ExtendedData
   ): Promise<LuigiNode[]> {
     const nodeArrays: LuigiNode[] = provider.contentConfiguration
-      .map((config) => {
+      .map((contentConfiguration) => {
         this.textsTranslateService.translateTexts(
-          config.luigiConfigFragment,
+          contentConfiguration.luigiConfigFragment,
           language
         );
 
         return this.createNodes(
-          config.luigiConfigFragment.data,
-          config.devUrl != undefined ? URI.parse(config.devUrl) : undefined
+          contentConfiguration.luigiConfigFragment.data,
+          contentConfiguration.url != undefined
+            ? URI.parse(contentConfiguration.url)
+            : undefined
         );
       })
       .flat();
 
-    const nodes: LuigiNode[] = nodeArrays.map((node) =>
+    return nodeArrays.map((node) =>
       this.nodeExtendedDataService.addExtendedDataToChildrenRecursively(
         node,
         extendedData
       )
     );
-    return nodes;
   }
 
   private createNodes(

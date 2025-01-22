@@ -39,13 +39,13 @@ describe('ContentConfigurationValidatorService', () => {
       //Arrange
       const contentConfigurations: ContentConfiguration[] = [
         {
-          devUrl: 'https://example.com/1',
+          url: 'https://example.com/1',
           name: 'example 1',
           creationTimestamp: '',
           luigiConfigFragment: undefined,
         },
         {
-          devUrl: 'https://example.com/2',
+          url: 'https://example.com/2',
           name: 'example 2',
           creationTimestamp: '',
           luigiConfigFragment: undefined,
@@ -69,12 +69,12 @@ describe('ContentConfigurationValidatorService', () => {
 
       const expectedResults: ValidationResult[] = [
         {
-          devUrl: 'https://example.com/1',
+          url: 'https://example.com/1',
           parsedConfiguration:
             '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
         },
         {
-          devUrl: 'https://example.com/2',
+          url: 'https://example.com/2',
           parsedConfiguration:
             '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
         },
