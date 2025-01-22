@@ -14,13 +14,7 @@ export interface RawServiceProvider {
   contentConfiguration: ContentConfiguration[];
   config: Record<string, string>;
   creationTimestamp: string;
-  installationData?: Record<string, string>;
-  extensionClassName?: string;
   isMissingMandatoryData?: boolean;
-  isMandatoryExtension?: boolean;
-  helpCenterData?: HelpCenterData;
-  documentation?: URL;
-  breadcrumbBadge?: BreadcrumbBadge;
 }
 
 export interface ServiceProviderResponse {

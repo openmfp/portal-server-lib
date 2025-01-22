@@ -42,14 +42,7 @@ export class LuigiConfigNodesService {
     const promises = rawServiceProviders.map((provider) =>
       this.luigiDataService
         .getLuigiData(provider, acceptLanguage, {
-          isMissingMandatoryData: provider.isMissingMandatoryData,
-          extensionClassName: provider.extensionClassName,
-          helpContext: {
-            displayName: provider.displayName,
-            ...provider.helpCenterData,
-            documentation: provider.documentation,
-          },
-          breadcrumbBadge: provider?.breadcrumbBadge,
+          ...provider,
         })
         .then(
           (nodes) => ({ nodes, provider }),
@@ -69,11 +62,8 @@ export class LuigiConfigNodesService {
       if (value) {
         const rawProvider = value.provider;
         serviceProviders.push({
-          config: rawProvider.config,
-          installationData: rawProvider.installationData,
-          isMandatoryExtension: rawProvider.isMandatoryExtension,
+          ...rawProvider,
           nodes: value.nodes,
-          creationTimestamp: rawProvider.creationTimestamp,
         });
       }
     }
