@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RawServiceProvider } from '../../context/service-provider';
 import {
-  ExtendedData,
   LuigiConfigData,
   LuigiNodeDefaults,
   LuigiAppConfig,
@@ -24,8 +23,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
 
   async getLuigiData(
     provider: RawServiceProvider,
-    language: string,
-    extendedData?: ExtendedData
+    language: string
   ): Promise<LuigiNode[]> {
     const nodeArrays: LuigiNode[] = provider.contentConfiguration
       .map((contentConfiguration) => {
@@ -46,7 +44,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     return nodeArrays.map((node) =>
       this.nodeExtendedDataService.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        provider
       )
     );
   }

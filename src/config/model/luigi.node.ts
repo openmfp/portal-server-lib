@@ -120,6 +120,7 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   hideFromNav?: boolean;
   keepSelectedForChildren?: boolean;
   label?: string;
+  extensionClassName?: string;
   layoutConfig?: any;
   link?: string;
   loadingIndicator?: { enabled: boolean };
@@ -147,11 +148,10 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
 }
 
 export interface ServiceProvider {
-  nodes: LuigiNode[];
-  config: Record<string, string>;
-  installationData?: Record<string, string>;
-  isMandatoryExtension?: boolean;
+  name: string;
+  displayName: string;
   creationTimestamp: string;
+  nodes: LuigiNode[];
 }
 
 export interface PortalConfig {

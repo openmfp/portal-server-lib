@@ -1,4 +1,3 @@
-import { BreadcrumbBadge } from '../model/breadcrumb-badge';
 import { ContentConfiguration } from '../model/content-configuration';
 import { StackSearch } from '../model/luigi.node';
 
@@ -9,16 +8,16 @@ export interface HelpCenterData {
 }
 
 export interface RawServiceProvider {
-  name: string;
-  displayName: string;
+  name?: string;
+  displayName?: string;
+  creationTimestamp?: string;
   contentConfiguration: ContentConfiguration[];
-  config: Record<string, string>;
-  creationTimestamp: string;
-  isMissingMandatoryData?: boolean;
+  nodeExtendedData?: Record<string, any>;
+  nodeContext?: Record<string, any>;
 }
 
 export interface ServiceProviderResponse {
-  serviceProviders: RawServiceProvider[];
+  rawServiceProviders: RawServiceProvider[];
 }
 
 export interface URL {
@@ -36,7 +35,7 @@ export interface ServiceProviderService {
 export class EmptyServiceProviderService implements ServiceProviderService {
   getServiceProviders(): Promise<ServiceProviderResponse> {
     return Promise.resolve({
-      serviceProviders: [],
+      rawServiceProviders: [],
     });
   }
 }

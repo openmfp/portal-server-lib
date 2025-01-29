@@ -23,16 +23,19 @@ describe('NodeExtendedDataService', () => {
         colorSchema: '8',
         hint: 'Badge Hint',
       };
-      const extendedData: ExtendedData = {
-        isMissingMandatoryData: true,
-        helpContext,
-        breadcrumbBadge,
-        extensionClassName: 'ExtensionClass',
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+        nodeExtendedData: {
+          isMissingMandatoryData: true,
+          helpContext,
+          breadcrumbBadge,
+          extensionClassName: 'ExtensionClass',
+        },
       };
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result).toEqual({
@@ -61,16 +64,19 @@ describe('NodeExtendedDataService', () => {
           { label: 'Child2', children: [{ label: 'Grandchild' }] },
         ],
       };
-      const extendedData: ExtendedData = {
-        isMissingMandatoryData: true,
-        helpContext,
-        breadcrumbBadge,
-        extensionClassName: 'ExtensionClass',
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+        nodeExtendedData: {
+          isMissingMandatoryData: true,
+          helpContext,
+          breadcrumbBadge,
+          extensionClassName: 'ExtensionClass',
+        },
       };
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result).toEqual({
@@ -109,14 +115,17 @@ describe('NodeExtendedDataService', () => {
 
     it('should not add extension class name when isMissingMandatoryData is false', () => {
       const node: LuigiNode = { label: 'Node' };
-      const extendedData: ExtendedData = {
-        isMissingMandatoryData: false,
-        extensionClassName: 'ExtensionClass',
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+        nodeExtendedData: {
+          isMissingMandatoryData: false,
+          extensionClassName: 'ExtensionClass',
+        },
       };
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result).toEqual({
@@ -131,14 +140,17 @@ describe('NodeExtendedDataService', () => {
         label: 'Node',
         context: { existingKey: 'existingValue' },
       };
-      const extendedData: ExtendedData = {
-        isMissingMandatoryData: true,
-        extensionClassName: 'ExtensionClass',
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+        nodeExtendedData: {
+          isMissingMandatoryData: false,
+          extensionClassName: 'ExtensionClass',
+        },
       };
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result).toEqual({
@@ -153,11 +165,12 @@ describe('NodeExtendedDataService', () => {
 
     it('should handle undefined extendedData', () => {
       const node: LuigiNode = { label: 'Node' };
-      const extendedData: ExtendedData = undefined;
-
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+      };
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result).toEqual({ label: 'Node', context: {} });
@@ -169,17 +182,19 @@ describe('NodeExtendedDataService', () => {
         label: 'Home',
         context: { existingKey: 'existingValue' },
       };
-
-      const extendedData: ExtendedData = {
-        isMissingMandatoryData: true,
-        helpContext: { displayName: 'some-help-context' },
-        breadcrumbBadge: { text: 'New', hint: 'positive' },
-        extensionClassName: 'MyExtensionClass',
+      const rawProvider: RawServiceProvider = {
+        contentConfiguration: [],
+        nodeExtendedData: {
+          isMissingMandatoryData: true,
+          helpContext: { displayName: 'some-help-context' },
+          breadcrumbBadge: { text: 'New', hint: 'positive' },
+          extensionClassName: 'MyExtensionClass',
+        },
       };
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        extendedData
+        rawProvider
       );
 
       expect(result.isMissingMandatoryData).toBe(true);

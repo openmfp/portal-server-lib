@@ -5,7 +5,7 @@ import {
 } from '../../../injection-tokens';
 import { ServiceProvider } from '../../model/luigi.node';
 import {
-  ServiceProviderResponse,
+  RawServiceProvider,
   ServiceProviderService,
 } from '../../context/service-provider';
 import { LuigiDataService } from '../luigi-data/luigi-data.service';
@@ -25,30 +25,28 @@ export class LuigiConfigNodesService {
     acceptLanguage: string,
     context?: Record<string, any>
   ): Promise<ServiceProvider[]> {
-    const serviceProviders =
+    const providerResponse =
       await this.serviceProviderService.getServiceProviders(
         token,
         entities,
         context
       );
-    return this.getNodesFromProvider(serviceProviders, acceptLanguage);
+    return this.getNodesFromProvider(
+      providerResponse.rawServiceProviders,
+      acceptLanguage
+    );
   }
 
   async getNodesFromProvider(
-    fetchedProvider: ServiceProviderResponse,
+    rawServiceProviders: RawServiceProvider[],
     acceptLanguage: string
   ): Promise<ServiceProvider[]> {
-    const rawServiceProviders = fetchedProvider.serviceProviders;
-    const promises = rawServiceProviders.map((provider) =>
-      this.luigiDataService
-        .getLuigiData(provider, acceptLanguage, {
-          ...provider,
-        })
-        .then(
-          (nodes) => ({ nodes, provider }),
-          (error) =>
-            console.error("[ERROR] Couldn't create nodes", provider, error)
-        )
+    const promises = rawServiceProviders.map((rawProvider) =>
+      this.luigiDataService.getLuigiData(rawProvider, acceptLanguage).then(
+        (nodes) => ({ nodes, rawProvider }),
+        (error) =>
+          console.error("[ERROR] Couldn't create nodes", rawProvider, error)
+      )
     );
 
     const luigiDataPromises = await Promise.allSettled(promises);
@@ -60,9 +58,11 @@ export class LuigiConfigNodesService {
       }
       const value = luigiData.value;
       if (value) {
-        const rawProvider = value.provider;
+        const rawProvider = value.rawProvider;
         serviceProviders.push({
-          ...rawProvider,
+          name: rawProvider.name,
+          displayName: rawProvider.displayName,
+          creationTimestamp: rawProvider.creationTimestamp,
           nodes: value.nodes,
         });
       }
