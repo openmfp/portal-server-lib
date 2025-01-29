@@ -8,9 +8,9 @@ export interface HelpCenterData {
 }
 
 export interface RawServiceProvider {
-  name?: string;
-  displayName?: string;
-  creationTimestamp?: string;
+  name: string;
+  displayName: string;
+  creationTimestamp: string;
   contentConfiguration: ContentConfiguration[];
   nodeExtendedData?: Record<string, any>;
   nodeContext?: Record<string, any>;

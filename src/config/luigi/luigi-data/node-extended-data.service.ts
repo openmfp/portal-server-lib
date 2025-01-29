@@ -18,8 +18,6 @@ export class NodeExtendedDataService {
       });
     }
 
-    this.addNewBadgeIfApplicable(node, provider);
-
     node.context = {
       ...node.context,
       ...provider.nodeContext,
@@ -29,28 +27,5 @@ export class NodeExtendedDataService {
       ...node,
       ...provider.nodeExtendedData,
     };
-  }
-
-  private addNewBadgeIfApplicable(
-    node: LuigiNode,
-    serviceProvider: RawServiceProvider
-  ): void {
-    if (
-      serviceProvider.nodeExtendedData.isMandatoryExtension ||
-      !serviceProvider.creationTimestamp
-    ) {
-      return;
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const shouldShowNewBadge = !(
-      new Date(serviceProvider.creationTimestamp).getTime() <
-      yesterday.getTime()
-    );
-
-    if (shouldShowNewBadge) {
-      node.statusBadge = { label: 'New', type: 'informative' };
-    }
   }
 }
