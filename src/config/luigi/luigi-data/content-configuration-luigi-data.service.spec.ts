@@ -3,7 +3,6 @@ import { ConfigTransferNodeService } from './config-transfer-node.service';
 import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
 import { IntentResolveService } from './intent-resolve.service';
 import { RawServiceProvider } from '../../context/service-provider';
-import { ExtendedData } from '../../model/content-configuration';
 import { NodeExtendedDataService } from './node-extended-data.service';
 import { TextsTranslateService } from './texts-translate.service';
 

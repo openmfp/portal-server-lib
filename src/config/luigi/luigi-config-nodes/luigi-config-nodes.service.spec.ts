@@ -47,26 +47,23 @@ describe('LuigiConfigNodesService', () => {
       .mockReturnValue(Promise.resolve(nodes));
     const rawServiceProviders: RawServiceProvider[] = [
       {
-        name: 'a',
-        displayName: 'c',
-        isMandatoryExtension: true,
-        contentConfiguration: [{} as ContentConfiguration],
-        config: {},
+        name: 'name',
+        displayName: 'display name',
         creationTimestamp: '2022-05-17T11:37:17Z',
+        contentConfiguration: [{} as ContentConfiguration],
       },
       {
         name: 'b',
         displayName: 'd',
-        contentConfiguration: [{} as ContentConfiguration],
-        config: {},
         creationTimestamp: '2021-05-17T11:37:17Z',
+        contentConfiguration: [{} as ContentConfiguration],
       },
     ];
     const token = 'token';
     const getExtensionClassesMock = jest
       .spyOn(serviceProviderService, 'getServiceProviders')
       .mockResolvedValue({
-        serviceProviders: rawServiceProviders,
+        rawServiceProviders,
       });
 
     // Act

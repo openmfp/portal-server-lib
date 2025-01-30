@@ -1,6 +1,5 @@
 import { RawServiceProvider } from '../../context/service-provider';
 import { HelpContext, LuigiNode } from '../../model/luigi.node';
-import { ExtendedData } from '../../model/content-configuration';
 import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
 import { NodeExtendedDataService } from './node-extended-data.service';
 
@@ -24,6 +23,9 @@ describe('NodeExtendedDataService', () => {
         hint: 'Badge Hint',
       };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
         nodeExtendedData: {
           isMissingMandatoryData: true,
@@ -43,7 +45,8 @@ describe('NodeExtendedDataService', () => {
         isMissingMandatoryData: true,
         helpContext,
         breadcrumbBadge,
-        context: { extensionClassName: 'ExtensionClass' },
+        context: {},
+        extensionClassName: 'ExtensionClass',
       });
     });
 
@@ -65,6 +68,9 @@ describe('NodeExtendedDataService', () => {
         ],
       };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
         nodeExtendedData: {
           isMissingMandatoryData: true,
@@ -84,28 +90,32 @@ describe('NodeExtendedDataService', () => {
         isMissingMandatoryData: true,
         helpContext,
         breadcrumbBadge,
-        context: { extensionClassName: 'ExtensionClass' },
+        context: {},
+        extensionClassName: 'ExtensionClass',
         children: [
           {
             label: 'Child1',
             isMissingMandatoryData: true,
             helpContext,
             breadcrumbBadge,
-            context: { extensionClassName: 'ExtensionClass' },
+            context: {},
+            extensionClassName: 'ExtensionClass',
           },
           {
             label: 'Child2',
             isMissingMandatoryData: true,
             helpContext,
             breadcrumbBadge,
-            context: { extensionClassName: 'ExtensionClass' },
+            context: {},
+            extensionClassName: 'ExtensionClass',
             children: [
               {
                 label: 'Grandchild',
                 isMissingMandatoryData: true,
                 helpContext,
                 breadcrumbBadge,
-                context: { extensionClassName: 'ExtensionClass' },
+                context: {},
+                extensionClassName: 'ExtensionClass',
               },
             ],
           },
@@ -116,6 +126,9 @@ describe('NodeExtendedDataService', () => {
     it('should not add extension class name when isMissingMandatoryData is false', () => {
       const node: LuigiNode = { label: 'Node' };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
         nodeExtendedData: {
           isMissingMandatoryData: false,
@@ -130,6 +143,7 @@ describe('NodeExtendedDataService', () => {
 
       expect(result).toEqual({
         context: {},
+        extensionClassName: 'ExtensionClass',
         isMissingMandatoryData: false,
         label: 'Node',
       });
@@ -141,10 +155,16 @@ describe('NodeExtendedDataService', () => {
         context: { existingKey: 'existingValue' },
       };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
         nodeExtendedData: {
           isMissingMandatoryData: false,
           extensionClassName: 'ExtensionClass',
+        },
+        nodeContext: {
+          contextValueFromProvider: 'contextValueFromProvider',
         },
       };
 
@@ -155,10 +175,11 @@ describe('NodeExtendedDataService', () => {
 
       expect(result).toEqual({
         label: 'Node',
-        isMissingMandatoryData: true,
+        isMissingMandatoryData: false,
+        extensionClassName: 'ExtensionClass',
         context: {
           existingKey: 'existingValue',
-          extensionClassName: 'ExtensionClass',
+          contextValueFromProvider: 'contextValueFromProvider',
         },
       });
     });
@@ -166,6 +187,9 @@ describe('NodeExtendedDataService', () => {
     it('should handle undefined extendedData', () => {
       const node: LuigiNode = { label: 'Node' };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
       };
       const result = service.addExtendedDataToChildrenRecursively(
@@ -183,6 +207,9 @@ describe('NodeExtendedDataService', () => {
         context: { existingKey: 'existingValue' },
       };
       const rawProvider: RawServiceProvider = {
+        name: 'name',
+        displayName: 'display name',
+        creationTimestamp: 'time',
         contentConfiguration: [],
         nodeExtendedData: {
           isMissingMandatoryData: true,
@@ -205,7 +232,7 @@ describe('NodeExtendedDataService', () => {
         text: 'New',
         hint: 'positive',
       });
-      expect(result.context.extensionClassName).toBe('MyExtensionClass');
+      expect(result.extensionClassName).toBe('MyExtensionClass');
     });
   });
 });
