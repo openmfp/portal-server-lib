@@ -49,19 +49,15 @@ export class LocalNodesController {
     }
 
     try {
-      const nodes: LuigiNode[] =
-        await this.contentConfigurationLuigiDataService.getLuigiData(
-          {
-            name: 'localContentConfiguration',
-            displayName: 'localContentConfiguration',
-            contentConfiguration: config.contentConfigurations,
-            config: {},
-            creationTimestamp: Date.now().toString(),
-          },
-          config.language
-        );
-
-      return nodes;
+      return await this.contentConfigurationLuigiDataService.getLuigiData(
+        {
+          name: 'localContentConfiguration',
+          displayName: 'localContentConfiguration',
+          contentConfiguration: config.contentConfigurations,
+          creationTimestamp: Date.now().toString(),
+        },
+        config.language
+      );
     } catch (e: any) {
       this.logger.error(`Could not process local content configuration: ${e}`);
       throw new HttpException(

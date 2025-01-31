@@ -18,6 +18,6 @@ describe('EmptyServiceProviderService', () => {
   it('should return an empty serviceProviders', async () => {
     const response = await service.getServiceProviders('token', [], {});
 
-    expect(response).toEqual({ serviceProviders: [] });
+    expect(response).toEqual({ rawServiceProviders: [] });
   });
 });

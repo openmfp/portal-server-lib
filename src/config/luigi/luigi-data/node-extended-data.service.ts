@@ -1,50 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { ExtendedData } from '../../model/content-configuration';
+import { RawServiceProvider } from '../../context/service-provider';
 import { LuigiNode } from '../../model/luigi.node';
 
 @Injectable()
 export class NodeExtendedDataService {
   addExtendedDataToChildrenRecursively(
     node: LuigiNode,
-    extendedData: ExtendedData
+    provider: RawServiceProvider
   ): LuigiNode {
     const children = node.children as LuigiNode[];
     if (children && children.length > 0) {
       children.map((child, index, originalChildren) => {
         originalChildren[index] = this.addExtendedDataToChildrenRecursively(
           child,
-          extendedData
+          provider
         );
       });
     }
 
-    const context = { ...node.context };
-    const extensionClassName = this.getExtensionClassNameForNode(extendedData);
-    if (extensionClassName) {
-      context.extensionClassName = extensionClassName;
-    }
+    node.context = {
+      ...node.context,
+      ...provider.nodeContext,
+    };
 
     return {
       ...node,
-      helpContext: extendedData?.helpContext,
-      isMissingMandatoryData: extendedData?.isMissingMandatoryData,
-      breadcrumbBadge: extendedData?.breadcrumbBadge,
-      context,
+      ...provider.nodeExtendedData,
     };
-  }
-
-  // Only add the extension class name to a node if it's missing mandatory data
-  // because we need it for navigation purposes
-  private getExtensionClassNameForNode(
-    extendedData: ExtendedData
-  ): string | undefined {
-    if (
-      extendedData?.isMissingMandatoryData &&
-      extendedData?.extensionClassName
-    ) {
-      return extendedData?.extensionClassName;
-    }
-
-    return undefined;
   }
 }
