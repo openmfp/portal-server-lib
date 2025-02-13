@@ -87,4 +87,20 @@ describe('TextsTranslateService', () => {
 
     expect(luigiConfigFragment.data.nodes[0].label).toBe('Welcome'); // Should fall back to default
   });
+
+  it('should return default dictionary when missing locale', () => {
+    const luigiConfigFragment = {
+      data: {
+        texts: [
+          { textDictionary: { welcome: 'Welcome you' } }, // default
+          { locale: 'de', textDictionary: { welcome: 'Willkommen' } },
+        ],
+        nodes: [{ pathSegment: 'home', label: '{{welcome}}' }],
+      },
+    };
+
+    service.translateTexts(luigiConfigFragment, 'en'); // French not available
+
+    expect(luigiConfigFragment.data.nodes[0].label).toBe('Welcome you'); // Should fall back to default
+  });
 });

@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { LuigiConfigFragment } from '../../model/content-configuration';
+import {
+  Dictionary,
+  LuigiConfigFragment,
+} from '../../model/content-configuration';
 
 @Injectable()
 export class TextsTranslateService {
@@ -33,25 +36,17 @@ export class TextsTranslateService {
   }
 
   private findMatchedDictionary(
-    textsObject: any,
+    textsObject: Dictionary[],
     language: string
-  ): Record<string, string> {
-    const defaultDict = textsObject.find((obj) => obj.locale === '') as Record<
-      string,
-      string
-    >;
+  ): Dictionary {
+    const defaultDict = textsObject.find((obj) => !obj.locale);
+
     const matchedDict = textsObject.find((obj) => {
-      const locale = obj.locale;
+      const locale = obj.locale || '';
       const isNotEmpty = locale !== '' && language !== '';
 
-      if (isNotEmpty && locale === language) {
-        return true;
-      } else if (isNotEmpty && locale.startsWith(language)) {
-        return true;
-      }
-
-      return false;
-    }) as Record<string, string>;
+      return isNotEmpty && (locale === language || locale.startsWith(language));
+    });
 
     return matchedDict || defaultDict;
   }
