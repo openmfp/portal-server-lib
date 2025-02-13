@@ -8,7 +8,7 @@ export interface LuigiNodeDefaults {
 }
 
 export interface Dictionary {
-  locale: string;
+  locale?: string;
   textDictionary: Record<string, string>;
 }
 

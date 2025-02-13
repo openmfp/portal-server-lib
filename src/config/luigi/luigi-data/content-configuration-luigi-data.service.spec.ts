@@ -261,5 +261,47 @@ describe('ContentConfigurationLuigiDataService', () => {
         expect(result[0].entityType).toEqual('project');
       });
     });
+
+    describe('urlSuffix', () => {
+      it('should produce proper viewUrl', async () => {
+        const result = await service.getLuigiData(
+          {
+            name: 'name',
+            displayName: 'displayName',
+            creationTimestamp: 'creationTimestamp',
+            contentConfiguration: [
+              {
+                name: 'name',
+                creationTimestamp: 'creationTimestamp',
+                url: 'http://localhost:8000/ui/example-content/ui/assets/config.json',
+                luigiConfigFragment: {
+                  data: {
+                    nodes: [
+                      {
+                        entityType: 'main',
+                        pathSegment: 'secondExample',
+                        label: 'Second Example',
+                        order: 3,
+                        hideFromNav: false,
+                        virtualTree: true,
+                        urlSuffix: '/ui/example-content/ui/#/showcase',
+                        loadingIndicator: {
+                          enabled: false,
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          'en'
+        );
+
+        expect(result[0].viewUrl).toEqual(
+          'http://localhost:8000/ui/example-content/ui/#/showcase'
+        );
+      });
+    });
   });
 });

@@ -51,7 +51,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
 
   private createNodes(
     luigiConfigData: LuigiConfigData,
-    localContentConfigurationUri: URIComponents | undefined
+    contentConfigurationUri: URIComponents | undefined
   ): LuigiNode[] {
     const appConfig: LuigiAppConfig = {
       navMode: 'inplace',
@@ -64,12 +64,12 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
 
     if (luigiConfigData && luigiConfigData.nodes) {
       let urlTemplateUrl = '';
-      if (localContentConfigurationUri != undefined) {
-        const schemeAndHost = `${localContentConfigurationUri.scheme}://${localContentConfigurationUri.host}`;
-        const localUrl = localContentConfigurationUri.port
-          ? `${schemeAndHost}:${localContentConfigurationUri.port}`
+      if (contentConfigurationUri != undefined) {
+        const schemeAndHost = `${contentConfigurationUri.scheme}://${contentConfigurationUri.host}`;
+        const url = contentConfigurationUri.port
+          ? `${schemeAndHost}:${contentConfigurationUri.port}`
           : schemeAndHost;
-        urlTemplateUrl = appConfig?.urlTemplateParams?.url || localUrl;
+        urlTemplateUrl = appConfig?.urlTemplateParams?.url || url;
       }
 
       const nodes: LuigiNode[] = luigiConfigData.nodes.map((node) =>
