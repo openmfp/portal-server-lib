@@ -1,5 +1,9 @@
 # Portal server library
 
+![Build Status](https://github.com/openmfp/portal-server-lib/actions/workflows/pipeline.yaml/badge.svg)
+[![REUSE status](
+https://api.reuse.software/badge/github.com/openmfp/portal-server-lib)](https://api.reuse.software/info/github.com/openmfp/portal-server-lib)
+
 This library help you to set up a [Nest.js](https://nestjs.com/) server to serve a dynamic luigi configuration.
 It is closely related to the [portal ui library](https://github.com/openmfp/portal-ui-lib).
 
@@ -97,4 +101,4 @@ Please refer to the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) file in this reposi
 
 ## Licensing
 
-Copyright 2024 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-server-lib).
+Copyright 2025 SAP SE or an SAP affiliate company and openMFP contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/openmfp/portal-server-lib).
