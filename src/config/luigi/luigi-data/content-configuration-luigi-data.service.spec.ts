@@ -302,6 +302,40 @@ describe('ContentConfigurationLuigiDataService', () => {
           'http://localhost:8000/ui/example-content/ui/#/showcase'
         );
       });
+
+      it('should produce proper viewUrl 2', async () => {
+        const result = await service.getLuigiData(
+          {
+            name: 'name',
+            displayName: 'displayName',
+            creationTimestamp: 'creationTimestamp',
+            contentConfiguration: [
+              {
+                name: 'my-microfrontend',
+                url: 'http://localhost:8000/ui/example-content/ui/assets/config.json',
+                creationTimestamp: '',
+                luigiConfigFragment: {
+                  data: {
+                    nodes: [
+                      {
+                        pathSegment: 'ur-path-segment',
+                        label: 'My Microfrontend',
+                        entityType: 'global',
+                        hideFromNav: false,
+                        urlSuffix: '/index.html',
+                        icon: 'folder',
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+          'en'
+        );
+
+        expect(result[0].viewUrl).toEqual('http://localhost:8000/index.html');
+      });
     });
   });
 });
