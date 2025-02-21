@@ -34,9 +34,9 @@
     "rxjs": ">=7.8.1"
   },
   "dependencies": {
-    "@nestjs/axios": "^3.1.1",
-    "@nestjs/common": "^10.4.7",
-    "@nestjs/serve-static": "^4.0.2",
+    "@nestjs/axios": "^4.0.0",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/serve-static": "^5.0.0",
     "axios": "^1.7.7",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
@@ -45,8 +45,8 @@
     "rxjs": "7.8.1"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.4.7",
-    "@nestjs/testing": "^10.4.7",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/testing": "^11.0.0",
     "@openmfp/config-prettier": "^0.7.0",
     "@openmfp/eslint-config-typescript": "^0.19.0",
     "@types/jest": "29.5.14",
