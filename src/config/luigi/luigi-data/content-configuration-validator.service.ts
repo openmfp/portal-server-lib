@@ -52,7 +52,7 @@ export class ContentConfigurationValidatorService {
               contentType: ContentType.JSON,
               contentConfiguration,
             }).pipe(
-              map((response) => {
+              map((response): ValidationResult => {
                 return {
                   url: contentConfiguration.url,
                   ...response.data,

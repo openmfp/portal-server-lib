@@ -130,7 +130,7 @@ describe('LocalnodesController', () => {
 
       expect(validateContentConfiguration).toBeCalled();
       expect(getLuigiData).toBeCalled();
-      expect(body).toStrictEqual([]);
+      expect(body).toStrictEqual({ nodes: [] });
     });
   });
 

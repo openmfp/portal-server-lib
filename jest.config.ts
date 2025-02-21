@@ -14,7 +14,7 @@ module.exports = {
       functions: 80,
       lines: 95,
       // more than 10 uncovered statements
-      statements: -10,
+      statements: -9,
     },
   },
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],

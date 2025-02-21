@@ -28,6 +28,11 @@ export class ConfigDto {
   contentConfigurations: ContentConfiguration[];
 }
 
+interface TransformResult {
+  nodes?: LuigiNode[];
+  errors?: ValidationResult[];
+}
+
 @Controller('/rest/localnodes')
 export class LocalNodesController {
   constructor(
@@ -40,24 +45,26 @@ export class LocalNodesController {
   async getLocalNodes(
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: Response
-  ): Promise<LuigiNode[] | ValidationResult[]> {
+  ): Promise<TransformResult> {
     const validationResultsErrors = await this.validate(
       config.contentConfigurations
     );
     if (validationResultsErrors.length) {
-      return validationResultsErrors;
+      return { errors: validationResultsErrors };
     }
 
     try {
-      return await this.contentConfigurationLuigiDataService.getLuigiData(
-        {
-          name: 'localContentConfiguration',
-          displayName: 'localContentConfiguration',
-          contentConfiguration: config.contentConfigurations,
-          creationTimestamp: Date.now().toString(),
-        },
-        config.language
-      );
+      return {
+        nodes: await this.contentConfigurationLuigiDataService.getLuigiData(
+          {
+            name: 'localContentConfiguration',
+            displayName: 'localContentConfiguration',
+            contentConfiguration: config.contentConfigurations,
+            creationTimestamp: Date.now().toString(),
+          },
+          config.language
+        ),
+      };
     } catch (e: any) {
       this.logger.error(`Could not process local content configuration: ${e}`);
       throw new HttpException(

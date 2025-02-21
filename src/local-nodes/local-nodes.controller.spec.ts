@@ -71,6 +71,7 @@ describe('LocalNodesController', () => {
     //Arrange
     const validationResults: ValidationResult[] = [
       {
+        url: 'http://localhost:8080',
         parsedConfiguration:
           '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
       },
@@ -92,6 +93,7 @@ describe('LocalNodesController', () => {
     //Act
     try {
       await controller.getLocalNodes(body, responseMock);
+      fail();
     } catch (error: any) {
       //Assert
       expect(error).toBeInstanceOf(HttpException);
@@ -108,6 +110,7 @@ describe('LocalNodesController', () => {
       const expectedResult: LuigiNode[] = undefined;
       const validationResults: ValidationResult[] = [
         {
+          url: 'http://localhost:8080',
           parsedConfiguration:
             '{"name":"example","luigiConfigFragment":{"data":{"nodes":[],"texts":[]}}}',
         },
@@ -128,20 +131,20 @@ describe('LocalNodesController', () => {
       const result = await controller.getLocalNodes(body, responseMock);
 
       //Assert
-      expect(result).toStrictEqual(expectedResult);
+      expect(result).toStrictEqual({ nodes: expectedResult });
     });
 
     it('should return HttpException when local nodes validator throws error', async () => {
       //Arrange
-      const validationResults: ValidationResult[] = [
-        {
-          validationErrors: [
-            {
-              message: 'The document is not valid:\n%s',
-            },
-          ],
-        },
-      ];
+      const validationResult: ValidationResult = {
+        url: 'http://localhost:8080',
+        validationErrors: [
+          {
+            message: 'The document is not valid:\n%s',
+          },
+        ],
+      };
+      const validationResults: ValidationResult[] = [validationResult];
 
       jest
         .spyOn(
@@ -151,16 +154,10 @@ describe('LocalNodesController', () => {
         .mockResolvedValue(Promise.resolve(validationResults));
 
       //Act
-      try {
-        await controller.getLocalNodes(body, responseMock);
-      } catch (error: any) {
-        //Assert
-        expect(error).toBeInstanceOf(HttpException);
-        expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
-        expect(error.message).toBe(
-          'Could not process local content configuration'
-        );
-      }
+      const result = await controller.getLocalNodes(body, responseMock);
+
+      // Assert
+      expect(result).toStrictEqual({ errors: [validationResult] });
     });
 
     it('should get local nodes', async () => {
@@ -168,6 +165,7 @@ describe('LocalNodesController', () => {
       const contentConfiguration = JSON.stringify(contentConfigurationToTest);
       const validationResults: ValidationResult[] = [
         {
+          url: 'http://localhost:8080',
           parsedConfiguration: contentConfiguration,
         },
       ];
@@ -191,7 +189,7 @@ describe('LocalNodesController', () => {
       const result = await controller.getLocalNodes(body, responseMock);
 
       //Assert
-      expect(result).toStrictEqual(expectedResultFormProcessing);
+      expect(result).toStrictEqual({ nodes: expectedResultFormProcessing });
     });
   });
 
