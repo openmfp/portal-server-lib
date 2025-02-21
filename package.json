@@ -47,7 +47,7 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.7",
     "@nestjs/testing": "^10.4.7",
-    "@openmfp/config-prettier": "^0.5.0",
+    "@openmfp/config-prettier": "^0.7.0",
     "@openmfp/eslint-config-typescript": "^0.19.0",
     "@types/jest": "29.5.14",
     "@types/node": "22.13.4",
