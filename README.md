@@ -31,6 +31,14 @@ In order to be able to use the library following environment properties have to 
 | OIDC_CLIENT_SECRET_${idp} | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
 | CONTENT_CONFIGURATION_VALIDATOR_API_URL | Endpoint URL for custom content configuration validation. Endpoint returns useful error message when configuration is invalid.  |
 
+
+- **Portal**
+
+| Property name                               | Description                                                                                                                                                                                     |
+|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL  | This URL is used to retrieve Content Configurations form database                                                                                                                                                  |
+
+
 - **Optional**
 
 | Property name           | Description                                                                                                                                                                                                 |
@@ -46,23 +54,27 @@ In order to be able to use the library following environment properties have to 
 Below is an example of a `.env` file for configuring the application:
 
 ```properties
+## Mandatory
+CONTENT_CONFIGURATION_VALIDATOR_API_URL=https://example.com/validate
 IDP_NAMES=app,dev
-
 BASE_DOMAINS_APP=localhost,example.com
 AUTH_SERVER_URL_APP=https://example.com/auth
 TOKEN_URL_APP=https://example.com/token
 OIDC_CLIENT_ID_APP=app_client_id
-OIDC_CLIENT_SECRET_APP=app_client_secret
-CONTENT_CONFIGURATION_VALIDATOR_API_URL=https://example.com/validate
+OIDC_CLIENT_SECRET_APP= app_client_secret
 
-HEALTH_CHECK_INTERVAL=
-LOGOUT_REDIRECT_URL="/logout"
-FEATURE_TOGGLES="foo=true,boo=false"
-ENVIRONMENT=local
+## Portal
+OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL=https://example.com/graphql
+
+## Optional
 DEVELOPMENT_INSTANCE=true
-FRONTEND_PORT=4300
+ENVIRONMENT='local'
 VALID_WEBCOMPONENT_URLS=".?"
+FEATURE_TOGGLES="foo=true,boo=false"
 ```
+
+All variables prefixed with `OPENMFP_PORTAL_CONTEXT_` are automatically accessible at the `/rest/config` endpoint. 
+For example, `OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL=https://example.com/graphql` transforms to `"portalContext": {"crdGatewayApiUrl": "https://example.com/graphql"}`.
 
 ## Consuming the library
 
