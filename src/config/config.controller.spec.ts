@@ -6,15 +6,13 @@ import { PortalModule } from '../portal.module';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import { HeaderParserService } from '../services';
 import { ServiceProvider } from './model/luigi.node';
-import { PortalContextProvider } from './context/portal-context-provider';
+import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 import {
   EntityAccessForbiddenException,
-  EntityContextProviders,
   EntityNotFoundException,
 } from './context/entity-context-provider';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -30,7 +28,7 @@ describe('ConfigController', () => {
   let getEntityContextMock: jest.Mock;
   let requestMock: Request;
   let responseMock: Response;
-  let portalContextProvider: PortalContextProvider;
+  let openmfpPortalContextService: OpenmfpPortalContextService;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
   const acceptLanguage = 'en';
@@ -61,8 +59,8 @@ describe('ConfigController', () => {
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN
     );
-    portalContextProvider = module.get<PortalContextProvider>(
-      PORTAL_CONTEXT_INJECTION_TOKEN
+    openmfpPortalContextService = module.get<OpenmfpPortalContextService>(
+      OpenmfpPortalContextService
     );
 
     jest
@@ -100,7 +98,7 @@ describe('ConfigController', () => {
       expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage);
     });
 
-    it('should handle portalContextProvider error', async () => {
+    it('should handle openmfpPortalContextService error', async () => {
       // Arrange
       const error = new Error('this is a test error');
 
@@ -113,7 +111,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(portalContextProvider, 'getContextValues')
+        .spyOn(openmfpPortalContextService, 'getContextValues')
         .mockRejectedValue(error);
 
       // Act
@@ -143,7 +141,7 @@ describe('ConfigController', () => {
         );
 
       jest
-        .spyOn(portalContextProvider, 'getContextValues')
+        .spyOn(openmfpPortalContextService, 'getContextValues')
         .mockImplementation(
           () => new Promise((resolve) => setTimeout(resolve, 0))
         );
