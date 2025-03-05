@@ -8,7 +8,6 @@ import {
   Res,
   NotFoundException,
   ForbiddenException,
-  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
@@ -17,9 +16,8 @@ import { HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
-  PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens';
-import { PortalContextProvider } from './context/portal-context-provider';
+import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
@@ -29,7 +27,7 @@ import {
   EntityNotFoundException,
 } from './context/entity-context-provider';
 import { ModuleRef } from '@nestjs/core';
-import { PortalConfig, ServiceProvider } from './model/luigi.node';
+import { PortalConfig } from './model/luigi.node';
 
 @Controller('/rest/config')
 export class ConfigController {
@@ -39,8 +37,7 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
-    @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
-    private portalContextProvider: PortalContextProvider,
+    private openmfpPortalContextService: OpenmfpPortalContextService,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
@@ -74,8 +71,8 @@ export class ConfigController {
         return e;
       });
 
-    const portalContextPromise = this.portalContextProvider
-      .getContextValues(request, response, providersPromise)
+    const portalContextPromise = this.openmfpPortalContextService
+      .getContextValues()
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
