@@ -31,14 +31,6 @@ In order to be able to use the library following environment properties have to 
 | OIDC_CLIENT_SECRET_${idp} | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
 | CONTENT_CONFIGURATION_VALIDATOR_API_URL | Endpoint URL for custom content configuration validation. Endpoint returns useful error message when configuration is invalid.  |
 
-
-- **Portal**
-
-| Property name                               | Description                                                                                                                                                                                     |
-|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL  | This URL is used to retrieve Content Configurations form database                                                                                                                                                  |
-
-
 - **Optional**
 
 | Property name           | Description                                                                                                                                                                                                 |
@@ -73,12 +65,21 @@ VALID_WEBCOMPONENT_URLS=".?"
 FEATURE_TOGGLES="foo=true,boo=false"
 ```
 
-All variables prefixed with `OPENMFP_PORTAL_CONTEXT_` are automatically accessible at the `/rest/config` endpoint. 
-For example, `OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL=https://example.com/graphql` transforms to `"portalContext": {"crdGatewayApiUrl": "https://example.com/graphql"}`.
-
 ## Consuming the library
 
 This library exposes a Nest module as an api and needs a main project to run.
+
+All system environment variables set and prefixed with `OPENMFP_PORTAL_CONTEXT_` are automatically read and accessible at the `/rest/config` endpoint.
+For example, `OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL=https://example.com/graphql` transforms
+to `"portalContext": {"crdGatewayApiUrl": "https://example.com/graphql"}`, with the whole resulting response:
+
+```json
+{
+  "portalContext": {"crdGatewayApiUrl": "https://example.com/graphql"},
+  "featureToggles": {"foo":  true},
+  "providers": []
+}
+```
 
 ### Import the module
 
