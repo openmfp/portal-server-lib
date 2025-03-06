@@ -42,7 +42,7 @@
     "class-validator": "0.14.1",
     "express": "4.21.2",
     "jwt-decode": "^4.0.0",
-    "rxjs": "7.8.1"
+    "rxjs": "7.8.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.7",
@@ -69,11 +69,11 @@
     "prettier": "^3.2.0",
     "rimraf": "^6.0.1",
     "supertest": "7.0.0",
-    "ts-jest": "29.2.5",
+    "ts-jest": "29.2.6",
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.7.3",
+    "typescript": "5.8.2",
     "wait-on": "^8.0.0",
     "yalc": "^1.0.0-pre.53"
   }
