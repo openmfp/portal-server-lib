@@ -18,6 +18,7 @@ import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens';
+import { PortalContextProvider } from './context/portal-context-provider';
 import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';

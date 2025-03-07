@@ -13,6 +13,7 @@ export {
   EntityNotFoundException,
   EntityContextProvider,
 } from './context/entity-context-provider';
+export { PortalContextProvider } from './context/portal-context-provider';
 export { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 export { FeatureTogglesProvider } from './context/feature-toggles-provider';
 export { IntentResolveService } from './luigi/luigi-data/intent-resolve.service';

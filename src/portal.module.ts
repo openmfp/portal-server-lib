@@ -48,7 +48,6 @@ import {
   PortalContextProvider,
   OpenmfpPortalContextService,
   EntityContextProviders,
-  EmptyPortalContextProvider,
   EnvFeatureTogglesProvider,
   LuigiConfigNodesService,
   EmptyServiceProviderService,
@@ -172,7 +171,7 @@ export class PortalModule implements NestModule {
       },
       { 
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
-        useClass: options.portalContextProvider || EmptyPortalContextProvider,
+        useClass: options.portalContextProvider || OpenmfpPortalContextService,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
