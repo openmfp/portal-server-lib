@@ -1,21 +1,19 @@
-import { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigController } from './config.controller';
+import { FEATURE_TOGGLES_INJECTION_TOKEN } from '../injection-tokens';
 import { PortalModule } from '../portal.module';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import {
-  FEATURE_TOGGLES_INJECTION_TOKEN,
-} from '../injection-tokens';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import { HeaderParserService } from '../services';
-import { ServiceProvider } from './model/luigi.node';
-import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
+import { ConfigController } from './config.controller';
 import {
   EntityAccessForbiddenException,
   EntityNotFoundException,
 } from './context/entity-context-provider';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider';
+import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
+import { ServiceProvider } from './model/luigi.node';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
+import { mock } from 'jest-mock-extended';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -53,14 +51,14 @@ describe('ConfigController', () => {
     }).compile();
     controller = module.get<ConfigController>(ConfigController);
     luigiConfigNodesService = module.get<LuigiConfigNodesService>(
-      LuigiConfigNodesService
+      LuigiConfigNodesService,
     );
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
-      FEATURE_TOGGLES_INJECTION_TOKEN
+      FEATURE_TOGGLES_INJECTION_TOKEN,
     );
     openmfpPortalContextService = module.get<OpenmfpPortalContextService>(
-      OpenmfpPortalContextService
+      OpenmfpPortalContextService,
     );
 
     jest
@@ -91,7 +89,7 @@ describe('ConfigController', () => {
       const config = await controller.getConfig(
         requestMock,
         responseMock,
-        acceptLanguage
+        acceptLanguage,
       );
 
       expect(config.providers).toBe(resultingNodes);
@@ -107,7 +105,7 @@ describe('ConfigController', () => {
       jest
         .spyOn(featureTogglesProvider, 'getFeatureToggles')
         .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0))
+          () => new Promise((resolve) => setTimeout(resolve, 0)),
         );
 
       jest
@@ -118,7 +116,7 @@ describe('ConfigController', () => {
       const result = controller.getConfig(
         requestMock,
         responseMock,
-        acceptLanguage
+        acceptLanguage,
       );
 
       // Assert
@@ -136,21 +134,21 @@ describe('ConfigController', () => {
         .mockImplementation(
           () =>
             new Promise((resolve, reject) =>
-              setTimeout(reject.bind(reject, error), 0)
-            )
+              setTimeout(reject.bind(reject, error), 0),
+            ),
         );
 
       jest
         .spyOn(openmfpPortalContextService, 'getContextValues')
         .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0))
+          () => new Promise((resolve) => setTimeout(resolve, 0)),
         );
 
       // Act
       const result = controller.getConfig(
         requestMock,
         responseMock,
-        acceptLanguage
+        acceptLanguage,
       );
 
       await expect(result).rejects.toEqual(error);
@@ -167,7 +165,7 @@ describe('ConfigController', () => {
         requestMock,
         responseMock,
         { entity: 'no-provider' },
-        acceptLanguage
+        acceptLanguage,
       );
 
       // Assert
@@ -186,8 +184,8 @@ describe('ConfigController', () => {
         .mockImplementation(
           () =>
             new Promise((resolve, reject) =>
-              setTimeout(reject.bind(reject, error), 0)
-            )
+              setTimeout(reject.bind(reject, error), 0),
+            ),
         );
 
       // Act
@@ -195,7 +193,7 @@ describe('ConfigController', () => {
         requestMock,
         responseMock,
         { entity: 'project' },
-        acceptLanguage
+        acceptLanguage,
       );
 
       // Assert
@@ -216,7 +214,7 @@ describe('ConfigController', () => {
           requestMock,
           responseMock,
           { entity },
-          acceptLanguage
+          acceptLanguage,
         );
       } catch (e) {
         expect(e).toBeInstanceOf(NotFoundException);
@@ -228,7 +226,7 @@ describe('ConfigController', () => {
       const entity = 'project';
       const entityAccessForbiddenException = new EntityAccessForbiddenException(
         entity,
-        'id'
+        'id',
       );
       getEntityContextMock.mockRejectedValue(entityAccessForbiddenException);
 
@@ -240,7 +238,7 @@ describe('ConfigController', () => {
           requestMock,
           responseMock,
           { entity },
-          acceptLanguage
+          acceptLanguage,
         );
       } catch (e) {
         expect(e).toBeInstanceOf(ForbiddenException);

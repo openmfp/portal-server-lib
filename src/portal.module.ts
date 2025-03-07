@@ -1,4 +1,50 @@
 import {
+  AuthCallback,
+  AuthController,
+  AuthTokenService,
+  NoopAuthCallback,
+} from './auth';
+import {
+  ConfigController,
+  ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
+  EmptyServiceProviderService,
+  EntityContextProviders,
+  EnvFeatureTogglesProvider,
+  IntentResolveService,
+  LuigiConfigNodesService,
+  LuigiDataService,
+  OpenmfpPortalContextService,
+  PortalContextProvider,
+  ServiceProviderService,
+} from './config';
+import { ConfigTransferNodeService } from './config/luigi/luigi-data/config-transfer-node.service';
+import { NodeExtendedDataService } from './config/luigi/luigi-data/node-extended-data.service';
+import { TextsTranslateService } from './config/luigi/luigi-data/texts-translate.service';
+import {
+  DiscoveryService,
+  EnvController,
+  EnvService,
+  EnvVariablesService,
+  EnvVariablesServiceImpl,
+} from './env';
+import { EmptyHealthChecker, HealthChecker, HealthController } from './health';
+import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
+  ENTITY_CONTEXT_INJECTION_TOKEN,
+  ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
+  FEATURE_TOGGLES_INJECTION_TOKEN,
+  HEALTH_CHECKER_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+} from './injection-tokens';
+import { LocalNodesController } from './local-nodes';
+import { LogoutCallback, LogoutController, NoopLogoutService } from './logout';
+import { CookiesService, HeaderParserService } from './services';
+import { HttpModule } from '@nestjs/axios';
+import {
   DynamicModule,
   Logger,
   MiddlewareConsumer,
@@ -6,55 +52,9 @@ import {
   NestModule,
   Type,
 } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import {
-  AuthCallback,
-  AuthController,
-  AuthTokenService,
-  NoopAuthCallback,
-} from './auth';
-import { ConfigTransferNodeService } from './config/luigi/luigi-data/config-transfer-node.service';
-import { NodeExtendedDataService } from './config/luigi/luigi-data/node-extended-data.service';
-import { TextsTranslateService } from './config/luigi/luigi-data/texts-translate.service';
-import {
-  AUTH_CALLBACK_INJECTION_TOKEN,
-  ENTITY_CONTEXT_INJECTION_TOKEN,
-  ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
-  FEATURE_TOGGLES_INJECTION_TOKEN,
-  PORTAL_CONTEXT_INJECTION_TOKEN,
-  HEALTH_CHECKER_INJECTION_TOKEN,
-  LOGOUT_CALLBACK_INJECTION_TOKEN,
-  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
-  SERVICE_PROVIDER_INJECTION_TOKEN,
-} from './injection-tokens';
-import { HealthController, EmptyHealthChecker, HealthChecker } from './health';
-import { LocalNodesController } from './local-nodes';
-import {
-  EnvController,
-  EnvVariablesServiceImpl,
-  EnvVariablesService,
-  EnvService,
-  DiscoveryService,
-} from './env';
-import { LogoutController, NoopLogoutService, LogoutCallback } from './logout';
-import {
-  IntentResolveService,
-  LuigiDataService,
-  ContentConfigurationLuigiDataService,
-  ConfigController,
-  PortalContextProvider,
-  OpenmfpPortalContextService,
-  EntityContextProviders,
-  EnvFeatureTogglesProvider,
-  LuigiConfigNodesService,
-  EmptyServiceProviderService,
-  ServiceProviderService,
-  ContentConfigurationValidatorService,
-} from './config';
-import { HeaderParserService, CookiesService } from './services';
 import cookieParser from 'cookie-parser';
 
 export interface PortalModuleOptions {
@@ -169,7 +169,7 @@ export class PortalModule implements NestModule {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
         useClass: options.logoutCallbackProvider || NoopLogoutService,
       },
-      { 
+      {
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
         useClass: options.portalContextProvider || OpenmfpPortalContextService,
       },
@@ -209,7 +209,7 @@ export class PortalModule implements NestModule {
         ServeStaticModule.forRoot({
           rootPath: options.frontendDistSources,
           exclude: ['/rest'],
-        })
+        }),
       );
     }
 
