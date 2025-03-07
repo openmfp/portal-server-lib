@@ -19,7 +19,6 @@ import {
   PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { PortalContextProvider } from './context/portal-context-provider';
-import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 import { EntityParams } from './model/entity';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider';
 import {
@@ -39,7 +38,6 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
-    private openmfpPortalContextService: OpenmfpPortalContextService,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
@@ -75,8 +73,8 @@ export class ConfigController {
         return e;
       });
 
-    const portalContextPromise = this.openmfpPortalContextService
-      .getContextValues()
+    const portalContextPromise = this.portalContextProvider
+      .getContextValues(request, response, providersPromise)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
