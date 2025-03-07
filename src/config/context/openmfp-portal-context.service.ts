@@ -11,15 +11,16 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
     const keys = Object.keys(process.env).filter(item=> item.startsWith(this.openmfpPortalContext));
     keys.forEach(key=>{
       const keyName = key.substring(this.openmfpPortalContext.length).trim();
-      const camelCaseName = this.toCamelCase(keyName);
-      context[camelCaseName] = process.env[key];
+      if(keyName.length > 0) {
+        const camelCaseName = this.toCamelCase(keyName);
+        context[camelCaseName] = process.env[key];
+      }
     })
     
     return Promise.resolve(context);
   }
   
   private toCamelCase(text: string): string {
-    if(text.length > 0) {
       let firstSegment = true;
       const items = text.split('_').map(item=>{
         if(firstSegment){
@@ -29,15 +30,10 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
         return this.capitalizeFirstLetter(item.toLowerCase());
       });
       return items.join('');
-    }
-    return '';
   }
 
   private capitalizeFirstLetter(text: string): string {
-    if(text.length > 0) {
-      return String(text).charAt(0).toUpperCase() + String(text).slice(1);
-    }
-    return '';
+    return String(text).charAt(0).toUpperCase() + String(text).slice(1);
   }
 }
 
