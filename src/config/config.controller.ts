@@ -16,6 +16,7 @@ import { HeaderParserService } from '../services';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens';
 import { OpenmfpPortalContextService } from './context/openmfp-portal-context.service';
 import { EntityParams } from './model/entity';
@@ -38,6 +39,8 @@ export class ConfigController {
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
     private openmfpPortalContextService: OpenmfpPortalContextService,
+    @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
+    private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)

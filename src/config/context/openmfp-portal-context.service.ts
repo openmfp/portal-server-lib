@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OpenmfpPortalContextService {
-  private readonly openmfpPortalContext = "OPENMFP_PORTAL_CONTEXT_";
+  private readonly openmfpPortalContext = 'OPENMFP_PORTAL_CONTEXT_';
   
   getContextValues(): Promise<Record<string, any>> {
     const context: Record<string, any> = {};

@@ -24,6 +24,7 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
+  PORTAL_CONTEXT_INJECTION_TOKEN,
   HEALTH_CHECKER_INJECTION_TOKEN,
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
@@ -44,8 +45,10 @@ import {
   LuigiDataService,
   ContentConfigurationLuigiDataService,
   ConfigController,
+  PortalContextProvider,
   OpenmfpPortalContextService,
   EntityContextProviders,
+  EmptyPortalContextProvider,
   EnvFeatureTogglesProvider,
   LuigiConfigNodesService,
   EmptyServiceProviderService,
@@ -82,6 +85,12 @@ export interface PortalModuleOptions {
    * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
    */
   logoutCallbackProvider?: Type<LogoutCallback>;
+
+  /**
+   * Makes it possible to extend the luigi context of every luigi node with contextValues
+   * The values will be available in the context under the property 'frameContext'
+   */
+  portalContextProvider?: Type<PortalContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -160,6 +169,10 @@ export class PortalModule implements NestModule {
       {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
         useClass: options.logoutCallbackProvider || NoopLogoutService,
+      },
+      { 
+        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
+        useClass: options.portalContextProvider || EmptyPortalContextProvider,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,
