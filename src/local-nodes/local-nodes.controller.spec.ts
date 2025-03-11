@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
