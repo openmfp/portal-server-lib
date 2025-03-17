@@ -181,7 +181,7 @@ describe('ContentConfigurationLuigiDataService', () => {
                     {
                       pathSegment: 'about',
                       label: 'About',
-                      urlSuffix: '/about',
+                      url: 'https://app.example.com/about',
                     },
                   ],
                 },
@@ -259,82 +259,6 @@ describe('ContentConfigurationLuigiDataService', () => {
         const result = await service.getLuigiData(mockProvider, 'en');
 
         expect(result[0].entityType).toEqual('project');
-      });
-    });
-
-    describe('urlSuffix', () => {
-      it('should produce proper viewUrl', async () => {
-        const result = await service.getLuigiData(
-          {
-            name: 'name',
-            displayName: 'displayName',
-            creationTimestamp: 'creationTimestamp',
-            contentConfiguration: [
-              {
-                name: 'name',
-                creationTimestamp: 'creationTimestamp',
-                url: 'http://localhost:8000/ui/example-content/ui/assets/config.json',
-                luigiConfigFragment: {
-                  data: {
-                    nodes: [
-                      {
-                        entityType: 'main',
-                        pathSegment: 'secondExample',
-                        label: 'Second Example',
-                        order: 3,
-                        hideFromNav: false,
-                        virtualTree: true,
-                        urlSuffix: '/ui/example-content/ui/#/showcase',
-                        loadingIndicator: {
-                          enabled: false,
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
-          'en'
-        );
-
-        expect(result[0].viewUrl).toEqual(
-          'http://localhost:8000/ui/example-content/ui/#/showcase'
-        );
-      });
-
-      it('should produce proper viewUrl 2', async () => {
-        const result = await service.getLuigiData(
-          {
-            name: 'name',
-            displayName: 'displayName',
-            creationTimestamp: 'creationTimestamp',
-            contentConfiguration: [
-              {
-                name: 'my-microfrontend',
-                url: 'http://localhost:8000/ui/example-content/ui/assets/config.json',
-                creationTimestamp: '',
-                luigiConfigFragment: {
-                  data: {
-                    nodes: [
-                      {
-                        pathSegment: 'ur-path-segment',
-                        label: 'My Microfrontend',
-                        entityType: 'global',
-                        hideFromNav: false,
-                        urlSuffix: '/index.html',
-                        icon: 'folder',
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-          },
-          'en'
-        );
-
-        expect(result[0].viewUrl).toEqual('http://localhost:8000/index.html');
       });
     });
   });
