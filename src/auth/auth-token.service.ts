@@ -88,10 +88,6 @@ export class AuthTokenService {
         })
         .pipe(
           catchError((e: AxiosError) => {
-            console.error(
-              `Error requesting token with urL: ${currentAuthEnv.oauthTokenUrl}, body: `,
-              body
-            );
             throw new Error(
               `Error response from auth token server: ${e.toString()}`
             );
