@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.144.6",
+  "version": "0.145.3",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
@@ -51,7 +51,7 @@
     "@openmfp/config-prettier": "^0.8.0",
     "@openmfp/eslint-config-typescript": "^0.19.0",
     "@types/jest": "29.5.14",
-    "@types/node": "22.13.9",
+    "@types/node": "22.13.10",
     "@types/supertest": "6.0.2",
     "typescript-eslint": "^8.0.0",
     "angular-eslint": "^19.2.1",    

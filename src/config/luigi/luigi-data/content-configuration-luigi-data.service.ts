@@ -108,9 +108,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       viewUrl: string,
       children = [];
 
-    if (urlTemplateUrl && node.urlSuffix && !node.isolateView) {
-      viewGroup = urlTemplateUrl;
-    } else if (node.url && node.viewGroup) {
+    if (node.url && node.viewGroup) {
       try {
         const nodeUrl = new URL(node.url);
         viewGroup =
@@ -118,15 +116,11 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       } catch (e) {
         console.warn('Invalid URL: ', node.url);
       }
+    } else if (urlTemplateUrl && node.url && !node.isolateView) {
+      viewGroup = urlTemplateUrl;
     }
 
-    if (node.urlSuffix && urlTemplateUrl) {
-      viewUrl = `${urlTemplateUrl}${node.urlSuffix}`;
-    }
-
-    if (node.compound && urlTemplateUrl) {
-      this.processCompoundChildrenUrls(node.compound, urlTemplateUrl);
-    }
+    this.processCompoundChildrenUrls(node.compound, urlTemplateUrl);
 
     if (node.url) {
       viewUrl = `${node.url}`;
