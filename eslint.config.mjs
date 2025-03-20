@@ -15,7 +15,7 @@ export default tsPlugin.config(
       },
     },
   },
-  //...openMfpConfig,
+  ...openMfpConfig,
   {
     files: ['**/*.ts'],
     extends: [...angularPlugin.configs.tsRecommended],
