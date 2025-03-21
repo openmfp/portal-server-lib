@@ -119,7 +119,6 @@ describe('LocalnodesController', () => {
         .spyOn(contentConfigurationLuigiDataService, 'getLuigiData')
         .mockReturnValue(Promise.resolve(resultingNodes));
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { body } = await request(app.getHttpServer())
         .post(`/rest/localnodes`)
         .send({
