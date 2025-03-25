@@ -8,7 +8,6 @@ import {
   Res,
   NotFoundException,
   ForbiddenException,
-  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
@@ -29,7 +28,7 @@ import {
   EntityNotFoundException,
 } from './context/entity-context-provider';
 import { ModuleRef } from '@nestjs/core';
-import { PortalConfig, ServiceProvider } from './model/luigi.node';
+import { PortalConfig } from './model/luigi.node';
 
 @Controller('/rest/config')
 export class ConfigController {
