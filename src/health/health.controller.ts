@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Logger } from '@nestjs/common';
-import { EnvService } from '../env/env.service';
-import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
-import { HealthChecker } from './health-checker';
+import { EnvService } from '../env/env.service.js';
+import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens.js';
+import { HealthChecker } from './health-checker.js';
 
 @Controller('/rest/health')
 export class HealthController {

@@ -23,6 +23,7 @@
     "test:integration": "jest --config ./integration-tests/jest.config.ts"
   },
   "peerDependencies": {
+    "@kubernetes/client-node": "^1.1.1",
     "@nestjs/axios": ">=3.0.0",
     "@nestjs/common": ">=10.0.0",
     "@nestjs/core": ">=10.0.0",
@@ -74,5 +75,6 @@
     "typescript": "5.8.2",
     "wait-on": "^8.0.0",
     "yalc": "^1.0.0-pre.53"
-  }
+  },
+  "type": "module"
 }

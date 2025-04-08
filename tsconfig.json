@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2021",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "node16",
     "outDir": "./dist",
     "baseUrl": "./",
     "declaration": true,
@@ -12,6 +13,6 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   }
 }

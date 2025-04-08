@@ -1,4 +1,4 @@
-export * from './injection-tokens';
+export * from './injection-tokens.js';
 export * from './portal.module';
 export * from './health';
 export * from './auth';

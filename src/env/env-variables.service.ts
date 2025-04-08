@@ -1,6 +1,6 @@
+import { EnvService, EnvVariables } from './env.service.js';
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EnvService, EnvVariables } from './env.service';
 
 export interface EnvConfigVariables extends EnvVariables {
   oauthServerUrl: string;
@@ -11,7 +11,7 @@ export interface EnvConfigVariables extends EnvVariables {
 export interface EnvVariablesService {
   getEnv: (
     request: Request,
-    response: Response
+    response: Response,
   ) => Promise<Record<string, any>>;
 }
 
@@ -21,7 +21,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
 
   async getEnv(
     request: Request,
-    response: Response
+    response: Response,
   ): Promise<EnvConfigVariables> {
     const { oauthServerUrl, oauthTokenUrl, clientId } =
       await this.envService.getCurrentAuthEnv(request);

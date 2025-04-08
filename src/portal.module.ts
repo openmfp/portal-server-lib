@@ -3,9 +3,10 @@ import {
   AuthController,
   AuthTokenService,
   NoopAuthCallback,
-} from './auth';
+} from './auth/index.js';
 import {
   ConfigController,
+  ConfigTransferNodeService,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
   EmptyServiceProviderService,
@@ -14,21 +15,24 @@ import {
   IntentResolveService,
   LuigiConfigNodesService,
   LuigiDataService,
+  NodeExtendedDataService,
   OpenmfpPortalContextService,
   PortalContextProvider,
   ServiceProviderService,
-} from './config';
-import { ConfigTransferNodeService } from './config/luigi/luigi-data/config-transfer-node.service';
-import { NodeExtendedDataService } from './config/luigi/luigi-data/node-extended-data.service';
-import { TextsTranslateService } from './config/luigi/luigi-data/texts-translate.service';
+  TextsTranslateService,
+} from './config/index.js';
 import {
   DiscoveryService,
   EnvController,
   EnvService,
   EnvVariablesService,
   EnvVariablesServiceImpl,
-} from './env';
-import { EmptyHealthChecker, HealthChecker, HealthController } from './health';
+} from './env/index.js';
+import {
+  EmptyHealthChecker,
+  HealthChecker,
+  HealthController,
+} from './health/index.js';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   ENTITY_CONTEXT_INJECTION_TOKEN,
@@ -39,10 +43,15 @@ import {
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-} from './injection-tokens';
-import { LocalNodesController } from './local-nodes';
-import { LogoutCallback, LogoutController, NoopLogoutService } from './logout';
-import { CookiesService, HeaderParserService } from './services';
+} from './injection-tokens.js';
+import { KubeController } from './kube/kube.controller.js';
+import { LocalNodesController } from './local-nodes/index.js';
+import {
+  LogoutCallback,
+  LogoutController,
+  NoopLogoutService,
+} from './logout/index.js';
+import { CookiesService, HeaderParserService } from './services/index.js';
 import { HttpModule } from '@nestjs/axios';
 import {
   DynamicModule,
@@ -52,8 +61,8 @@ import {
   NestModule,
   Type,
 } from '@nestjs/common';
-import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface';
-import { Provider } from '@nestjs/common/interfaces/modules/provider.interface';
+import { ForwardReference } from '@nestjs/common/interfaces/modules/forward-reference.interface.js';
+import { Provider } from '@nestjs/common/interfaces/modules/provider.interface.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import cookieParser from 'cookie-parser';
 
@@ -136,6 +145,7 @@ export class PortalModule implements NestModule {
       EnvController,
       LogoutController,
       ConfigController,
+      KubeController,
     ];
 
     let providers: Provider[] = [
