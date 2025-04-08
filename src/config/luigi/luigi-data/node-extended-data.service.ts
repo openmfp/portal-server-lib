@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RawServiceProvider } from '../../context/service-provider';
-import { LuigiNode } from '../../model/luigi.node';
+import { RawServiceProvider } from '../../context/service-provider.js';
+import { LuigiNode } from '../../model/luigi.node.js';
 
 @Injectable()
 export class NodeExtendedDataService {

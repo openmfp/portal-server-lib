@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-} from '../../../injection-tokens';
-import { ServiceProvider } from '../../model/luigi.node';
+} from '../../../injection-tokens.js';
+import { ServiceProvider } from '../../model/luigi.node.js';
 import {
   RawServiceProvider,
   ServiceProviderService,
-} from '../../context/service-provider';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
+} from '../../context/service-provider.js';
+import { LuigiDataService } from '../luigi-data/luigi-data.service.js';
 
 @Injectable()
 export class LuigiConfigNodesService {

@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { RawServiceProvider } from '../../context/service-provider';
+import { RawServiceProvider } from '../../context/service-provider.js';
 import {
   LuigiConfigData,
   LuigiNodeDefaults,
   LuigiAppConfig,
-} from '../../model/content-configuration';
-import { LuigiNode } from '../../model/luigi.node';
-import { ConfigTransferNodeService } from './config-transfer-node.service';
-import { LuigiDataService } from './luigi-data.service';
+} from '../../model/content-configuration.js';
+import { LuigiNode } from '../../model/luigi.node.js';
+import { ConfigTransferNodeService } from './config-transfer-node.service.js';
+import { LuigiDataService } from './luigi-data.service.js';
 import * as URI from 'uri-js';
 import { URIComponents } from 'uri-js';
-import { NodeExtendedDataService } from './node-extended-data.service';
-import { TextsTranslateService } from './texts-translate.service';
+import { NodeExtendedDataService } from './node-extended-data.service.js';
+import { TextsTranslateService } from './texts-translate.service.js';
 
 @Injectable()
 export class ContentConfigurationLuigiDataService implements LuigiDataService {

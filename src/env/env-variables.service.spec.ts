@@ -1,7 +1,7 @@
-import { EnvVariablesServiceImpl } from './env-variables.service';
-import { AuthTokenData } from '../auth';
+import { EnvVariablesServiceImpl } from './env-variables.service.js';
+import { AuthTokenData } from '../auth/index.js';
 import { Request, Response } from 'express';
-import { EnvService } from './env.service';
+import { EnvService } from './env.service.js';
 
 describe('EnvVariablesServiceImpl', () => {
   let envVariablesService: EnvVariablesServiceImpl;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthTokenData } from './auth-token.service';
+import { AuthTokenData } from './auth-token.service.js';
 
 export interface AuthCallback {
   handleSuccess(

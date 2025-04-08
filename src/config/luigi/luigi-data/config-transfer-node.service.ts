@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { LuigiConfigData } from '../../model/content-configuration';
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
-import { IntentResolveService } from './intent-resolve.service';
+import { LuigiConfigData } from '../../model/content-configuration.js';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 
 @Injectable()
 export class ConfigTransferNodeService {

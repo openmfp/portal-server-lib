@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DiscoveryService } from './discovery.service';
+import { DiscoveryService } from './discovery.service.js';
 import { HttpService } from '@nestjs/axios';
 import { mock } from 'jest-mock-extended';
 import { of, throwError } from 'rxjs';

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EnvService, ServerAuthVariables } from '../env/env.service';
+import { EnvService, ServerAuthVariables } from '../env/env.service.js';
 import { Request, Response } from 'express';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
-import { CookiesService } from '../services';
+import { CookiesService } from '../services/index.js';
 
 export interface AuthTokenData {
   access_token: string;

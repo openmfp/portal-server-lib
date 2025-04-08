@@ -1,7 +1,7 @@
 import { KubeConfig } from '@kubernetes/client-node';
 import { Controller, Get, Req, Res} from '@nestjs/common';
 import { readFileSync } from 'fs';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('/rest/kube')
 export class KubeController {
@@ -11,7 +11,7 @@ export class KubeController {
     @Res({ passthrough: true }) response: Response): Promise<string> {
 
     const kc = new KubeConfig();
-    const kubeconfigPath = request.query.kubeconfigPath.toString();
+    const kubeconfigPath = request.query.kubeconfigPath?.toString();
 
     if (kubeconfigPath) {
       kc.loadFromFile(kubeconfigPath);

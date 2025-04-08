@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoopLogoutService } from './noop-logout.service';
+import { NoopLogoutService } from './noop-logout.service.js';
 import { mock } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 

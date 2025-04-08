@@ -3,7 +3,7 @@ import {
   CrossNavigationInbounds,
   LuigiIntent,
   LuigiNode,
-} from '../../model/luigi.node';
+} from '../../model/luigi.node.js';
 
 @Injectable()
 export class IntentResolveService {

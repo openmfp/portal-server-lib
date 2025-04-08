@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import type { Response } from 'express';
 import {
   Body,
   Controller,
@@ -14,7 +14,7 @@ import {
   ContentConfigurationValidatorService,
   LuigiNode,
   ValidationResult,
-} from '../config';
+} from '../config/index.js';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class ConfigDto {

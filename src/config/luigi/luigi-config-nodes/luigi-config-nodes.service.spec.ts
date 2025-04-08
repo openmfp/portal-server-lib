@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContentConfiguration } from '../../model/content-configuration';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
-import { LuigiConfigNodesService } from './luigi-config-nodes.service';
-import { PortalModule } from '../../../portal.module';
+import { ContentConfiguration } from '../../model/content-configuration.js';
+import { LuigiDataService } from '../luigi-data/luigi-data.service.js';
+import { LuigiConfigNodesService } from './luigi-config-nodes.service.js';
+import { PortalModule } from '../../../portal.module.js';
 import { mock } from 'jest-mock-extended';
 import {
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-} from '../../../injection-tokens';
-import { LuigiNode } from '../../model/luigi.node';
+} from '../../../injection-tokens.js';
+import { LuigiNode } from '../../model/luigi.node.js';
 import {
   RawServiceProvider,
   ServiceProviderService,
-} from '../../context/service-provider';
+} from '../../context/service-provider.js';
 
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;

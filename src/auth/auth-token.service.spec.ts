@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock } from 'jest-mock-extended';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
+import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { Request, Response } from 'express';
 import nock from 'nock';
-import { EnvService } from '../env';
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthCallback } from './auth.callback';
-import { PortalModule } from '../portal.module';
+import { EnvService } from '../env/index.js';
+import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import { AuthCallback } from './auth.callback.js';
+import { PortalModule } from '../portal.module.js';
 
 describe('AuthTokenService', () => {
   let service: AuthTokenService;

@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CookiesService } from '../services';
-import { AuthController } from './auth.controller';
-import { PortalModule } from '../portal.module';
-import { AuthCallback } from './auth.callback';
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
+import { CookiesService } from '../services/index.js';
+import { AuthController } from './auth.controller.js';
+import { PortalModule } from '../portal.module.js';
+import { AuthCallback } from './auth.callback.js';
+import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import { AuthTokenService, AuthTokenData } from './auth-token.service.js';
 
 describe('AuthController', () => {
   let controller: AuthController;

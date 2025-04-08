@@ -1,28 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom, map, Observable } from 'rxjs';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import {
+  ContentConfiguration,
+  ContentType,
   ValidationInput,
   ValidationResult,
-  ContentType,
-  ContentConfiguration,
-} from '../../../config';
+} from '../../../config/index.js';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, Logger } from '@nestjs/common';
+import { Observable, lastValueFrom, map } from 'rxjs';
 
 @Injectable()
 export class ContentConfigurationValidatorService {
   private logger: Logger = new Logger(
-    ContentConfigurationValidatorService.name
+    ContentConfigurationValidatorService.name,
   );
 
   constructor(private readonly httpService: HttpService) {}
 
   public validateContentConfigurationRequest(
-    validationInput: ValidationInput
-  ): Observable<AxiosResponse<ValidationResult, any>> {
+    validationInput: ValidationInput,
+  ): Observable<any> {
     const ccValidatorApiUrl =
       process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL;
-    const config: AxiosRequestConfig = {
+    const config = {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -30,19 +29,19 @@ export class ContentConfigurationValidatorService {
     const data = {
       contentType: validationInput.contentType.toLowerCase(),
       contentConfiguration: JSON.stringify(
-        validationInput.contentConfiguration
+        validationInput.contentConfiguration,
       ),
     };
 
     return this.httpService.post<ValidationResult>(
       ccValidatorApiUrl,
       data,
-      config
+      config,
     );
   }
 
   public validateContentConfigurations(
-    contentConfigurations: ContentConfiguration[]
+    contentConfigurations: ContentConfiguration[],
   ): Promise<ValidationResult[]> {
     try {
       return Promise.all(
@@ -57,10 +56,10 @@ export class ContentConfigurationValidatorService {
                   url: contentConfiguration.url,
                   ...response.data,
                 };
-              })
-            )
+              }),
+            ),
           );
-        })
+        }),
       );
     } catch (e: any) {
       this.logger.error(`Error while validating Content-Configuration: ${e}`);

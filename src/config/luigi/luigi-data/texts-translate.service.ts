@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   Dictionary,
   LuigiConfigFragment,
-} from '../../model/content-configuration';
+} from '../../model/content-configuration.js';
 
 @Injectable()
 export class TextsTranslateService {

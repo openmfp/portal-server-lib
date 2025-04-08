@@ -1,4 +1,4 @@
-import { ServiceProvider } from '../model/luigi.node';
+import { ServiceProvider } from '../model/luigi.node.js';
 import { Request, Response } from 'express';
 
 export interface PortalContextProvider {

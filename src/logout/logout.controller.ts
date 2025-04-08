@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { CookiesService } from '../services/index.js';
 import { LogoutCallback } from './logout-callback.js';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';

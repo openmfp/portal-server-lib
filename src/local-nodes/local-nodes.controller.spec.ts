@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { ConfigDto, LocalNodesController } from './local-nodes.controller';
+import { ConfigDto, LocalNodesController } from './local-nodes.controller.js';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
@@ -9,10 +9,10 @@ import {
   IntentResolveService,
   LuigiNode,
   ValidationResult,
-} from '../config';
-import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
-import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
-import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
+} from '../config/index.js';
+import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service.js';
+import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service.js';
+import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service.js';
 import { mock } from 'jest-mock-extended';
 import { Request, Response } from 'express';
 import { AxiosResponse } from 'axios';
