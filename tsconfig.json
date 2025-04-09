@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "preserve",
     "target": "es2021",
     "outDir": "./dist",
     "baseUrl": "./",
