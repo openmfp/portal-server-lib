@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, Logger } from '@nestjs/common';
-import { EnvService } from '../env/env.service.js';
+import { EnvService } from '../env/index.js';
 import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens.js';
 import { HealthChecker } from './health-checker.js';
 
