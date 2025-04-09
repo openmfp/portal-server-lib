@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { AuthTokenData } from '../auth';
+import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 const authCookie = 'openmfp_auth_cookie';

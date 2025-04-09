@@ -28,7 +28,7 @@ export interface ServiceProviderService {
   getServiceProviders(
     token: string,
     entities: string[],
-    context: Record<string, any>
+    context: Record<string, any>,
   ): Promise<ServiceProviderResponse>;
 }
 

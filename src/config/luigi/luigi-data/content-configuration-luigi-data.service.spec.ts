@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { RawServiceProvider } from '../../context/service-provider';
 import { ConfigTransferNodeService } from './config-transfer-node.service';
 import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
 import { IntentResolveService } from './intent-resolve.service';
-import { RawServiceProvider } from '../../context/service-provider';
 import { NodeExtendedDataService } from './node-extended-data.service';
 import { TextsTranslateService } from './texts-translate.service';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('ContentConfigurationLuigiDataService', () => {
   let service: ContentConfigurationLuigiDataService;
@@ -28,7 +28,7 @@ describe('ContentConfigurationLuigiDataService', () => {
     }).compile();
 
     service = module.get<ContentConfigurationLuigiDataService>(
-      ContentConfigurationLuigiDataService
+      ContentConfigurationLuigiDataService,
     );
   });
 
@@ -193,7 +193,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         const result = await service.getLuigiData(mockProvider, 'en');
 
         expect(result[0].viewGroup).toContain(
-          'https://app.example.com#https://example.com#main'
+          'https://app.example.com#https://example.com#main',
         );
         expect(result[0].viewUrl).toBe('https://example.com/home');
         expect(result[1].viewUrl).toBe('https://app.example.com/about');
@@ -230,10 +230,10 @@ describe('ContentConfigurationLuigiDataService', () => {
         const result = await service.getLuigiData(mockProvider, 'en');
 
         expect(result[0].compound.children[0].viewUrl).toBe(
-          'https://app.example.com/child1'
+          'https://app.example.com/child1',
         );
         expect(result[0].compound.children[1].viewUrl).toBe(
-          'https://example.com/child2'
+          'https://example.com/child2',
         );
       });
     });

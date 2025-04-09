@@ -1,42 +1,42 @@
-import { Injectable } from '@nestjs/common';
 import { RawServiceProvider } from '../../context/service-provider';
 import {
+  LuigiAppConfig,
   LuigiConfigData,
   LuigiNodeDefaults,
-  LuigiAppConfig,
 } from '../../model/content-configuration';
 import { LuigiNode } from '../../model/luigi.node';
 import { ConfigTransferNodeService } from './config-transfer-node.service';
 import { LuigiDataService } from './luigi-data.service';
-import * as URI from 'uri-js';
-import { URIComponents } from 'uri-js';
 import { NodeExtendedDataService } from './node-extended-data.service';
 import { TextsTranslateService } from './texts-translate.service';
+import { Injectable } from '@nestjs/common';
+import * as URI from 'uri-js';
+import { URIComponents } from 'uri-js';
 
 @Injectable()
 export class ContentConfigurationLuigiDataService implements LuigiDataService {
   constructor(
     private textsTranslateService: TextsTranslateService,
     private configTransferNodeService: ConfigTransferNodeService,
-    private nodeExtendedDataService: NodeExtendedDataService
+    private nodeExtendedDataService: NodeExtendedDataService,
   ) {}
 
   async getLuigiData(
     provider: RawServiceProvider,
-    language: string
+    language: string,
   ): Promise<LuigiNode[]> {
     const nodeArrays: LuigiNode[] = provider.contentConfiguration
       .map((contentConfiguration) => {
         this.textsTranslateService.translateTexts(
           contentConfiguration.luigiConfigFragment,
-          language
+          language,
         );
 
         return this.createNodes(
           contentConfiguration.luigiConfigFragment.data,
           contentConfiguration.url != undefined
             ? URI.parse(contentConfiguration.url)
-            : undefined
+            : undefined,
         );
       })
       .flat();
@@ -44,14 +44,14 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     return nodeArrays.map((node) =>
       this.nodeExtendedDataService.addExtendedDataToChildrenRecursively(
         node,
-        provider
-      )
+        provider,
+      ),
     );
   }
 
   private createNodes(
     luigiConfigData: LuigiConfigData,
-    contentConfigurationUri: URIComponents | undefined
+    contentConfigurationUri: URIComponents | undefined,
   ): LuigiNode[] {
     const appConfig: LuigiAppConfig = {
       navMode: 'inplace',
@@ -77,14 +77,14 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
           node,
           appConfig,
           urlTemplateUrl,
-          luigiConfigData.nodeDefaults
-        )
+          luigiConfigData.nodeDefaults,
+        ),
       );
 
       this.configTransferNodeService.transferConfig(
         nodes,
         luigiConfigData,
-        urlTemplateUrl
+        urlTemplateUrl,
       );
 
       return nodes;
@@ -97,7 +97,7 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
     nodeCfg: LuigiNode,
     appConfig: LuigiAppConfig,
     urlTemplateUrl: string,
-    nodeDefaults?: LuigiNodeDefaults
+    nodeDefaults?: LuigiNodeDefaults,
   ): LuigiNode {
     const node: LuigiNode = {
       ...(nodeDefaults || {}),

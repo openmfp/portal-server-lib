@@ -1,7 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
-import { ConfigDto, LocalNodesController } from './local-nodes.controller';
 import {
   ContentConfiguration,
   ContentConfigurationLuigiDataService,
@@ -10,12 +6,16 @@ import {
   LuigiNode,
   ValidationResult,
 } from '../config';
-import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
-import { mock } from 'jest-mock-extended';
-import { Request, Response } from 'express';
+import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
+import { ConfigDto, LocalNodesController } from './local-nodes.controller';
+import { HttpModule } from '@nestjs/axios';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import { Request, Response } from 'express';
+import { mock } from 'jest-mock-extended';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -46,12 +46,12 @@ describe('LocalNodesController', () => {
 
     contentConfigurationValidatorServiceMock =
       module.get<ContentConfigurationValidatorService>(
-        ContentConfigurationValidatorService
+        ContentConfigurationValidatorService,
       );
 
     contentConfigurationLuigiDataServiceMock =
       module.get<ContentConfigurationLuigiDataService>(
-        ContentConfigurationLuigiDataService
+        ContentConfigurationLuigiDataService,
       );
 
     controller = module.get<LocalNodesController>(LocalNodesController);
@@ -79,7 +79,7 @@ describe('LocalNodesController', () => {
     jest
       .spyOn(
         contentConfigurationValidatorServiceMock,
-        'validateContentConfigurations'
+        'validateContentConfigurations',
       )
       .mockResolvedValue(Promise.resolve(validationResults));
 
@@ -98,7 +98,7 @@ describe('LocalNodesController', () => {
       expect(error).toBeInstanceOf(HttpException);
       expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
       expect(error.message).toBe(
-        'Could not process local content configuration'
+        'Could not process local content configuration',
       );
     }
   });
@@ -118,7 +118,7 @@ describe('LocalNodesController', () => {
       jest
         .spyOn(
           contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations'
+          'validateContentConfigurations',
         )
         .mockResolvedValue(Promise.resolve(validationResults));
 
@@ -148,7 +148,7 @@ describe('LocalNodesController', () => {
       jest
         .spyOn(
           contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations'
+          'validateContentConfigurations',
         )
         .mockResolvedValue(Promise.resolve(validationResults));
 
@@ -172,7 +172,7 @@ describe('LocalNodesController', () => {
       jest
         .spyOn(
           contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations'
+          'validateContentConfigurations',
         )
         .mockResolvedValue(Promise.resolve(validationResults));
 

@@ -1,7 +1,7 @@
-import { EnvVariablesServiceImpl } from './env-variables.service';
 import { AuthTokenData } from '../auth';
-import { Request, Response } from 'express';
+import { EnvVariablesServiceImpl } from './env-variables.service';
 import { EnvService } from './env.service';
+import { Request, Response } from 'express';
 
 describe('EnvVariablesServiceImpl', () => {
   let envVariablesService: EnvVariablesServiceImpl;
@@ -38,7 +38,7 @@ describe('EnvVariablesServiceImpl', () => {
     it('should return the result from authDataService.provideAuthData and current auth envs', async () => {
       const result = await envVariablesService.getEnv(
         mockRequest,
-        mockResponse
+        mockResponse,
       );
 
       expect(result).toEqual({

@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
 import { AuthTokenData } from './auth-token.service';
 import { NoopAuthCallback } from './auth.callback';
+import { Request, Response } from 'express';
 
 describe('NoopAuthCallback', () => {
   let callback: NoopAuthCallback;
@@ -16,7 +16,7 @@ describe('NoopAuthCallback', () => {
       const authTokenResponse = {} as AuthTokenData;
 
       await expect(
-        callback.handleSuccess(request, response, authTokenResponse)
+        callback.handleSuccess(request, response, authTokenResponse),
       ).resolves.toBeUndefined();
     });
   });
@@ -27,7 +27,7 @@ describe('NoopAuthCallback', () => {
       const response = {} as Response;
 
       await expect(
-        callback.handleFailure(request, response)
+        callback.handleFailure(request, response),
       ).resolves.toBeUndefined();
     });
   });

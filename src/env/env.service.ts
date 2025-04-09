@@ -1,6 +1,6 @@
+import { DiscoveryService } from './discovery.service';
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { DiscoveryService } from './discovery.service';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;
@@ -37,7 +37,7 @@ export class EnvService {
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
       localFrontendPort: process.env.FRONTEND_PORT || '4300',
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
-        ','
+        ',',
       ),
     };
   }
@@ -57,11 +57,11 @@ export class EnvService {
   }
 
   public async getCurrentAuthEnv(
-    request: Request
+    request: Request,
   ): Promise<ServerAuthVariables> {
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
-      (x) => x.baseDomain === request.hostname
+      (x) => x.baseDomain === request.hostname,
     );
     if (defaultTenant) {
       return await this.getAuthEnv(defaultTenant.idpName);
@@ -84,7 +84,7 @@ export class EnvService {
         request.hostname
       } is not listed in the portal's base urls: '${baseDomainsToIdps
         .map((x) => x.baseDomain)
-        .join(',')}'`
+        .join(',')}'`,
     );
   }
 
@@ -115,8 +115,8 @@ export class EnvService {
       const hasClientSecret = !!clientSecret;
       throw new Error(
         `the idp ${idpName} is not properly configured. oauthServerUrl: '${oauthServerUrl}' oauthTokenUrl: '${oauthTokenUrl}' clientId: '${clientId}', has client secret (${clientSecretEnvVar}): ${String(
-          hasClientSecret
-        )}`
+          hasClientSecret,
+        )}`,
       );
     }
 
@@ -154,7 +154,7 @@ export class EnvService {
             idpName,
             baseDomain,
           };
-        })
+        }),
       );
     }
 

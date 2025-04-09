@@ -3,7 +3,7 @@ import { Type } from '@nestjs/common';
 export interface EntityContextProvider {
   getContextValues(
     token: string,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ): Promise<Record<string, any>>;
 }
 
@@ -23,7 +23,7 @@ export class EntityNotFoundException extends EntityException {
     super(
       entityType,
       entityId,
-      `${entityType} with id ${entityId} doesn't exist.`
+      `${entityType} with id ${entityId} doesn't exist.`,
     );
   }
 }
@@ -33,7 +33,7 @@ export class EntityAccessForbiddenException extends EntityException {
     super(
       entityType,
       entityId,
-      `Access forbidden for ${entityType} with id ${entityId}.`
+      `Access forbidden for ${entityType} with id ${entityId}.`,
     );
   }
 }

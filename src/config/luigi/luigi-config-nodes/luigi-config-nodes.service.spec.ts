@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ContentConfiguration } from '../../model/content-configuration';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
-import { LuigiConfigNodesService } from './luigi-config-nodes.service';
-import { PortalModule } from '../../../portal.module';
-import { mock } from 'jest-mock-extended';
 import {
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from '../../../injection-tokens';
-import { LuigiNode } from '../../model/luigi.node';
+import { PortalModule } from '../../../portal.module';
 import {
   RawServiceProvider,
   ServiceProviderService,
 } from '../../context/service-provider';
+import { ContentConfiguration } from '../../model/content-configuration';
+import { LuigiNode } from '../../model/luigi.node';
+import { LuigiDataService } from '../luigi-data/luigi-data.service';
+import { LuigiConfigNodesService } from './luigi-config-nodes.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { mock } from 'jest-mock-extended';
 
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;
@@ -29,10 +29,10 @@ describe('LuigiConfigNodesService', () => {
 
     service = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     serviceProviderService = module.get<ServiceProviderService>(
-      SERVICE_PROVIDER_INJECTION_TOKEN
+      SERVICE_PROVIDER_INJECTION_TOKEN,
     );
     luigiDataService = module.get<LuigiDataService>(
-      LUIGI_DATA_SERVICE_INJECTION_TOKEN
+      LUIGI_DATA_SERVICE_INJECTION_TOKEN,
     );
   });
 
@@ -73,13 +73,13 @@ describe('LuigiConfigNodesService', () => {
       'en',
       {
         key: 'val',
-      }
+      },
     );
 
     // Assert
     expect(serviceProvidersForTenant.length).toBe(2);
     expect(serviceProvidersForTenant[0].creationTimestamp).toBe(
-      '2022-05-17T11:37:17Z'
+      '2022-05-17T11:37:17Z',
     );
     expect(getExtensionClassesMock).toHaveBeenCalledWith(token, ['TENANT'], {
       key: 'val',
@@ -92,7 +92,7 @@ describe('LuigiConfigNodesService', () => {
       token,
       ['PROJECT'],
       'en',
-      { key: 'val' }
+      { key: 'val' },
     );
 
     // Assert 2

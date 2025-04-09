@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CookiesService } from './cookies.service';
-import { Request, Response } from 'express';
 import { AuthTokenData } from '../auth/auth-token.service';
+import { CookiesService } from './cookies.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
 
 describe('CookiesService', () => {
   let service: CookiesService;
@@ -55,7 +55,7 @@ describe('CookiesService', () => {
           httpOnly: true,
           secure: true,
           sameSite: 'strict',
-        }
+        },
       );
     });
   });
@@ -69,7 +69,7 @@ describe('CookiesService', () => {
       service.removeAuthCookie(mockResponse);
 
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        'openmfp_auth_cookie'
+        'openmfp_auth_cookie',
       );
     });
   });

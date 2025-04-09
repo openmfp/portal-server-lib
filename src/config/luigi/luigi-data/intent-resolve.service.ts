@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
 import {
   CrossNavigationInbounds,
   LuigiIntent,
   LuigiNode,
 } from '../../model/luigi.node';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class IntentResolveService {
   public resolve(
     nodes: LuigiNode[],
-    luigiIntentInboundList: CrossNavigationInbounds
+    luigiIntentInboundList: CrossNavigationInbounds,
   ) {
     if (nodes.length === 0 || !luigiIntentInboundList) {
       return;
@@ -18,7 +18,7 @@ export class IntentResolveService {
     const configTransferNode = nodes[0];
     const intentData = this.resolveIntentTargetsAndEntityPath(
       nodes,
-      luigiIntentInboundList
+      luigiIntentInboundList,
     );
     configTransferNode._intentMappings = intentData?.intentMappings;
     configTransferNode._entityRelativePaths = intentData?.entityRelativePaths;
@@ -32,7 +32,7 @@ export class IntentResolveService {
    */
   private resolveIntentTargetsAndEntityPath(
     nodes: LuigiNode[],
-    inbounds: CrossNavigationInbounds
+    inbounds: CrossNavigationInbounds,
   ): {
     intentMappings?: LuigiIntent[];
     entityRelativePaths?: Record<string, any>;
@@ -49,10 +49,10 @@ export class IntentResolveService {
           node.entityType,
           '',
           node.entityType,
-          tempListObject
+          tempListObject,
         );
         listOfIntentMappings = listOfIntentMappings.concat(
-          tempListObject.intentMappings
+          tempListObject.intentMappings,
         );
         Object.assign(listOfEntityPaths, tempListObject.entityRelativePaths);
       }
@@ -85,7 +85,7 @@ export class IntentResolveService {
     intentKnowledge: {
       intentMappings: LuigiIntent[];
       entityRelativePaths: Record<string, any>;
-    }
+    },
   ) {
     // parent entity for building 'entityRelativePaths' knowledge
     let currentParentEntity = parentEntity;
@@ -140,7 +140,7 @@ export class IntentResolveService {
           currentParentEntity,
           currentPathSegment,
           currentTargetParentEntity,
-          intentKnowledge
+          intentKnowledge,
         );
       }
     }

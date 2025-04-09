@@ -1,6 +1,6 @@
+import { integrationTestModule } from './integration-test-module';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { integrationTestModule } from './integration-test-module';
 
 describe('Logout (integration)', () => {
   let app: INestApplication;

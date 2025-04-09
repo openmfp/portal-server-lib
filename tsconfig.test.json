@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
   "target": "es2021",
-  "sourceMap": true,
+  "sourceMap": true
 }
