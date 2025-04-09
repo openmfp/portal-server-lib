@@ -1,9 +1,9 @@
-import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { EnvService } from '../env';
+import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { CookiesService } from '../services';
 import { LogoutCallback } from './logout-callback';
-import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { EnvService } from '../env';
+import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 @Controller('/rest/logout')
 export class LogoutController {
@@ -11,7 +11,7 @@ export class LogoutController {
     @Inject(LOGOUT_CALLBACK_INJECTION_TOKEN)
     private logoutCallback: LogoutCallback,
     private envService: EnvService,
-    private cookiesService: CookiesService
+    private cookiesService: CookiesService,
   ) {}
 
   @Get()

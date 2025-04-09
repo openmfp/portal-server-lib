@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { mock } from 'jest-mock-extended';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
-import { Request, Response } from 'express';
-import nock from 'nock';
 import { EnvService } from '../env';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthCallback } from './auth.callback';
 import { PortalModule } from '../portal.module';
+import { AuthTokenData, AuthTokenService } from './auth-token.service';
+import { AuthCallback } from './auth.callback';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
+import { mock } from 'jest-mock-extended';
+import nock from 'nock';
 
 describe('AuthTokenService', () => {
   let service: AuthTokenService;
@@ -73,7 +73,7 @@ describe('AuthTokenService', () => {
           httpOnly: true,
           secure: true,
           sameSite: 'strict',
-        }
+        },
       );
     }
 
@@ -93,7 +93,7 @@ describe('AuthTokenService', () => {
         const authTokenResponse = await service.exchangeTokenForRefreshToken(
           requestMock,
           responseMock,
-          refreshToken
+          refreshToken,
         );
 
         // Assert
@@ -115,10 +115,10 @@ describe('AuthTokenService', () => {
           service.exchangeTokenForRefreshToken(
             requestMock,
             responseMock,
-            refreshToken
-          )
+            refreshToken,
+          ),
         ).rejects.toThrowError(
-          'Unexpected response code from auth token server: 206, null'
+          'Unexpected response code from auth token server: 206, null',
         );
       });
     });
@@ -142,7 +142,7 @@ describe('AuthTokenService', () => {
         const authTokenResponse = await service.exchangeTokenForCode(
           requestMock,
           responseMock,
-          code
+          code,
         );
 
         // Assert
@@ -168,7 +168,7 @@ describe('AuthTokenService', () => {
         const authTokenResponse = await service.exchangeTokenForCode(
           requestMock,
           responseMock,
-          code
+          code,
         );
 
         // Assert
@@ -194,11 +194,11 @@ describe('AuthTokenService', () => {
       const authTokenResponsePromise = service.exchangeTokenForCode(
         requestMock,
         responseMock,
-        code
+        code,
       );
 
       await expect(authTokenResponsePromise).rejects.toThrowError(
-        'Error response from auth token server: AxiosError: Request failed with status code 500'
+        'Error response from auth token server: AxiosError: Request failed with status code 500',
       );
     });
   });

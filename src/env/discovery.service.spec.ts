@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DiscoveryService } from './discovery.service';
 import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AxiosError } from 'axios';
 import { mock } from 'jest-mock-extended';
 import { of, throwError } from 'rxjs';
-import { AxiosError } from 'axios';
 
 describe('DiscoveryService', () => {
   let service: DiscoveryService;
@@ -42,14 +42,14 @@ describe('DiscoveryService', () => {
           statusText: null,
           headers: null,
           config: null,
-        })
+        }),
       );
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
       const oidc = await service.getOIDC('APP');
 
       expect(oidc.authorization_endpoint).toEqual(
-        'example.com/authorization_endpoint'
+        'example.com/authorization_endpoint',
       );
       expect(oidc.token_endpoint).toEqual('example.com/token_endpoint');
       expect(service['oidcResultPerIdp']['APP']).toEqual({
@@ -68,7 +68,7 @@ describe('DiscoveryService', () => {
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Error response from discovery service: AxiosError: error'
+        'Error response from discovery service: AxiosError: error',
       );
     });
 
@@ -84,13 +84,13 @@ describe('DiscoveryService', () => {
           statusText: null,
           headers: null,
           config: null,
-        })
+        }),
       );
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: Response status: 101, OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 101, OIDC endpoint: example.com',
       );
     });
 
@@ -111,13 +111,13 @@ describe('DiscoveryService', () => {
           statusText: null,
           headers: null,
           config: null,
-        })
+        }),
       );
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com',
       );
     });
 
@@ -133,13 +133,13 @@ describe('DiscoveryService', () => {
           statusText: null,
           headers: null,
           config: null,
-        })
+        }),
       );
 
       process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
 
       await expect(service.getOIDC('APP')).rejects.toThrow(
-        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com'
+        'Invalid response from discovery service: Response status: 200, OIDC endpoint: example.com',
       );
       expect(service['oidcResultPerIdp']['APP']).toBeUndefined();
     });

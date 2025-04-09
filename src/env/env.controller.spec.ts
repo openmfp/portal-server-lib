@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { EnvController } from './env.controller';
-import { mock, MockProxy } from 'jest-mock-extended';
-import { Request, Response } from 'express';
-import { EnvVariablesService } from './env-variables.service';
 import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens';
+import { EnvVariablesService } from './env-variables.service';
+import { EnvController } from './env.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
+import { MockProxy, mock } from 'jest-mock-extended';
 
 describe('EnvController', () => {
   let controller: EnvController;

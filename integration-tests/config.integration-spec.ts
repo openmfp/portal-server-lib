@@ -1,25 +1,25 @@
-import { Request } from 'express';
-import { mock } from 'jest-mock-extended';
-import { Test, TestingModule } from '@nestjs/testing';
-import request from 'supertest';
+import {
+  EntityNotFoundException,
+  FEATURE_TOGGLES_INJECTION_TOKEN,
+  FeatureTogglesProvider,
+  HeaderParserService,
+  LuigiConfigNodesService,
+  PortalModule,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
+  ServiceProvider,
+  ServiceProviderService,
+} from '../src';
+import { EntityAccessForbiddenException } from '../src/config/context/entity-context-provider';
 import {
   ForbiddenException,
   INestApplication,
   NotFoundException,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  LuigiConfigNodesService,
-  HeaderParserService,
-  FeatureTogglesProvider,
-  ServiceProvider,
-  FEATURE_TOGGLES_INJECTION_TOKEN,
-  PortalModule,
-  ServiceProviderService,
-  SERVICE_PROVIDER_INJECTION_TOKEN,
-  EntityNotFoundException,
-} from '../src';
-import { EntityAccessForbiddenException } from '../src/config/context/entity-context-provider';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request } from 'express';
+import { mock } from 'jest-mock-extended';
+import request from 'supertest';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -61,12 +61,12 @@ describe('ConfigController', () => {
     }).compile();
 
     serviceProviderServiceMock = module.get<ServiceProviderService>(
-      SERVICE_PROVIDER_INJECTION_TOKEN
+      SERVICE_PROVIDER_INJECTION_TOKEN,
     );
     nodesService = module.get<LuigiConfigNodesService>(LuigiConfigNodesService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
-      FEATURE_TOGGLES_INJECTION_TOKEN
+      FEATURE_TOGGLES_INJECTION_TOKEN,
     );
 
     jest
@@ -89,7 +89,7 @@ describe('ConfigController', () => {
   describe('GET /rest/config', () => {
     it('should return 403 forbidden response status', async () => {
       (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
-        new ForbiddenException()
+        new ForbiddenException(),
       );
 
       await request(app.getHttpServer())
@@ -100,7 +100,7 @@ describe('ConfigController', () => {
 
     it('should return 404 not found response status', async () => {
       (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
-        new NotFoundException()
+        new NotFoundException(),
       );
 
       await request(app.getHttpServer())
@@ -111,7 +111,7 @@ describe('ConfigController', () => {
 
     it('should return 500 internal error response status', async () => {
       (serviceProviderServiceMock.getServiceProviders as any).mockRejectedValue(
-        new Error('any other error')
+        new Error('any other error'),
       );
 
       await request(app.getHttpServer())

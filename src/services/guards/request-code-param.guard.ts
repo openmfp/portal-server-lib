@@ -1,9 +1,9 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   HttpException,
   HttpStatus,
+  Injectable,
 } from '@nestjs/common';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class RequestCodeParamGuard implements CanActivate {
     if (!code) {
       throw new HttpException(
         "No 'code' was provided in the query.",
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 

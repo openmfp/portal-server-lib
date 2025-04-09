@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
 import {
-  PortalModule,
   ContentConfigurationLuigiDataService,
-  LuigiNode,
   ContentConfigurationValidatorService,
+  LuigiNode,
+  PortalModule,
 } from '../src';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import request from 'supertest';
 
 describe('LocalnodesController', () => {
   let app: INestApplication;
@@ -21,12 +21,12 @@ describe('LocalnodesController', () => {
 
     contentConfigurationValidatorService =
       module.get<ContentConfigurationValidatorService>(
-        ContentConfigurationValidatorService
+        ContentConfigurationValidatorService,
       );
 
     contentConfigurationLuigiDataService =
       module.get<ContentConfigurationLuigiDataService>(
-        ContentConfigurationLuigiDataService
+        ContentConfigurationLuigiDataService,
       );
 
     app = module.createNestApplication();
@@ -106,7 +106,7 @@ describe('LocalnodesController', () => {
       const validateContentConfiguration = jest
         .spyOn(
           contentConfigurationValidatorService,
-          'validateContentConfigurations'
+          'validateContentConfigurations',
         )
         .mockResolvedValue([
           {

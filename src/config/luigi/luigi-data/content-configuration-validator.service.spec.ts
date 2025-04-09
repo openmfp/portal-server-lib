@@ -1,15 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
-import { Logger } from '@nestjs/common';
 import {
   ContentConfiguration,
   ValidationInput,
   ValidationResult,
 } from '../../../';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
-import { mock } from 'jest-mock-extended';
+import { ContentConfigurationValidatorService } from './content-configuration-validator.service';
 import { HttpService } from '@nestjs/axios';
+import { Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AxiosResponse } from 'axios';
+import { mock } from 'jest-mock-extended';
+import { of } from 'rxjs';
 
 describe('ContentConfigurationValidatorService', () => {
   let service: ContentConfigurationValidatorService;
@@ -26,7 +26,7 @@ describe('ContentConfigurationValidatorService', () => {
       .compile();
 
     service = module.get<ContentConfigurationValidatorService>(
-      ContentConfigurationValidatorService
+      ContentConfigurationValidatorService,
     );
   });
 
@@ -82,7 +82,7 @@ describe('ContentConfigurationValidatorService', () => {
 
       //Act
       const result = await service.validateContentConfigurations(
-        contentConfigurations
+        contentConfigurations,
       );
 
       //Assert

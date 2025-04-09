@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CookiesService } from '../services';
-import { LogoutController } from './logout.controller';
-import { mock, MockProxy } from 'jest-mock-extended';
-import { Request, Response } from 'express';
-import { NoopLogoutService } from './noop-logout.service';
-import { LogoutCallback } from './logout-callback';
-import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { DiscoveryService, EnvService } from '../env';
+import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
+import { CookiesService } from '../services';
+import { LogoutCallback } from './logout-callback';
+import { LogoutController } from './logout.controller';
+import { NoopLogoutService } from './noop-logout.service';
 import { HttpModule } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Request, Response } from 'express';
+import { MockProxy, mock } from 'jest-mock-extended';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
@@ -65,7 +65,7 @@ describe('LogoutController', () => {
 
     // Assert
     expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
-      responseMock
+      responseMock,
     );
   });
 
@@ -76,7 +76,7 @@ describe('LogoutController', () => {
     // Assert
     expect(logoutCallbackMock.handleLogout).toHaveBeenCalledWith(
       requestMock,
-      responseMock
+      responseMock,
     );
   });
 
@@ -98,7 +98,7 @@ describe('LogoutController', () => {
 
       // Assert
       expect(responseMock.redirect).toHaveBeenCalledWith(
-        '\test?error=Something_Important'
+        '\test?error=Something_Important',
       );
     });
   });

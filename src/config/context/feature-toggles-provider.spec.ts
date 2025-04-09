@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EnvService } from '../../env/env.service';
 import {
   EnvFeatureTogglesProvider,
   FeatureTogglesProvider,
 } from './feature-toggles-provider';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('EnvFeatureTogglesProvider', () => {
   let envFeatureTogglesProvider: FeatureTogglesProvider;
@@ -25,7 +25,7 @@ describe('EnvFeatureTogglesProvider', () => {
     }).compile();
 
     envFeatureTogglesProvider = module.get<FeatureTogglesProvider>(
-      EnvFeatureTogglesProvider
+      EnvFeatureTogglesProvider,
     );
     envService = module.get<EnvService>(EnvService);
   });

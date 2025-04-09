@@ -1,7 +1,7 @@
-import { Controller, Get, Inject, Logger } from '@nestjs/common';
 import { EnvService } from '../env/env.service';
 import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
 import { HealthChecker } from './health-checker';
+import { Controller, Get, Inject, Logger } from '@nestjs/common';
 
 @Controller('/rest/health')
 export class HealthController {
@@ -14,7 +14,7 @@ export class HealthController {
     private envService: EnvService,
     private logger: Logger,
     @Inject(HEALTH_CHECKER_INJECTION_TOKEN)
-    private healthChecker: HealthChecker
+    private healthChecker: HealthChecker,
   ) {
     this.isHealthy = false;
     this.healthCheckInterval =

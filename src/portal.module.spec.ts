@@ -1,12 +1,12 @@
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { AuthController } from './auth';
 import { ConfigController } from './config';
 import { EnvController } from './env';
 import { HealthController } from './health';
+import { LocalNodesController } from './local-nodes';
 import { LogoutController } from './logout';
 import { PortalModule } from './portal.module';
 import { DynamicModule, Provider } from '@nestjs/common';
-import { LocalNodesController } from './local-nodes';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 describe('PortalModule', () => {
   it('should create portal module', () => {
@@ -57,7 +57,7 @@ describe('PortalModule', () => {
     });
 
     expect(
-      serveStaticModule.map((e) => (e as DynamicModule).providers)
+      serveStaticModule.map((e) => (e as DynamicModule).providers),
     ).toStrictEqual([expectedModule.providers]);
   });
 });

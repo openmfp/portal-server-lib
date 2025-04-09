@@ -1,7 +1,7 @@
+import { EnvVariablesService } from '../src';
+import { integrationTestModule } from './integration-test-module';
 import { INestApplication, Type } from '@nestjs/common';
 import request from 'supertest';
-import { integrationTestModule } from './integration-test-module';
-import { EnvVariablesService } from '../src';
 
 describe('AppController (integration)', () => {
   const env = {
