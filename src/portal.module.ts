@@ -44,6 +44,7 @@ import {
   PORTAL_CONTEXT_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens.js';
+import { KubeConfigController } from './kube/kube-config.controller.js';
 import { LocalNodesController } from './local-nodes/index.js';
 import {
   LogoutCallback,
@@ -144,6 +145,7 @@ export class PortalModule implements NestModule {
       EnvController,
       LogoutController,
       ConfigController,
+      KubeConfigController,
     ];
 
     let providers: Provider[] = [
