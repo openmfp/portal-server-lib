@@ -12,7 +12,7 @@
   "files": [
     "dist/**/*"
   ],
-  "exports":{
+  "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "esm": "./dist/index.js"
