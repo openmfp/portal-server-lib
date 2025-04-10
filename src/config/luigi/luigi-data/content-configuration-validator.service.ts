@@ -1,12 +1,12 @@
 import {
-  ContentConfiguration,
   ContentType,
   ValidationInput,
   ValidationResult,
-} from '../../../config';
+} from '../../model/content-configuration-validation.js';
+import { ContentConfiguration } from '../../model/content-configuration.js';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { Observable, lastValueFrom, map } from 'rxjs';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ContentConfigurationValidatorService {
   ): Observable<AxiosResponse<ValidationResult, any>> {
     const ccValidatorApiUrl =
       process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL;
-    const config: AxiosRequestConfig = {
+    const config = {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -38,7 +38,7 @@ export class ContentConfigurationValidatorService {
       ccValidatorApiUrl,
       data,
       config,
-    );
+    ) as any;
   }
 
   public validateContentConfigurations(

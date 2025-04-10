@@ -1,12 +1,18 @@
-import { EnvService } from '../env';
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { PortalModule } from '../portal.module';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
-import { AuthCallback } from './auth.callback';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import { mock } from 'jest-mock-extended';
+import { of } from 'rxjs';
 import nock from 'nock';
+
+import { EnvService } from '../env/env.service.js';
+import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import { PortalModule } from '../portal.module.js';
+import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import { AuthCallback } from './auth.callback.js';
+import { CookiesService } from '../services/index.js';
 
 describe('AuthTokenService', () => {
   let service: AuthTokenService;

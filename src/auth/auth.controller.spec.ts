@@ -3,9 +3,9 @@ import { PortalModule } from '../portal.module';
 import { CookiesService } from '../services';
 import { AuthTokenData, AuthTokenService } from './auth-token.service';
 import { AuthCallback } from './auth.callback';
-import { AuthController } from './auth.controller';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
+import { AuthController } from './auth.controller.js';
+import { Test } from '@nestjs/testing';
+import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 
 describe('AuthController', () => {

@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "module": "preserve",
-    "target": "es2021",
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
   }
 }

@@ -1,6 +1,6 @@
-import { EnvService, EnvVariables } from './env.service';
+import { EnvService, EnvVariables } from './env.service.js';
 import { Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 export interface EnvConfigVariables extends EnvVariables {
   oauthServerUrl: string;

@@ -1,5 +1,6 @@
-import { RawServiceProvider } from '../../context/service-provider';
-import { LuigiNode } from '../../model/luigi.node';
+import { RawServiceProvider } from '../../context/service-provider.js';
+import { BreadcrumbBadge } from '../../model/breadcrumb-badge.js';
+import { HelpContext, LuigiNode } from '../../model/luigi.node.js';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

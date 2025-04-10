@@ -1,7 +1,7 @@
-import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens';
-import { EnvVariablesService } from './env-variables.service';
+import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens.js';
+import { EnvVariablesService } from './env-variables.service.js';
 import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('/rest/envconfig')
 export class EnvController {

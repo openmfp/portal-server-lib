@@ -2,8 +2,9 @@ import {
   CrossNavigationInbounds,
   LuigiIntent,
   LuigiNode,
-} from '../../model/luigi.node';
+} from '../../model/luigi.node.js';
 import { Injectable } from '@nestjs/common';
+import { LuigiConfigData } from '../../model/content-configuration.js';
 
 @Injectable()
 export class IntentResolveService {

@@ -1,7 +1,7 @@
 import { DiscoveryService } from '.';
-import { EnvService } from './env.service';
+import { EnvService } from './env.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { mock } from 'jest-mock-extended';
 
 describe('EnvService', () => {

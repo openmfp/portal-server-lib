@@ -1,4 +1,5 @@
 import {
+  EntityAccessForbiddenException,
   EntityNotFoundException,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   FeatureTogglesProvider,
@@ -8,8 +9,7 @@ import {
   SERVICE_PROVIDER_INJECTION_TOKEN,
   ServiceProvider,
   ServiceProviderService,
-} from '../src';
-import { EntityAccessForbiddenException } from '../src/config/context/entity-context-provider';
+} from '../src/index.js';
 import {
   ForbiddenException,
   INestApplication,
@@ -17,7 +17,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { mock } from 'jest-mock-extended';
 import request from 'supertest';
 

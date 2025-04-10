@@ -1,6 +1,6 @@
-import { NoopLogoutService } from './noop-logout.service';
+import { NoopLogoutService } from './noop-logout.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 
 describe('NoopLogoutService', () => {

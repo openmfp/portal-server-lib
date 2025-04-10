@@ -1,9 +1,9 @@
-import { RawServiceProvider } from '../../context/service-provider';
-import { ConfigTransferNodeService } from './config-transfer-node.service';
-import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service';
-import { IntentResolveService } from './intent-resolve.service';
-import { NodeExtendedDataService } from './node-extended-data.service';
-import { TextsTranslateService } from './texts-translate.service';
+import { RawServiceProvider } from '../../context/service-provider.js';
+import { ConfigTransferNodeService } from './config-transfer-node.service.js';
+import { ContentConfigurationLuigiDataService } from './content-configuration-luigi-data.service.js';
+import { IntentResolveService } from './intent-resolve.service.js';
+import { NodeExtendedDataService } from './node-extended-data.service.js';
+import { TextsTranslateService } from './texts-translate.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('ContentConfigurationLuigiDataService', () => {
