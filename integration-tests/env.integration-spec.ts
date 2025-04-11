@@ -1,5 +1,5 @@
-import { EnvVariablesService } from '../src';
-import { integrationTestModule } from './integration-test-module';
+import { EnvVariablesService } from '../src/index.js';
+import { integrationTestModule } from './integration-test-module.js';
 import { INestApplication, Type } from '@nestjs/common';
 import request from 'supertest';
 

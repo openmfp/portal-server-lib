@@ -3,7 +3,7 @@ import {
   ContentConfigurationValidatorService,
   LuigiNode,
   PortalModule,
-} from '../src';
+} from '../src/index.js';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
