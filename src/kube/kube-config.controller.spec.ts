@@ -1,34 +1,42 @@
 import { KubeConfigController } from './kube-config.controller.js';
-import { KubeConfig } from '@kubernetes/client-node';
-import { Test, TestingModule } from '@nestjs/testing';
+import { jest } from '@jest/globals';
+import { Test } from '@nestjs/testing';
 import { readFileSync } from 'fs';
 
-jest.mock('@kubernetes/client-node', () => ({
-  KubeConfig: jest.fn().mockImplementation(() => ({
-    loadFromFile: jest.fn(),
-    loadFromDefault: jest.fn(),
-    getCurrentCluster: jest.fn(),
-  })),
-}));
+// Create proper mock implementations for KubeConfig
+const mockLoadFromFile = jest.fn();
+const mockLoadFromDefault = jest.fn();
+const mockGetCurrentCluster = jest.fn();
+
+// Mock the KubeConfig class
+jest.mock('@kubernetes/client-node', () => {
+  return {
+    KubeConfig: jest.fn().mockImplementation(() => {
+      return {
+        loadFromFile: mockLoadFromFile,
+        loadFromDefault: mockLoadFromDefault,
+        getCurrentCluster: mockGetCurrentCluster,
+      };
+    }),
+  };
+});
 
 jest.mock('fs', () => ({
   readFileSync: jest.fn(),
 }));
 
 describe('KubeConfigController', () => {
-  let controller: KubeConfigController;
-  let mockKubeConfig: jest.Mocked<KubeConfig>;
+  let controller;
 
   beforeEach(async () => {
+    // Reset all mocks
     jest.clearAllMocks();
 
-    mockKubeConfig = new KubeConfig() as jest.Mocked<KubeConfig>;
-
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       controllers: [KubeConfigController],
     }).compile();
 
-    controller = module.get<KubeConfigController>(KubeConfigController);
+    controller = module.get(KubeConfigController);
   });
 
   it('should be defined', () => {
@@ -42,24 +50,14 @@ describe('KubeConfigController', () => {
       };
       const mockResponse = {};
 
-      (mockKubeConfig.getCurrentCluster as jest.Mock).mockReturnValue({
+      mockGetCurrentCluster.mockReturnValue({
         caData: 'dGVzdENhRGF0YQ==',
       });
 
-      jest.spyOn(KubeConfig.prototype, 'loadFromFile');
-      jest.spyOn(KubeConfig.prototype, 'getCurrentCluster').mockReturnValue({
-        caData: 'dGVzdENhRGF0YQ==',
-      } as any);
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
-
-      expect(KubeConfig.prototype.loadFromFile).toHaveBeenCalledWith(
-        '/path/to/kubeconfig',
-      );
-      expect(KubeConfig.prototype.loadFromDefault).not.toHaveBeenCalled();
+      expect(mockLoadFromFile).toHaveBeenCalledWith('/path/to/kubeconfig');
+      expect(mockLoadFromDefault).not.toHaveBeenCalled();
       expect(result).toBe('testCaData');
     });
 
@@ -67,18 +65,14 @@ describe('KubeConfigController', () => {
       const mockRequest = { query: {} };
       const mockResponse = {};
 
-      jest.spyOn(KubeConfig.prototype, 'loadFromDefault');
-      jest.spyOn(KubeConfig.prototype, 'getCurrentCluster').mockReturnValue({
+      mockGetCurrentCluster.mockReturnValue({
         caData: 'dGVzdENhRGF0YQ==',
-      } as any);
+      });
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
-      expect(KubeConfig.prototype.loadFromFile).not.toHaveBeenCalled();
-      expect(KubeConfig.prototype.loadFromDefault).toHaveBeenCalled();
+      expect(mockLoadFromFile).not.toHaveBeenCalled();
+      expect(mockLoadFromDefault).toHaveBeenCalled();
       expect(result).toBe('testCaData');
     });
 
@@ -86,15 +80,10 @@ describe('KubeConfigController', () => {
       const mockRequest = { query: {} };
       const mockResponse = {};
 
-      jest
-        .spyOn(KubeConfig.prototype, 'getCurrentCluster')
-        .mockReturnValue(null);
-      jest.spyOn(console, 'warn').mockImplementation();
+      mockGetCurrentCluster.mockReturnValue(null);
+      console.warn = jest.fn();
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
       expect(console.warn).toHaveBeenCalledWith(
         'No current cluster found in kubeconfig.',
@@ -106,14 +95,11 @@ describe('KubeConfigController', () => {
       const mockRequest = { query: {} };
       const mockResponse = {};
 
-      jest.spyOn(KubeConfig.prototype, 'getCurrentCluster').mockReturnValue({
+      mockGetCurrentCluster.mockReturnValue({
         caData: 'dGVzdENhRGF0YQ==',
-      } as any);
+      });
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
       expect(result).toBe('testCaData');
     });
@@ -124,16 +110,13 @@ describe('KubeConfigController', () => {
       const caFilePath = '/path/to/ca.crt';
       const caFileContent = 'CA_FILE_CONTENT';
 
-      jest.spyOn(KubeConfig.prototype, 'getCurrentCluster').mockReturnValue({
+      mockGetCurrentCluster.mockReturnValue({
         caFile: caFilePath,
-      } as any);
+      });
 
-      (readFileSync as jest.Mock).mockReturnValue(caFileContent);
+      (readFileSync as any).mockReturnValue(caFileContent);
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
       expect(readFileSync).toHaveBeenCalledWith(caFilePath, 'utf-8');
       expect(result).toBe(caFileContent);
@@ -143,15 +126,10 @@ describe('KubeConfigController', () => {
       const mockRequest = { query: {} };
       const mockResponse = {};
 
-      jest
-        .spyOn(KubeConfig.prototype, 'getCurrentCluster')
-        .mockReturnValue({} as any);
-      jest.spyOn(console, 'warn').mockImplementation();
+      mockGetCurrentCluster.mockReturnValue({});
+      console.warn = jest.fn();
 
-      const result = await controller.getCaCert(
-        mockRequest as any,
-        mockResponse as any,
-      );
+      const result = await controller.getCaCert(mockRequest, mockResponse);
 
       expect(console.warn).toHaveBeenCalledWith(
         'No CA data or CA file path found in the kubeconfig.',

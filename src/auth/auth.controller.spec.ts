@@ -105,7 +105,7 @@ describe('AuthController', () => {
       // act
       const response = await controller.refresh(requestMock, responseMock);
 
-      //
+      // assert
       expect(response).toBeUndefined();
       expect(
         authTokenServiceMock.exchangeTokenForRefreshToken,

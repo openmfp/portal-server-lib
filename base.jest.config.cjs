@@ -1,5 +1,7 @@
 module.exports = {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
   coverageReporters: ['text', 'cobertura', 'lcov'],
   transform: {
     '^.+\\.(t|j)s$': [
@@ -12,4 +14,7 @@ module.exports = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(\\@kubernetes/client-node)/)', // ⬅️ this is crucial
+  ],
 };

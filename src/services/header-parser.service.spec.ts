@@ -1,4 +1,4 @@
-import { PortalModule } from '../portal.module';
+import { PortalModule } from '../portal.module.js';
 import { HeaderParserService } from './header-parser.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
