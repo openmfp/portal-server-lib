@@ -1,6 +1,7 @@
-import { AuthTokenData } from '../auth';
-import { EnvVariablesServiceImpl } from './env-variables.service';
-import { EnvService } from './env.service';
+import { AuthTokenData } from '../auth/index.js';
+import { EnvVariablesServiceImpl } from './env-variables.service.js';
+import { EnvService } from './env.service.js';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { Request, Response } from 'express';
 
 describe('EnvVariablesServiceImpl', () => {

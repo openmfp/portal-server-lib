@@ -2,13 +2,14 @@ import { AuthController } from './auth/index.js';
 import { ConfigController } from './config/index.js';
 import { EnvController } from './env/index.js';
 import { HealthController } from './health/index.js';
+import { KubeConfigController } from './kube/kube-config.controller.js';
 import { LocalNodesController } from './local-nodes/index.js';
 import { LogoutController } from './logout/index.js';
 import { PortalModule } from './portal.module.js';
 import { DynamicModule, Provider } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
-describe('PortalModule', () => {
+describe.only('PortalModule', () => {
   it('should create portal module', () => {
     const portalModule = PortalModule.create({});
 
@@ -19,6 +20,7 @@ describe('PortalModule', () => {
       EnvController,
       LogoutController,
       ConfigController,
+      KubeConfigController,
     ]);
   });
 
