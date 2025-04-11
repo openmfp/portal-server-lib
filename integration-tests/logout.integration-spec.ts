@@ -1,4 +1,4 @@
-import { integrationTestModule } from './integration-test-module';
+import { integrationTestModule } from './integration-test-module.js';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 

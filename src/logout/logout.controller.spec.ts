@@ -2,11 +2,11 @@ import { DiscoveryService, EnvService } from '../env';
 import { LOGOUT_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
 import { CookiesService } from '../services';
 import { LogoutCallback } from './logout-callback';
-import { LogoutController } from './logout.controller';
+import { LogoutController } from './logout.controller.js';
 import { NoopLogoutService } from './noop-logout.service';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { MockProxy, mock } from 'jest-mock-extended';
 
 describe('LogoutController', () => {

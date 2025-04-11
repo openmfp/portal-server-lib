@@ -1,7 +1,7 @@
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { CookiesService, RequestCodeParamGuard } from '../services';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
-import { AuthCallback } from './auth.callback';
+import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import { CookiesService, RequestCodeParamGuard } from '../services/index.js';
+import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import { AuthCallback } from './auth.callback.js';
 import {
   Controller,
   Get,
@@ -12,7 +12,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('/rest/auth')
 export class AuthController {

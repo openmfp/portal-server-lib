@@ -1,7 +1,7 @@
-import { RawServiceProvider } from '../../context/service-provider';
-import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
-import { HelpContext, LuigiNode } from '../../model/luigi.node';
-import { NodeExtendedDataService } from './node-extended-data.service';
+import { RawServiceProvider } from '../../context/service-provider.js';
+import { BreadcrumbBadge } from '../../model/breadcrumb-badge.js';
+import { HelpContext, LuigiNode } from '../../model/luigi.node.js';
+import { NodeExtendedDataService } from './node-extended-data.service.js';
 
 describe('NodeExtendedDataService', () => {
   let service: NodeExtendedDataService;

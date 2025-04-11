@@ -1,17 +1,18 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-} from '../../../injection-tokens';
-import { PortalModule } from '../../../portal.module';
+} from '../../../injection-tokens.js';
+import { PortalModule } from '../../../portal.module.js';
 import {
   RawServiceProvider,
   ServiceProviderService,
-} from '../../context/service-provider';
-import { ContentConfiguration } from '../../model/content-configuration';
-import { LuigiNode } from '../../model/luigi.node';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
-import { LuigiConfigNodesService } from './luigi-config-nodes.service';
-import { Test, TestingModule } from '@nestjs/testing';
+} from '../../context/service-provider.js';
+import { ContentConfiguration } from '../../model/content-configuration.js';
+import { LuigiNode } from '../../model/luigi.node.js';
+import { LuigiDataService } from '../luigi-data/luigi-data.service.js';
+import { LuigiConfigNodesService } from './luigi-config-nodes.service.js';
 import { mock } from 'jest-mock-extended';
 
 describe('LuigiConfigNodesService', () => {

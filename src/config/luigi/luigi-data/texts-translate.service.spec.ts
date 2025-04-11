@@ -1,5 +1,5 @@
-import { LuigiConfigFragment } from '../../model/content-configuration';
-import { TextsTranslateService } from './texts-translate.service';
+import { LuigiConfigFragment } from '../../model/content-configuration.js';
+import { TextsTranslateService } from './texts-translate.service.js';
 
 describe('TextsTranslateService', () => {
   let service: TextsTranslateService;

@@ -1,9 +1,9 @@
-import { EnvService, ServerAuthVariables } from '../env/env.service';
-import { CookiesService } from '../services';
+import { EnvService, ServerAuthVariables } from '../env/env.service.js';
+import { CookiesService } from '../services/index.js';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { catchError, firstValueFrom } from 'rxjs';
 
 export interface AuthTokenData {

@@ -1,11 +1,11 @@
-import { RawServiceProvider } from '../../context/service-provider';
+import { RawServiceProvider } from '../../context/service-provider.js';
 import {
   LuigiConfigData,
   LuigiConfigFragment,
-} from '../../model/content-configuration';
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
-import { ConfigTransferNodeService } from './config-transfer-node.service';
-import { IntentResolveService } from './intent-resolve.service';
+} from '../../model/content-configuration.js';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { ConfigTransferNodeService } from './config-transfer-node.service.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 
 describe('ConfigTransferNodeService', () => {
   let service: ConfigTransferNodeService;

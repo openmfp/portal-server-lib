@@ -1,21 +1,22 @@
 import {
+  ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
-} from '../injection-tokens';
-import { PortalModule } from '../portal.module';
-import { HeaderParserService } from '../services';
-import { ConfigController } from './config.controller';
+} from '../injection-tokens.js';
+import { PortalModule } from '../portal.module.js';
+import { HeaderParserService } from '../services/index.js';
+import { ConfigController } from './config.controller.js';
 import {
   EntityAccessForbiddenException,
   EntityNotFoundException,
-} from './context/entity-context-provider';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider';
-import { PortalContextProvider } from './context/portal-context-provider';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { ServiceProvider } from './model/luigi.node';
+} from './context/entity-context-provider.js';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
+import { PortalContextProvider } from './context/portal-context-provider.js';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
+import { ServiceProvider } from './model/luigi.node.js';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 
 const MockEntityProvider = 'MockEntityProvider';

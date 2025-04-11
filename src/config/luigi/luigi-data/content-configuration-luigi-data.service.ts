@@ -1,14 +1,15 @@
-import { RawServiceProvider } from '../../context/service-provider';
+import { RawServiceProvider } from '../../context/service-provider.js';
 import {
-  LuigiAppConfig,
+  ContentConfiguration,
   LuigiConfigData,
+  LuigiAppConfig,
   LuigiNodeDefaults,
-} from '../../model/content-configuration';
-import { LuigiNode } from '../../model/luigi.node';
-import { ConfigTransferNodeService } from './config-transfer-node.service';
-import { LuigiDataService } from './luigi-data.service';
-import { NodeExtendedDataService } from './node-extended-data.service';
-import { TextsTranslateService } from './texts-translate.service';
+} from '../../model/content-configuration.js';
+import { LuigiNode } from '../../model/luigi.node.js';
+import { ConfigTransferNodeService } from './config-transfer-node.service.js';
+import { LuigiDataService } from './luigi-data.service.js';
+import { NodeExtendedDataService } from './node-extended-data.service.js';
+import { TextsTranslateService } from './texts-translate.service.js';
 import { Injectable } from '@nestjs/common';
 import * as URI from 'uri-js';
 import { URIComponents } from 'uri-js';

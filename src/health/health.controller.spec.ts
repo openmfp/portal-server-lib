@@ -1,8 +1,8 @@
-import { DiscoveryService } from '../env';
-import { EnvService } from '../env/env.service';
-import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
-import { HealthChecker } from './health-checker';
-import { HealthController } from './health.controller';
+import { DiscoveryService } from '../env/index.js';
+import { EnvService } from '../env/index.js';
+import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens.js';
+import { HealthChecker } from './health-checker.js';
+import { HealthController } from './health.controller.js';
 import { HttpModule } from '@nestjs/axios';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

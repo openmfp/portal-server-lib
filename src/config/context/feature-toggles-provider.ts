@@ -1,4 +1,4 @@
-import { EnvService } from '../../env/env.service';
+import { EnvService } from '../../env/env.service.js';
 import { Injectable } from '@nestjs/common';
 
 export interface FeatureTogglesProvider {

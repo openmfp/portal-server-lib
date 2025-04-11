@@ -1,4 +1,4 @@
-import { AuthTokenService, PortalModule } from '../src';
+import { AuthTokenService, PortalModule } from '../src/index.js';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';

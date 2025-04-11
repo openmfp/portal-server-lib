@@ -1,4 +1,4 @@
-const baseConfig = {
+module.exports = {
   testEnvironment: 'node',
   coverageReporters: ['text', 'cobertura', 'lcov'],
   transform: {
@@ -9,6 +9,7 @@ const baseConfig = {
       },
     ],
   },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 };
-
-export { baseConfig };

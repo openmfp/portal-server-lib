@@ -2,19 +2,19 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
-} from '../injection-tokens';
-import { HeaderParserService } from '../services';
+} from '../injection-tokens.js';
+import { HeaderParserService } from '../services/index.js';
 import {
   EntityAccessForbiddenException,
   EntityContextProvider,
   EntityContextProviders,
   EntityNotFoundException,
-} from './context/entity-context-provider';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider';
-import { PortalContextProvider } from './context/portal-context-provider';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { EntityParams } from './model/entity';
-import { PortalConfig } from './model/luigi.node';
+} from './context/entity-context-provider.js';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
+import { PortalContextProvider } from './context/portal-context-provider.js';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
+import { EntityParams } from './model/entity.js';
+import { PortalConfig } from './model/luigi.node.js';
 import {
   Controller,
   ForbiddenException,
@@ -26,9 +26,10 @@ import {
   Param,
   Req,
   Res,
+  Optional,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Controller('/rest/config')
 export class ConfigController {

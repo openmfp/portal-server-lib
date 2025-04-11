@@ -1,10 +1,10 @@
-import { AuthController } from './auth';
-import { ConfigController } from './config';
-import { EnvController } from './env';
-import { HealthController } from './health';
-import { LocalNodesController } from './local-nodes';
-import { LogoutController } from './logout';
-import { PortalModule } from './portal.module';
+import { AuthController } from './auth/index.js';
+import { ConfigController } from './config/index.js';
+import { EnvController } from './env/index.js';
+import { HealthController } from './health/index.js';
+import { LocalNodesController } from './local-nodes/index.js';
+import { LogoutController } from './logout/index.js';
+import { PortalModule } from './portal.module.js';
 import { DynamicModule, Provider } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
