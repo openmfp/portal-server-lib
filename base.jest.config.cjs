@@ -1,4 +1,5 @@
-const baseConfig = {
+module.exports = {
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   coverageReporters: ['text', 'cobertura', 'lcov'],
   transform: {
@@ -9,6 +10,12 @@ const baseConfig = {
       },
     ],
   },
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
 };
-
-export { baseConfig };

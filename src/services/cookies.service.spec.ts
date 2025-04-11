@@ -1,6 +1,6 @@
-import { AuthTokenData } from '../auth/auth-token.service';
+import { AuthTokenData } from '../auth/auth-token.service.js';
 import { CookiesService } from './cookies.service.js';
-import { Test } from '@nestjs/testing';
+import {Test, TestingModule} from '@nestjs/testing';
 import type { Request, Response } from 'express';
 
 describe('CookiesService', () => {
