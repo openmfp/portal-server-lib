@@ -116,7 +116,11 @@ export class AuthTokenService {
     if (env.isLocal) {
       redirectionUrl = `http://localhost:${env.localFrontendPort}`;
     } else {
-      redirectionUrl = `https://${request.hostname}`;
+      if (env.localFrontendPort !== "80" && env.localFrontendPort !== "443") {
+        redirectionUrl = `https://${request.hostname}:${env.localFrontendPort}`;
+      } else {
+        redirectionUrl = `https://${request.hostname}`;
+      }
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }
