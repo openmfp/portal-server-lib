@@ -1,7 +1,7 @@
 import {
   Dictionary,
   LuigiConfigFragment,
-} from '../../model/content-configuration';
+} from '../../model/content-configuration.js';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

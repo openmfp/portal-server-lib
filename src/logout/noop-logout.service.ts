@@ -1,6 +1,6 @@
-import { LogoutCallback } from './logout-callback';
+import { LogoutCallback } from './logout-callback.js';
 import { Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 @Injectable()
 export class NoopLogoutService implements LogoutCallback {

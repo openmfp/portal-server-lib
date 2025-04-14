@@ -4,7 +4,7 @@ import {
   ContentConfigurationValidatorService,
   LuigiNode,
   ValidationResult,
-} from '../config';
+} from '../config/index.js';
 import {
   Body,
   Controller,
@@ -15,7 +15,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
-import { Response } from 'express';
+import type { Response as ExpressResponse } from 'express';
 
 export class ConfigDto {
   @IsString()
@@ -44,7 +44,7 @@ export class LocalNodesController {
   @Post()
   async getLocalNodes(
     @Body() config: ConfigDto,
-    @Res({ passthrough: true }) response: Response,
+    @Res({ passthrough: true }) response: ExpressResponse,
   ): Promise<TransformResult> {
     const validationResultsErrors = await this.validate(
       config.contentConfigurations,

@@ -1,6 +1,6 @@
-import { DiscoveryService } from './discovery.service';
+import { DiscoveryService } from './discovery.service.js';
 import { Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 export interface ServerAuthVariables {
   oauthServerUrl: string;

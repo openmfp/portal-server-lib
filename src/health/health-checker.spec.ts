@@ -1,4 +1,4 @@
-import { EmptyHealthChecker, HealthChecker } from './health-checker';
+import { EmptyHealthChecker, HealthChecker } from './health-checker.js';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('EmptyHealthChecker', () => {

@@ -73,5 +73,6 @@
     "typescript": "5.8.2",
     "wait-on": "^8.0.0",
     "yalc": "^1.0.0-pre.53"
-  }
+  },
+  "type": "module"
 }

@@ -9,12 +9,12 @@ import {
 import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
 import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
 import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
-import { ConfigDto, LocalNodesController } from './local-nodes.controller';
+import { ConfigDto, LocalNodesController } from './local-nodes.controller.js';
 import { HttpModule } from '@nestjs/axios';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 
 describe('LocalNodesController', () => {

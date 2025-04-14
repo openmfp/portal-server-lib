@@ -1,8 +1,8 @@
-import { EnvService } from '../../env/env.service';
+import { EnvService } from '../../env/env.service.js';
 import {
   EnvFeatureTogglesProvider,
   FeatureTogglesProvider,
-} from './feature-toggles-provider';
+} from './feature-toggles-provider.js';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('EnvFeatureTogglesProvider', () => {

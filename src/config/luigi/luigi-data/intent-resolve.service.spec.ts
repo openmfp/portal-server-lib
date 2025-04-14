@@ -1,5 +1,5 @@
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
-import { IntentResolveService } from './intent-resolve.service';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 
 describe('IntentResolveService', () => {
   let service: IntentResolveService;

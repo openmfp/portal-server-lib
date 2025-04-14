@@ -1,5 +1,5 @@
-import { ServiceProvider } from '../model/luigi.node';
-import { Request, Response } from 'express';
+import { ServiceProvider } from '../model/luigi.node.js';
+import type { Request, Response } from 'express';
 
 export interface PortalContextProvider {
   getContextValues(
