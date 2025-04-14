@@ -159,7 +159,7 @@ describe('AuthTokenService', () => {
           .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
-            redirect_uri: `https://example.com/callback?storageType=none`,
+            redirect_uri: `https://example.com:4300/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
