@@ -18,5 +18,5 @@ export default tsPlugin.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
     },
-  }
+  },
 );

@@ -1,5 +1,5 @@
-import { ContentConfiguration } from '../model/content-configuration';
-import { StackSearch } from '../model/luigi.node';
+import { ContentConfiguration } from '../model/content-configuration.js';
+import { StackSearch } from '../model/luigi.node.js';
 
 export interface HelpCenterData {
   stackSearch?: StackSearch;
@@ -28,7 +28,7 @@ export interface ServiceProviderService {
   getServiceProviders(
     token: string,
     entities: string[],
-    context: Record<string, any>
+    context: Record<string, any>,
   ): Promise<ServiceProviderResponse>;
 }
 

@@ -1,12 +1,12 @@
-import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import {
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   PortalModule,
   PortalModuleOptions,
 } from '../src';
+import { Test, TestingModuleBuilder } from '@nestjs/testing';
 
 function integrationTestModule(
-  options: PortalModuleOptions
+  options: PortalModuleOptions,
 ): TestingModuleBuilder {
   const moduleFixture: TestingModuleBuilder = Test.createTestingModule({
     imports: [PortalModule.create({})],

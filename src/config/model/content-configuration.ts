@@ -1,6 +1,6 @@
-import { HelpContext, LuigiNode } from './luigi.node';
-import { BreadcrumbBadge } from './breadcrumb-badge';
-import { LuigiUserSettings } from './luigi-user-settings';
+import { BreadcrumbBadge } from './breadcrumb-badge.js';
+import { LuigiUserSettings } from './luigi-user-settings.js';
+import { HelpContext, LuigiNode } from './luigi.node.js';
 
 export interface LuigiNodeDefaults {
   entityType?: string;

@@ -1,7 +1,7 @@
+import { LuigiConfigData } from '../../model/content-configuration.js';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 import { Injectable } from '@nestjs/common';
-import { LuigiConfigData } from '../../model/content-configuration';
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
-import { IntentResolveService } from './intent-resolve.service';
 
 @Injectable()
 export class ConfigTransferNodeService {
@@ -10,7 +10,7 @@ export class ConfigTransferNodeService {
   transferConfig(
     nodes: LuigiNode[],
     luigiConfigData: LuigiConfigData,
-    urlTemplateUrl: string
+    urlTemplateUrl: string,
   ): void {
     if (nodes.length > 0) {
       const configTransferNode = nodes[0];
@@ -29,7 +29,7 @@ export class ConfigTransferNodeService {
             if (group.viewUrl && !this.isAbsoluteUrl(group.viewUrl)) {
               group.viewUrl = `${urlTemplateUrl}${group.viewUrl}`;
             }
-          }
+          },
         );
       }
 

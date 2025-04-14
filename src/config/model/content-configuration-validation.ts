@@ -1,4 +1,4 @@
-import { ContentConfiguration } from './content-configuration';
+import { ContentConfiguration } from './content-configuration.js';
 
 export enum ContentType {
   JSON = 'JSON',

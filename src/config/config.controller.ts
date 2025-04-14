@@ -1,34 +1,35 @@
 import {
-  Controller,
-  Get,
-  Headers,
-  Inject,
-  Param,
-  Req,
-  Res,
-  NotFoundException,
-  ForbiddenException,
-  Logger,
-} from '@nestjs/common';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service';
-import { Request, Response } from 'express';
-import { HeaderParserService } from '../services';
-import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
-} from '../injection-tokens';
-import { PortalContextProvider } from './context/portal-context-provider';
-import { EntityParams } from './model/entity';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider';
+} from '../injection-tokens.js';
+import { HeaderParserService } from '../services/index.js';
 import {
   EntityAccessForbiddenException,
   EntityContextProvider,
   EntityContextProviders,
   EntityNotFoundException,
-} from './context/entity-context-provider';
+} from './context/entity-context-provider.js';
+import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
+import { PortalContextProvider } from './context/portal-context-provider.js';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
+import { EntityParams } from './model/entity.js';
+import { PortalConfig } from './model/luigi.node.js';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Headers,
+  Inject,
+  Logger,
+  NotFoundException,
+  Param,
+  Req,
+  Res,
+  Optional,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { PortalConfig } from './model/luigi.node';
+import type { Request, Response } from 'express';
 
 @Controller('/rest/config')
 export class ConfigController {
@@ -44,7 +45,7 @@ export class ConfigController {
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)
     private featureTogglesProvider: FeatureTogglesProvider,
-    moduleRef: ModuleRef
+    moduleRef: ModuleRef,
   ) {
     for (const [entity, eCP] of Object.entries(entityContextProviders)) {
       this.entityContextProviders[entity] = moduleRef.get(eCP);
@@ -55,7 +56,7 @@ export class ConfigController {
   async getConfig(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-    @Headers('Accept-language') acceptLanguage: string
+    @Headers('Accept-language') acceptLanguage: string,
   ): Promise<PortalConfig> {
     const token = this.headerParser.extractBearerToken(request);
 
@@ -81,10 +82,10 @@ export class ConfigController {
       });
 
     const featureToggles = ConfigController.getOrThrow(
-      await featureTogglePromise
+      await featureTogglePromise,
     );
     const portalContext = ConfigController.getOrThrow(
-      await portalContextPromise
+      await portalContextPromise,
     );
     const providers = ConfigController.getOrThrow(await providersPromise);
 
@@ -100,7 +101,7 @@ export class ConfigController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
     @Param() params: EntityParams,
-    @Headers('Accept-language') acceptLanguage: string
+    @Headers('Accept-language') acceptLanguage: string,
   ) {
     const token = this.headerParser.extractBearerToken(request);
 

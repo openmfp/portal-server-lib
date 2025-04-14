@@ -1,5 +1,5 @@
-import { IntentResolveService } from './intent-resolve.service';
-import { LuigiNode, CrossNavigationInbounds } from '../../model/luigi.node';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 
 describe('IntentResolveService', () => {
   let service: IntentResolveService;
@@ -66,7 +66,7 @@ describe('IntentResolveService', () => {
 
       const result = (service as any).resolveIntentTargetsAndEntityPath(
         nodes,
-        inbounds
+        inbounds,
       );
 
       expect(result).toEqual({ intentMappings: [], entityRelativePaths: {} });
@@ -99,7 +99,7 @@ describe('IntentResolveService', () => {
 
       const result = (service as any).resolveIntentTargetsAndEntityPath(
         nodes,
-        inbounds
+        inbounds,
       );
 
       expect(result.intentMappings?.length).toBe(2);

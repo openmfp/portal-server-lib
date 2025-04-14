@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
 import {
-  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
-} from '../../../injection-tokens';
-import { ServiceProvider } from '../../model/luigi.node';
+  LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+} from '../../../injection-tokens.js';
 import {
   RawServiceProvider,
   ServiceProviderService,
-} from '../../context/service-provider';
-import { LuigiDataService } from '../luigi-data/luigi-data.service';
+} from '../../context/service-provider.js';
+import { ServiceProvider } from '../../model/luigi.node.js';
+import { LuigiDataService } from '../luigi-data/luigi-data.service.js';
+import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class LuigiConfigNodesService {
@@ -16,37 +16,37 @@ export class LuigiConfigNodesService {
     @Inject(SERVICE_PROVIDER_INJECTION_TOKEN)
     private serviceProviderService: ServiceProviderService,
     @Inject(LUIGI_DATA_SERVICE_INJECTION_TOKEN)
-    private luigiDataService: LuigiDataService
+    private luigiDataService: LuigiDataService,
   ) {}
 
   async getNodes(
     token: string,
     entities: string[],
     acceptLanguage: string,
-    context?: Record<string, any>
+    context?: Record<string, any>,
   ): Promise<ServiceProvider[]> {
     const providerResponse =
       await this.serviceProviderService.getServiceProviders(
         token,
         entities,
-        context
+        context,
       );
     return this.getNodesFromProvider(
       providerResponse.rawServiceProviders,
-      acceptLanguage
+      acceptLanguage,
     );
   }
 
   async getNodesFromProvider(
     rawServiceProviders: RawServiceProvider[],
-    acceptLanguage: string
+    acceptLanguage: string,
   ): Promise<ServiceProvider[]> {
     const promises = rawServiceProviders.map((rawProvider) =>
       this.luigiDataService.getLuigiData(rawProvider, acceptLanguage).then(
         (nodes) => ({ nodes, rawProvider }),
         (error) =>
-          console.error("[ERROR] Couldn't create nodes", rawProvider, error)
-      )
+          console.error("[ERROR] Couldn't create nodes", rawProvider, error),
+      ),
     );
 
     const luigiDataPromises = await Promise.allSettled(promises);

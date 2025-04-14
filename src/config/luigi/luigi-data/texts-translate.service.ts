@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
 import {
   Dictionary,
   LuigiConfigFragment,
-} from '../../model/content-configuration';
+} from '../../model/content-configuration.js';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TextsTranslateService {
   translateTexts(
     luigiConfigFragment: LuigiConfigFragment,
-    language: string
+    language: string,
   ): void {
     if (
       !luigiConfigFragment.data.texts ||
@@ -20,7 +20,7 @@ export class TextsTranslateService {
     let configurationString = JSON.stringify(luigiConfigFragment.data);
     const { textDictionary } = this.findMatchedDictionary(
       luigiConfigFragment.data.texts,
-      language
+      language,
     );
 
     textDictionary &&
@@ -28,7 +28,7 @@ export class TextsTranslateService {
         const searchRegExp = new RegExp(`{{${key}}}`, 'g');
         configurationString = configurationString.replace(
           searchRegExp,
-          value.toString()
+          value.toString(),
         );
       });
 
@@ -37,7 +37,7 @@ export class TextsTranslateService {
 
   private findMatchedDictionary(
     textsObject: Dictionary[],
-    language: string
+    language: string,
   ): Dictionary {
     const defaultDict = textsObject.find((obj) => !obj.locale);
 

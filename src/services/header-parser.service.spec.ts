@@ -1,8 +1,8 @@
-import { mock } from 'jest-mock-extended';
-import { Test, TestingModule } from '@nestjs/testing';
 import { PortalModule } from '../portal.module';
-import { HeaderParserService } from './header-parser.service';
-import { Request } from 'express';
+import { HeaderParserService } from './header-parser.service.js';
+import { Test, TestingModule } from '@nestjs/testing';
+import type { Request } from 'express';
+import { mock } from 'jest-mock-extended';
 
 describe('HeaderParserService', () => {
   let service: HeaderParserService;

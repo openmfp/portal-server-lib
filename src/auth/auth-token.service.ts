@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { EnvService, ServerAuthVariables } from '../env/env.service';
-import { Request, Response } from 'express';
+import { EnvService, ServerAuthVariables } from '../env/env.service.js';
+import { CookiesService } from '../services/index.js';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
+import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import { CookiesService } from '../services';
+import type { Request, Response } from 'express';
+import { catchError, firstValueFrom } from 'rxjs';
 
 export interface AuthTokenData {
   access_token: string;
@@ -21,7 +21,7 @@ export class AuthTokenService {
   constructor(
     private envService: EnvService,
     private httpService: HttpService,
-    private cookiesService: CookiesService
+    private cookiesService: CookiesService,
   ) {}
 
   /**
@@ -33,7 +33,7 @@ export class AuthTokenService {
   public async exchangeTokenForCode(
     request: Request,
     response: Response,
-    code: string
+    code: string,
   ): Promise<AuthTokenData> {
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
     const redirectUri = this.getRedirectUri(request);
@@ -56,7 +56,7 @@ export class AuthTokenService {
   public async exchangeTokenForRefreshToken(
     request: Request,
     response: Response,
-    refreshToken: string
+    refreshToken: string,
   ): Promise<AuthTokenData> {
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
 
@@ -71,10 +71,10 @@ export class AuthTokenService {
     request: Request,
     response: Response,
     currentAuthEnv: ServerAuthVariables,
-    body: URLSearchParams
+    body: URLSearchParams,
   ): Promise<AuthTokenData> {
     const authorization = `${Buffer.from(
-      `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`
+      `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`,
     ).toString('base64')}`;
 
     const tokenFetchResult = await firstValueFrom(
@@ -89,10 +89,10 @@ export class AuthTokenService {
         .pipe(
           catchError((e: AxiosError) => {
             throw new Error(
-              `Error response from auth token server: ${e.toString()}`
+              `Error response from auth token server: ${e.toString()}`,
             );
-          })
-        )
+          }),
+        ),
     );
 
     if (tokenFetchResult.status === 200) {
@@ -101,7 +101,7 @@ export class AuthTokenService {
     }
 
     throw new Error(
-      `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`
+      `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`,
     );
   }
 
@@ -116,7 +116,8 @@ export class AuthTokenService {
     if (env.isLocal) {
       redirectionUrl = `http://localhost:${env.localFrontendPort}`;
     } else {
-      redirectionUrl = `https://${request.hostname}`;
+      let isStandardPort = env.localFrontendPort === "80" || env.localFrontendPort === "443"
+      redirectionUrl = `https://${request.hostname}${isStandardPort ? '' : `:${env.localFrontendPort}`}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }

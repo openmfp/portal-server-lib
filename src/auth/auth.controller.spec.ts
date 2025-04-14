@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
+import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import { PortalModule } from '../portal.module.js';
+import { CookiesService } from '../services/index.js';
+import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import { AuthCallback } from './auth.callback.js';
+import { AuthController } from './auth.controller.js';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CookiesService } from '../services';
-import { AuthController } from './auth.controller';
-import { PortalModule } from '../portal.module';
-import { AuthCallback } from './auth.callback';
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens';
-import { AuthTokenData, AuthTokenService } from './auth-token.service';
+import type { Request, Response } from 'express';
+import { mock } from 'jest-mock-extended';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -44,7 +44,7 @@ describe('AuthController', () => {
       const callback = jest.spyOn(authCallbackMock, 'handleSuccess');
       const getTokenForCode = jest.spyOn(
         authTokenServiceMock,
-        'exchangeTokenForCode'
+        'exchangeTokenForCode',
       );
       requestMock.query = { code: 'foo' };
       const idToken = 'id_token';
@@ -63,12 +63,12 @@ describe('AuthController', () => {
       expect(callback).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        authTokenResponse
+        authTokenResponse,
       );
       expect(getTokenForCode).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        'foo'
+        'foo',
       );
       expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
     });
@@ -77,7 +77,7 @@ describe('AuthController', () => {
       // arrange
       const getTokenForCode = jest.spyOn(
         authTokenServiceMock,
-        'exchangeTokenForCode'
+        'exchangeTokenForCode',
       );
       requestMock.query = { code: 'foo' };
       getTokenForCode.mockRejectedValue(new Error('error'));
@@ -90,7 +90,7 @@ describe('AuthController', () => {
       expect(getTokenForCode).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        'foo'
+        'foo',
       );
     });
 
@@ -108,7 +108,7 @@ describe('AuthController', () => {
       //
       expect(response).toBeUndefined();
       expect(
-        authTokenServiceMock.exchangeTokenForRefreshToken
+        authTokenServiceMock.exchangeTokenForRefreshToken,
       ).not.toHaveBeenCalled();
     });
 
@@ -116,7 +116,7 @@ describe('AuthController', () => {
       // arrange
       const exchangeTokenForRefreshToken = jest.spyOn(
         authTokenServiceMock,
-        'exchangeTokenForRefreshToken'
+        'exchangeTokenForRefreshToken',
       );
       const getAuthCookie = jest.spyOn(cookiesServiceMock, 'getAuthCookie');
       getAuthCookie.mockReturnValue('authCookie');
@@ -137,12 +137,12 @@ describe('AuthController', () => {
       expect(callback).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        authTokenResponse
+        authTokenResponse,
       );
       expect(exchangeTokenForRefreshToken).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        'authCookie'
+        'authCookie',
       );
       expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
     });
@@ -152,10 +152,10 @@ describe('AuthController', () => {
       const logoutRedirectUrl = 'logoutRedirectUrl';
       cookiesServiceMock.getAuthCookie.mockReturnValue('authCookie');
       authTokenServiceMock.exchangeTokenForRefreshToken.mockRejectedValue(
-        new Error('error')
+        new Error('error'),
       );
       authCallbackMock.handleFailure.mockRejectedValue(
-        new Error('handleFailure')
+        new Error('handleFailure'),
       );
 
       // act
@@ -166,13 +166,13 @@ describe('AuthController', () => {
       expect(authCallbackMock.handleSuccess).not.toHaveBeenCalled();
       expect(authCallbackMock.handleFailure).toHaveBeenCalledWith(
         requestMock,
-        responseMock
+        responseMock,
       );
       expect(
-        authTokenServiceMock.exchangeTokenForRefreshToken
+        authTokenServiceMock.exchangeTokenForRefreshToken,
       ).toHaveBeenCalledWith(requestMock, responseMock, 'authCookie');
       expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
-        responseMock
+        responseMock,
       );
     });
   });

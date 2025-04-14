@@ -1,4 +1,4 @@
-import { PortalContextProvider } from './portal-context-provider';
+import { PortalContextProvider } from './portal-context-provider.js';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

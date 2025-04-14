@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HealthController } from './health.controller';
-import { EnvService } from '../env/env.service';
-import { mock, MockProxy } from 'jest-mock-extended';
-import { Logger } from '@nestjs/common';
-import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens';
-import { HealthChecker } from './health-checker';
+import { DiscoveryService } from '../env/index.js';
+import { EnvService } from '../env/index.js';
+import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens.js';
+import { HealthChecker } from './health-checker.js';
+import { HealthController } from './health.controller.js';
 import { HttpModule } from '@nestjs/axios';
-import { DiscoveryService } from '../env';
+import { Logger } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MockProxy, mock } from 'jest-mock-extended';
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -54,7 +54,7 @@ describe('HealthController', () => {
       healthChecker.isHealthy.mockResolvedValue(false);
 
       await expect(controller.getHealth()).rejects.toThrow(
-        'Application health checker reported not healthy'
+        'Application health checker reported not healthy',
       );
     });
 
@@ -62,7 +62,7 @@ describe('HealthController', () => {
       healthChecker.isHealthy.mockReturnValue(Promise.reject());
 
       await expect(controller.getHealth()).rejects.toThrow(
-        'Application health checker reported not healthy'
+        'Application health checker reported not healthy',
       );
     });
 
@@ -80,7 +80,7 @@ describe('HealthController', () => {
       healthChecker.isHealthy.mockReturnValue(Promise.resolve(false));
 
       await expect(controller.getHealth()).rejects.toThrow(
-        'Application health checker reported not healthy'
+        'Application health checker reported not healthy',
       );
 
       // be healthy again
@@ -98,7 +98,7 @@ describe('HealthController', () => {
       await Promise.resolve();
 
       await expect(controller.getHealth()).rejects.toThrow(
-        'Application health checker reported not healthy'
+        'Application health checker reported not healthy',
       );
     });
   });

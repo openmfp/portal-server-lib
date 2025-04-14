@@ -1,7 +1,7 @@
+import { AuthTokenService, PortalModule } from '../src/index.js';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { PortalModule, AuthTokenService } from '../src';
 
 describe('AuthController', () => {
   let app: INestApplication;
@@ -32,7 +32,7 @@ describe('AuthController', () => {
         .expect(400)
         .expect((response) => {
           expect(response.body.message).toEqual(
-            "No 'code' was provided in the query."
+            "No 'code' was provided in the query.",
           );
         });
     });

@@ -1,7 +1,7 @@
-import { RawServiceProvider } from '../../context/service-provider';
-import { HelpContext, LuigiNode } from '../../model/luigi.node';
-import { BreadcrumbBadge } from '../../model/breadcrumb-badge';
-import { NodeExtendedDataService } from './node-extended-data.service';
+import { RawServiceProvider } from '../../context/service-provider.js';
+import { BreadcrumbBadge } from '../../model/breadcrumb-badge.js';
+import { HelpContext, LuigiNode } from '../../model/luigi.node.js';
+import { NodeExtendedDataService } from './node-extended-data.service.js';
 
 describe('NodeExtendedDataService', () => {
   let service: NodeExtendedDataService;
@@ -37,7 +37,7 @@ describe('NodeExtendedDataService', () => {
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result).toEqual({
@@ -82,7 +82,7 @@ describe('NodeExtendedDataService', () => {
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result).toEqual({
@@ -138,7 +138,7 @@ describe('NodeExtendedDataService', () => {
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result).toEqual({
@@ -170,7 +170,7 @@ describe('NodeExtendedDataService', () => {
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result).toEqual({
@@ -194,7 +194,7 @@ describe('NodeExtendedDataService', () => {
       };
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result).toEqual({ label: 'Node', context: {} });
@@ -221,7 +221,7 @@ describe('NodeExtendedDataService', () => {
 
       const result = service.addExtendedDataToChildrenRecursively(
         node,
-        rawProvider
+        rawProvider,
       );
 
       expect(result.isMissingMandatoryData).toBe(true);

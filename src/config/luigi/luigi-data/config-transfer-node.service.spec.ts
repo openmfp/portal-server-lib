@@ -1,11 +1,11 @@
-import { RawServiceProvider } from '../../context/service-provider';
+import { RawServiceProvider } from '../../context/service-provider.js';
 import {
   LuigiConfigData,
   LuigiConfigFragment,
-} from '../../model/content-configuration';
-import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node';
-import { ConfigTransferNodeService } from './config-transfer-node.service';
-import { IntentResolveService } from './intent-resolve.service';
+} from '../../model/content-configuration.js';
+import { CrossNavigationInbounds, LuigiNode } from '../../model/luigi.node.js';
+import { ConfigTransferNodeService } from './config-transfer-node.service.js';
+import { IntentResolveService } from './intent-resolve.service.js';
 
 describe('ConfigTransferNodeService', () => {
   let service: ConfigTransferNodeService;
@@ -63,15 +63,15 @@ describe('ConfigTransferNodeService', () => {
       service.transferConfig(
         luigiConfigFragment.data.nodes,
         luigiConfigFragment.data,
-        'https://app.example.com'
+        'https://app.example.com',
       );
 
       expect(
-        luigiConfigFragment.data.nodes[0]._userSettingsConfig
+        luigiConfigFragment.data.nodes[0]._userSettingsConfig,
       ).toBeDefined();
       expect(
         luigiConfigFragment.data.nodes[0]._userSettingsConfig.groups.general
-          .viewUrl
+          .viewUrl,
       ).toBe('https://app.example.com/settings');
     });
 
@@ -150,7 +150,7 @@ describe('ConfigTransferNodeService', () => {
 
       expect(intentResolveServiceMock.resolve).toHaveBeenCalledWith(
         nodes,
-        luigiConfigData.targetAppConfig?.crossNavigation?.inbounds
+        luigiConfigData.targetAppConfig?.crossNavigation?.inbounds,
       );
     });
   });

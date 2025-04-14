@@ -1,4 +1,10 @@
-import { Response } from 'express';
+import {
+  ContentConfiguration,
+  ContentConfigurationLuigiDataService,
+  ContentConfigurationValidatorService,
+  LuigiNode,
+  ValidationResult,
+} from '../config/index.js';
 import {
   Body,
   Controller,
@@ -8,14 +14,8 @@ import {
   Post,
   Res,
 } from '@nestjs/common';
-import {
-  ContentConfiguration,
-  ContentConfigurationLuigiDataService,
-  ContentConfigurationValidatorService,
-  LuigiNode,
-  ValidationResult,
-} from '../config';
 import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import type { Response as ExpressResponse } from 'express';
 
 export class ConfigDto {
   @IsString()
@@ -38,16 +38,16 @@ export class LocalNodesController {
   constructor(
     private logger: Logger,
     private contentConfigurationValidatorService: ContentConfigurationValidatorService,
-    private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService
+    private contentConfigurationLuigiDataService: ContentConfigurationLuigiDataService,
   ) {}
 
   @Post()
   async getLocalNodes(
     @Body() config: ConfigDto,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) response: ExpressResponse,
   ): Promise<TransformResult> {
     const validationResultsErrors = await this.validate(
-      config.contentConfigurations
+      config.contentConfigurations,
     );
     if (validationResultsErrors.length) {
       return { errors: validationResultsErrors };
@@ -62,30 +62,30 @@ export class LocalNodesController {
             contentConfiguration: config.contentConfigurations,
             creationTimestamp: Date.now().toString(),
           },
-          config.language
+          config.language,
         ),
       };
     } catch (e: any) {
       this.logger.error(`Could not process local content configuration: ${e}`);
       throw new HttpException(
         'Could not process local content configuration',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
   private async validate(
-    contentConfigurations: ContentConfiguration[]
+    contentConfigurations: ContentConfiguration[],
   ): Promise<ValidationResult[]> {
     const validationResults =
       await this.contentConfigurationValidatorService.validateContentConfigurations(
-        contentConfigurations
+        contentConfigurations,
       );
 
     return validationResults.filter(
       (validationResult) =>
         validationResult.validationErrors &&
-        validationResult.validationErrors.length
+        validationResult.validationErrors.length,
     );
   }
 }

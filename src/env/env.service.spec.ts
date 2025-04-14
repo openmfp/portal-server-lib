@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { mock } from 'jest-mock-extended';
-import { EnvService } from './env.service';
-import { Request } from 'express';
 import { DiscoveryService } from '.';
+import { EnvService } from './env.service.js';
+import { Test, TestingModule } from '@nestjs/testing';
+import type { Request } from 'express';
+import { mock } from 'jest-mock-extended';
 
 describe('EnvService', () => {
   let service: EnvService;
@@ -154,7 +154,7 @@ describe('EnvService', () => {
 
       const discoveryServiceMockGetOIDC = jest.spyOn(
         discoveryServiceMock,
-        'getOIDC'
+        'getOIDC',
       );
       discoveryServiceMockGetOIDC.mockResolvedValue({
         authorization_endpoint: 'example.com/authorization_endpoint',
@@ -165,7 +165,7 @@ describe('EnvService', () => {
       const envWithAuth = await service.getCurrentAuthEnv(request);
 
       expect(envWithAuth.oauthServerUrl).toEqual(
-        'example.com/authorization_endpoint'
+        'example.com/authorization_endpoint',
       );
       expect(envWithAuth.oauthTokenUrl).toEqual('example.com/token_endpoint');
     });
@@ -176,7 +176,7 @@ describe('EnvService', () => {
 
       const discoveryServiceMockGetOIDC = jest.spyOn(
         discoveryServiceMock,
-        'getOIDC'
+        'getOIDC',
       );
       discoveryServiceMockGetOIDC.mockResolvedValue(null);
 
@@ -255,7 +255,7 @@ describe('EnvService', () => {
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
       await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        "the idp 'not-existing' is not configured!"
+        "the idp 'not-existing' is not configured!",
       );
     });
 
@@ -272,7 +272,7 @@ describe('EnvService', () => {
       request.hostname = 'app-too.foo.com';
 
       await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'"
+        "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
       );
     });
 
@@ -281,7 +281,7 @@ describe('EnvService', () => {
       request.hostname = 'not-configured.app.k8s.ondemand.com';
 
       await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false"
+        "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false",
       );
     });
   });
