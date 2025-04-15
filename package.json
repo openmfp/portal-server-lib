@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.148.6",
+  "version": "0.148.7",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
