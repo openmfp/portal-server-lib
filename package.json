@@ -66,11 +66,11 @@
     "prettier": "^3.2.0",
     "rimraf": "^6.0.1",
     "supertest": "7.1.0",
-    "ts-jest": "29.3.0",
+    "ts-jest": "29.3.2",
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.8.2",
+    "typescript": "5.8.3",
     "wait-on": "^8.0.0",
     "yalc": "^1.0.0-pre.53"
   },
