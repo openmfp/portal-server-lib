@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 
 export interface ServerAuthVariables {
+  idpName: string;
+  baseDomain: string;
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -11,10 +13,13 @@ export interface ServerAuthVariables {
 
 export interface EnvVariables {
   idpNames?: string[];
+  oauthServerUrl?: string;
+  oauthTokenUrl?: string;
+  clientId?: string;
   logoutRedirectUrl?: string;
   healthCheckInterval?: number;
   isLocal?: boolean;
-  localFrontendPort?: string;
+  frontendPort?: string;
   developmentInstance?: boolean;
   validWebcomponentUrls?: string[];
 }
@@ -35,7 +40,7 @@ export class EnvService {
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
-      localFrontendPort: process.env.FRONTEND_PORT || '4300',
+      frontendPort: process.env.FRONTEND_PORT || '4300',
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
         ',',
       ),
@@ -56,15 +61,16 @@ export class EnvService {
     return result;
   }
 
-  public async getCurrentAuthEnv(
-    request: Request,
-  ): Promise<ServerAuthVariables> {
+  public getDomain(request: Request) {
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
       (x) => x.baseDomain === request.hostname,
     );
     if (defaultTenant) {
-      return await this.getAuthEnv(defaultTenant.idpName);
+      return {
+        idpName: defaultTenant.idpName,
+        domain: defaultTenant.baseDomain,
+      };
     }
 
     for (const baseDomainToIdp of baseDomainsToIdps) {
@@ -74,8 +80,47 @@ export class EnvService {
         continue;
       }
 
+      let subDomainIdpName = regExpExecArray[1];
+      return {
+        idpName: subDomainIdpName,
+        domain: subDomainIdpName,
+      };
+    }
+    return {};
+  }
+
+  public async getCurrentAuthEnv(
+    request: Request,
+  ): Promise<ServerAuthVariables> {
+    const baseDomainsToIdps = this.getBaseDomainsToIdp();
+    const defaultTenant = baseDomainsToIdps.find(
+      (x) => x.baseDomain === request.hostname,
+    );
+    if (defaultTenant) {
+      return await this.getAuthEnv(
+        defaultTenant.idpName,
+        defaultTenant.baseDomain,
+      );
+    }
+
+    for (const baseDomainToIdp of baseDomainsToIdps) {
+      const r = this.getBaseDomainRegex(baseDomainToIdp.baseDomain);
+      const regExpExecArray = r.exec(request.hostname);
+      if (!regExpExecArray) {
+        continue;
+      }
+
+      let subDomainIdpName = regExpExecArray[1];
+      const env = this.getEnv();
+      if (!env.idpNames.includes(subDomainIdpName)) {
+        subDomainIdpName = baseDomainToIdp.idpName;
+      }
+
       if (regExpExecArray.length > 1) {
-        return await this.getAuthEnv(regExpExecArray[1]);
+        return await this.getAuthEnv(
+          subDomainIdpName,
+          baseDomainToIdp.baseDomain,
+        );
       }
     }
 
@@ -88,14 +133,17 @@ export class EnvService {
     );
   }
 
-  private async getAuthEnv(idpName: string): Promise<ServerAuthVariables> {
+  private async getAuthEnv(
+    idpName: string,
+    baseDomain: string,
+  ): Promise<ServerAuthVariables> {
     const env = this.getEnv();
 
     if (!env.idpNames.includes(idpName)) {
       throw new Error(`the idp '${idpName}' is not configured!`);
     }
 
-    const idpEnvName = this.getIdpEnvName(idpName);
+    const idpEnvName = this.formatIdpNameForEnvVar(idpName);
 
     const oidc = await this.discoveryService.getOIDC(idpEnvName);
     const oauthServerUrl =
@@ -121,6 +169,8 @@ export class EnvService {
     }
 
     return {
+      idpName,
+      baseDomain,
       oauthServerUrl: oauthServerUrl,
       clientId: clientId,
       clientSecret: clientSecret,
@@ -133,7 +183,7 @@ export class EnvService {
     return idpNames.split(',');
   }
 
-  private getIdpEnvName(idpName: string) {
+  private formatIdpNameForEnvVar(idpName: string) {
     return idpName.toUpperCase().replace('-', '_');
   }
 
@@ -145,17 +195,17 @@ export class EnvService {
     let baseDomains: BaseDomainsToIdp[] = [];
 
     for (const idpName of this.getIdpNames()) {
-      const idpEnvName = this.getIdpEnvName(idpName);
-      const idpDomains = process.env[`BASE_DOMAINS_${idpEnvName}`] || '';
-      const idpNames = idpDomains.split(',');
-      baseDomains = baseDomains.concat(
-        idpNames.filter(Boolean).map((baseDomain) => {
-          return {
-            idpName,
-            baseDomain,
-          };
-        }),
-      );
+      const idpEnvName = this.formatIdpNameForEnvVar(idpName);
+      const idpDomains: BaseDomainsToIdp[] = (
+        process.env[`BASE_DOMAINS_${idpEnvName}`] || ''
+      )
+        .split(',')
+        .filter(Boolean)
+        .map((baseDomain) => ({
+          idpName,
+          baseDomain,
+        }));
+      baseDomains.push(...idpDomains);
     }
 
     return baseDomains;

@@ -36,7 +36,7 @@ export class AuthTokenService {
     code: string,
   ): Promise<AuthTokenData> {
     const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
-    const redirectUri = this.getRedirectUri(request);
+    const redirectUri = this.getRedirectUri(request, currentAuthEnv);
 
     const body = new URLSearchParams({
       client_id: currentAuthEnv.clientId,
@@ -89,14 +89,20 @@ export class AuthTokenService {
         .pipe(
           catchError((e: AxiosError) => {
             throw new Error(
-              `Error response from auth token server: ${e.toString()}`,
+              `Error response from auth token server: ${e.toString()}.
+              ${e.response.data['error']}: ${e.response.data['error_description']}.
+              params: redirect_uri: ${body['redirect_uri']}`,
             );
           }),
         ),
     );
 
     if (tokenFetchResult.status === 200) {
-      this.cookiesService.setAuthCookie(response, tokenFetchResult.data);
+      this.cookiesService.setAuthCookie(
+        request,
+        response,
+        tokenFetchResult.data,
+      );
       return tokenFetchResult.data;
     }
 
@@ -110,14 +116,18 @@ export class AuthTokenService {
    *  When running locally after executing token retrieval the call will be redirected to localhost and port set in FRONTEND_PORT system variable,
    *  otherwise to the host of the initiating request
    */
-  private getRedirectUri(request: Request) {
+  private getRedirectUri(
+    request: Request,
+    currentAuthEnv: ServerAuthVariables,
+  ) {
     let redirectionUrl: string;
     const env = this.envService.getEnv();
     if (env.isLocal) {
-      redirectionUrl = `http://localhost:${env.localFrontendPort}`;
+      redirectionUrl = `http://localhost:${env.frontendPort}`;
     } else {
-      let isStandardPort = env.localFrontendPort === "80" || env.localFrontendPort === "443"
-      redirectionUrl = `https://${request.hostname}${isStandardPort ? '' : `:${env.localFrontendPort}`}`;
+      let isStandardPort =
+        env.frontendPort === '80' || env.frontendPort === '443';
+      redirectionUrl = `${request.protocol}://${currentAuthEnv.baseDomain}${isStandardPort ? '' : ':' + env.frontendPort}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }

@@ -11,11 +11,17 @@ export class CookiesService {
     return cookies && cookies[authCookie];
   }
 
-  public setAuthCookie(response: Response, authTokenResponse: AuthTokenData) {
+  public setAuthCookie(
+    request: Request,
+    response: Response,
+    authTokenResponse: AuthTokenData,
+  ) {
     response.cookie(authCookie, authTokenResponse.refresh_token, {
+      domain: request.hostname,
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      path: '/',
+      sameSite: 'lax',
     });
   }
 

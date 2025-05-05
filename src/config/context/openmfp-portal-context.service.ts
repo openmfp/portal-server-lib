@@ -1,11 +1,19 @@
+import { EnvService } from '../../env/index.js';
+import { ServiceProvider } from '../model/luigi.node.js';
 import { PortalContextProvider } from './portal-context-provider.js';
 import { Injectable } from '@nestjs/common';
+import type { Request, Response } from 'express';
+import process from 'node:process';
 
 @Injectable()
 export class OpenmfpPortalContextService implements PortalContextProvider {
   private readonly openmfpPortalContext = 'OPENMFP_PORTAL_CONTEXT_';
 
-  getContextValues(): Promise<Record<string, any>> {
+  getContextValues(
+    request: Request,
+    response: Response,
+    providersPromise: Promise<ServiceProvider[] | Error>,
+  ): Promise<Record<string, any>> {
     const context: Record<string, any> = {};
 
     const keys = Object.keys(process.env).filter((item) =>
@@ -19,7 +27,23 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
       }
     });
 
+    this.addGraphQLGatewayApiUrl(request, context);
     return Promise.resolve(context);
+  }
+
+  constructor(private envService: EnvService) {}
+
+  addGraphQLGatewayApiUrl(
+    request: Request,
+    context: Record<string, any>,
+  ): void {
+    const org = this.envService.getDomain(request);
+    const subDomain = request.hostname === org.domain ? '' : `${org.idpName}.`;
+    context.crdGatewayApiUrl =
+      process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL?.replace(
+        '${org-subdomain}',
+        subDomain,
+      ).replace('${org-name}', org.idpName);
   }
 
   private toCamelCase(text: string): string {

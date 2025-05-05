@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 export interface EnvConfigVariables extends EnvVariables {
+  idpName: string;
+  baseDomain: string;
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -23,7 +25,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     request: Request,
     response: Response,
   ): Promise<EnvConfigVariables> {
-    const { oauthServerUrl, oauthTokenUrl, clientId } =
+    const { oauthServerUrl, oauthTokenUrl, clientId, idpName, baseDomain } =
       await this.envService.getCurrentAuthEnv(request);
     const {
       validWebcomponentUrls,
@@ -32,6 +34,8 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       developmentInstance,
     } = this.envService.getEnv();
     return {
+      idpName,
+      baseDomain,
       oauthServerUrl,
       oauthTokenUrl,
       clientId,
