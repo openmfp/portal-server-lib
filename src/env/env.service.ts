@@ -1,6 +1,7 @@
 import { DiscoveryService } from './discovery.service.js';
 import { Injectable } from '@nestjs/common';
 import type { Request } from 'express';
+import _ from 'lodash';
 
 export interface ServerAuthVariables {
   idpName: string;
@@ -187,7 +188,8 @@ export class EnvService {
   }
 
   private getBaseDomainRegex(baseDomain: string): RegExp {
-    return new RegExp(`(.*)\\.${baseDomain}`);
+    const domain = _.escapeRegExp(baseDomain);
+    return new RegExp(`(.*)\\.${domain}`);
   }
 
   private getBaseDomainsToIdp(): BaseDomainsToIdp[] {
