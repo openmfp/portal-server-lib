@@ -83,7 +83,6 @@ export class EnvService {
       let subDomainIdpName = regExpExecArray[1];
       return {
         idpName: subDomainIdpName,
-        domain: subDomainIdpName,
       };
     }
     return {};
