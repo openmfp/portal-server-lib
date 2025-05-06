@@ -1,4 +1,4 @@
-import { DiscoveryService } from '.';
+import { DiscoveryService } from './discovery.service.js';
 import { EnvService } from './env.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
@@ -250,13 +250,24 @@ describe('EnvService', () => {
       expect(envWithAuth.clientSecret).toBe(clientSecretHyperspace);
     });
 
-    it('should throw when the idp is not existing', async () => {
+    it('should throw when the idp is not existing, neither base domain is present', async () => {
+      const request = mock<Request>();
+      request.hostname = 'not-existing.app.k8s.ondemand2.com';
+
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
+        "not-existing.app.k8s.ondemand2.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
+      );
+    });
+
+    it('should return the base domain in case the idp is not existing in the env variables', async () => {
       const request = mock<Request>();
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
-      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        "the idp 'not-existing' is not configured!",
-      );
+      const envWithAuth = await service.getCurrentAuthEnv(request);
+
+      expect(envWithAuth.baseDomain).toBe('app.k8s.ondemand.com');
+      // the idp value here is used to retrieve the auth configuration from env variables, for the idp not-existing there are no env variables
+      expect(envWithAuth.idpName).toBe('app');
     });
 
     it('should throw when the token url is not configured is not existing', async () => {
@@ -317,6 +328,88 @@ describe('EnvService', () => {
         process.env.FEATURE_TOGGLES = testCase.featureString;
         const features = service.getFeatureToggles();
         expect(features).toEqual(testCase.expectedObject);
+      });
+    });
+  });
+
+  describe('getDomain', () => {
+    beforeEach(() => {
+      process.env['IDP_NAMES'] = 'app,foo,hyperspace';
+      process.env['BASE_DOMAINS_APP'] = 'app.k8s.ondemand.com';
+      process.env['BASE_DOMAINS_FOO'] = 'foo.com';
+      process.env['BASE_DOMAINS_HYPERSPACE'] = 'hyper.space,localhost';
+    });
+
+    afterEach(() => {
+      delete process.env['IDP_NAMES'];
+      delete process.env['BASE_DOMAINS_APP'];
+      delete process.env['BASE_DOMAINS_FOO'];
+      delete process.env['BASE_DOMAINS_HYPERSPACE'];
+    });
+
+    it('should return exact match when hostname matches base domain', () => {
+      const request = mock<Request>();
+      request.hostname = 'app.k8s.ondemand.com';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({
+        idpName: 'app',
+        domain: 'app.k8s.ondemand.com',
+      });
+    });
+
+    it('should return subdomain match when hostname is a subdomain', () => {
+      const request = mock<Request>();
+      request.hostname = 'test.app.k8s.ondemand.com';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({
+        idpName: 'test',
+      });
+    });
+
+    it('should return empty object when no match is found', () => {
+      const request = mock<Request>();
+      request.hostname = 'unknown.domain.com';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({});
+    });
+
+    it('should handle multiple base domains correctly', () => {
+      const request = mock<Request>();
+      request.hostname = 'test.hyper.space';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({
+        idpName: 'test',
+      });
+    });
+
+    it('should handle localhost domain', () => {
+      const request = mock<Request>();
+      request.hostname = 'localhost';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({
+        idpName: 'hyperspace',
+        domain: 'localhost',
+      });
+    });
+
+    it('should handle subdomain with dots in the name', () => {
+      const request = mock<Request>();
+      request.hostname = 'test.sub.app.k8s.ondemand.com';
+
+      const result = service.getDomain(request);
+
+      expect(result).toEqual({
+        idpName: 'test.sub',
       });
     });
   });

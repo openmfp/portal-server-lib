@@ -1,4 +1,4 @@
-const baseConfig = require( './base.jest.config.cjs');
+const baseConfig = require('./base.jest.config.cjs');
 
 module.exports = {
   ...baseConfig,
@@ -13,8 +13,7 @@ module.exports = {
       branches: 50,
       functions: 80,
       lines: 95,
-      // more than 10 uncovered statements
-      statements: -9,
+      statements: -10,
     },
   },
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],

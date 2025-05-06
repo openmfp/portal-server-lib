@@ -26,7 +26,6 @@ import {
   Param,
   Req,
   Res,
-  Optional,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import type { Request, Response } from 'express';
