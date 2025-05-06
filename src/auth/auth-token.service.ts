@@ -131,8 +131,6 @@ export class AuthTokenService {
       const port = isStandardPort ? '' : ':' + env.frontendPort;
       redirectionUrl = `${request.protocol}://${currentAuthEnv.baseDomain}${port}`;
     }
-    redirectionUrl = `${redirectionUrl}/callback?storageType=none`;
-    console.debug('redirectionUrl', redirectionUrl);
-    return redirectionUrl;
+    return `${redirectionUrl}/callback?storageType=none`;
   }
 }
