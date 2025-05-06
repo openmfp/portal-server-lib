@@ -1,4 +1,4 @@
-import { DiscoveryService } from '.';
+import { DiscoveryService } from './discovery.service.js';
 import { EnvService } from './env.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
@@ -250,13 +250,24 @@ describe('EnvService', () => {
       expect(envWithAuth.clientSecret).toBe(clientSecretHyperspace);
     });
 
-    it('should throw when the idp is not existing', async () => {
+    it('should throw when the idp is not existing, neither base domain is present', async () => {
+      const request = mock<Request>();
+      request.hostname = 'not-existing.app.k8s.ondemand2.com';
+
+      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
+        "not-existing.app.k8s.ondemand2.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
+      );
+    });
+
+    it('should return the base domain in case the idp is not existing in the env variables', async () => {
       const request = mock<Request>();
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
-      await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-        "the idp 'not-existing' is not configured!",
-      );
+      const envWithAuth = await service.getCurrentAuthEnv(request);
+
+      expect(envWithAuth.baseDomain).toBe('app.k8s.ondemand.com');
+      // the idp value here is used to retrieve the auth configuration from env variables, for the idp not-existing there are no env variables
+      expect(envWithAuth.idpName).toBe('app');
     });
 
     it('should throw when the token url is not configured is not existing', async () => {

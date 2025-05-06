@@ -125,9 +125,10 @@ export class AuthTokenService {
     if (env.isLocal) {
       redirectionUrl = `http://localhost:${env.frontendPort}`;
     } else {
-      let isStandardPort =
+      const isStandardPort =
         env.frontendPort === '80' || env.frontendPort === '443';
-      redirectionUrl = `${request.protocol}://${currentAuthEnv.baseDomain}${isStandardPort ? '' : ':' + env.frontendPort}`;
+      const port = isStandardPort ? '' : ':' + env.frontendPort;
+      redirectionUrl = `${request.protocol}://${currentAuthEnv.baseDomain}${port}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }

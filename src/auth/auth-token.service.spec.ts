@@ -58,6 +58,7 @@ describe('AuthTokenService', () => {
     };
     beforeEach(() => {
       requestMock.hostname = hostname;
+      requestMock.protocol = 'https';
     });
 
     function assertResponseAndCookies(authTokenResponse: AuthTokenData) {
@@ -70,9 +71,11 @@ describe('AuthTokenService', () => {
         'openmfp_auth_cookie',
         refreshTokenValue,
         {
+          domain: 'example.com',
+          path: '/',
           httpOnly: true,
           secure: true,
-          sameSite: 'strict',
+          sameSite: 'lax',
         },
       );
     }

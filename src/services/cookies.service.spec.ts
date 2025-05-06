@@ -1,6 +1,6 @@
 import { AuthTokenData } from '../auth/auth-token.service.js';
 import { CookiesService } from './cookies.service.js';
-import {Test, TestingModule} from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 
 describe('CookiesService', () => {
@@ -42,19 +42,25 @@ describe('CookiesService', () => {
         cookie: jest.fn(),
       } as Response;
 
+      const mockRequest = {
+        hostname: 'test-hostname',
+      } as Response;
+
       const mockAuthTokenResponse: AuthTokenData = {
         refresh_token: 'test-refresh-token',
       } as AuthTokenData;
 
-      service.setAuthCookie(mockResponse, mockAuthTokenResponse);
+      service.setAuthCookie(mockRequest, mockResponse, mockAuthTokenResponse);
 
       expect(mockResponse.cookie).toHaveBeenCalledWith(
         'openmfp_auth_cookie',
         'test-refresh-token',
         {
+          domain: 'test-hostname',
+          path: '/',
           httpOnly: true,
           secure: true,
-          sameSite: 'strict',
+          sameSite: 'lax',
         },
       );
     });

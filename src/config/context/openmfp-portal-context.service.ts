@@ -1,19 +1,14 @@
 import { EnvService } from '../../env/index.js';
-import { ServiceProvider } from '../model/luigi.node.js';
 import { PortalContextProvider } from './portal-context-provider.js';
 import { Injectable } from '@nestjs/common';
-import type { Request, Response } from 'express';
+import type { Request } from 'express';
 import process from 'node:process';
 
 @Injectable()
 export class OpenmfpPortalContextService implements PortalContextProvider {
   private readonly openmfpPortalContext = 'OPENMFP_PORTAL_CONTEXT_';
 
-  getContextValues(
-    request: Request,
-    response: Response,
-    providersPromise: Promise<ServiceProvider[] | Error>,
-  ): Promise<Record<string, any>> {
+  getContextValues(request: Request): Promise<Record<string, any>> {
     const context: Record<string, any> = {};
 
     const keys = Object.keys(process.env).filter((item) =>
