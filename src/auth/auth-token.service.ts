@@ -77,6 +77,7 @@ export class AuthTokenService {
       `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`,
     ).toString('base64')}`;
 
+    const redirectUri = body.get('redirect_uri');
     const tokenFetchResult = await firstValueFrom(
       this.httpService
         .post<AuthTokenData>(currentAuthEnv.oauthTokenUrl, body, {
@@ -91,7 +92,7 @@ export class AuthTokenService {
             throw new Error(
               `Error response from auth token server: ${e.toString()}.
               ${e.response.data['error']}: ${e.response.data['error_description']}.
-              params: redirect_uri: ${body['redirect_uri']}`,
+              params.redirect_uri: ${redirectUri}`,
             );
           }),
         ),
