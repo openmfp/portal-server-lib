@@ -129,7 +129,7 @@ export class AuthTokenService {
       const isStandardPort =
         env.frontendPort === '80' || env.frontendPort === '443';
       const port = isStandardPort ? '' : ':' + env.frontendPort;
-      redirectionUrl = `${request.protocol}://${currentAuthEnv.baseDomain}${port}`;
+      redirectionUrl = `https://${currentAuthEnv.baseDomain}${port}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }
