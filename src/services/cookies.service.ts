@@ -25,7 +25,7 @@ export class CookiesService {
     });
   }
 
-  public removeAuthCookie(response: Response) {
-    response.clearCookie(authCookie);
+  public removeAuthCookie(request: Request, response: Response) {
+    response.clearCookie(authCookie, { domain: request.hostname });
   }
 }

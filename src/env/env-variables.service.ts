@@ -5,6 +5,7 @@ import type { Request, Response } from 'express';
 export interface EnvConfigVariables extends EnvVariables {
   idpName: string;
   baseDomain: string;
+  organization: string;
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -25,8 +26,14 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     request: Request,
     response: Response,
   ): Promise<EnvConfigVariables> {
-    const { oauthServerUrl, oauthTokenUrl, clientId, idpName, baseDomain } =
-      await this.envService.getCurrentAuthEnv(request);
+    const {
+      oauthServerUrl,
+      oauthTokenUrl,
+      clientId,
+      idpName,
+      baseDomain,
+      organization,
+    } = await this.envService.getCurrentAuthEnv(request);
     const {
       validWebcomponentUrls,
       logoutRedirectUrl,
@@ -36,6 +43,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     return {
       idpName,
       baseDomain,
+      organization,
       oauthServerUrl,
       oauthTokenUrl,
       clientId,

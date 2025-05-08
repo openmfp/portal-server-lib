@@ -6,6 +6,7 @@ import _ from 'lodash';
 export interface ServerAuthVariables {
   idpName: string;
   baseDomain: string;
+  organization: string;
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -110,6 +111,7 @@ export class EnvService {
         continue;
       }
 
+      let subDomain = regExpExecArray[1];
       let subDomainIdpName = regExpExecArray[1];
       const env = this.getEnv();
       if (!env.idpNames.includes(subDomainIdpName)) {
@@ -120,6 +122,7 @@ export class EnvService {
         return await this.getAuthEnv(
           subDomainIdpName,
           baseDomainToIdp.baseDomain,
+          subDomain,
         );
       }
     }
@@ -136,6 +139,7 @@ export class EnvService {
   private async getAuthEnv(
     idpName: string,
     baseDomain: string,
+    subDomainIdpName?: string,
   ): Promise<ServerAuthVariables> {
     const env = this.getEnv();
 
@@ -171,6 +175,7 @@ export class EnvService {
     return {
       idpName,
       baseDomain,
+      organization: subDomainIdpName || idpName,
       oauthServerUrl: oauthServerUrl,
       clientId: clientId,
       clientSecret: clientSecret,

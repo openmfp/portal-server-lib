@@ -88,7 +88,7 @@ export class AuthController {
     request: Request,
     response: Response,
   ): Promise<void> {
-    this.cookiesService.removeAuthCookie(response);
+    this.cookiesService.removeAuthCookie(request, response);
 
     try {
       await this.authCallbackService.handleFailure(request, response);

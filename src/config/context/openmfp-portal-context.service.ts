@@ -38,7 +38,7 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
       process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL?.replace(
         '${org-subdomain}',
         subDomain,
-      ).replace('${org-name}', org.idpName);
+      );
   }
 
   private toCamelCase(text: string): string {
