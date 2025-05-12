@@ -16,16 +16,24 @@ export class CookiesService {
     response: Response,
     authTokenResponse: AuthTokenData,
   ) {
-    response.cookie(authCookie, authTokenResponse.refresh_token, {
+    response.cookie(
+      authCookie,
+      authTokenResponse.refresh_token,
+      this.cookieParams(request),
+    );
+  }
+
+  public removeAuthCookie(request: Request, response: Response) {
+    response.clearCookie(authCookie, this.cookieParams(request));
+  }
+
+  private cookieParams(request: Request) {
+    return {
       domain: request.hostname,
       httpOnly: true,
       secure: true,
       path: '/',
       sameSite: 'lax',
-    });
-  }
-
-  public removeAuthCookie(request: Request, response: Response) {
-    response.clearCookie(authCookie, { domain: request.hostname });
+    };
   }
 }
