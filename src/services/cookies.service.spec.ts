@@ -68,14 +68,25 @@ describe('CookiesService', () => {
 
   describe('removeAuthCookie', () => {
     it('should clear the auth cookie', () => {
+      const mockRequest = {
+        hostname: 'test-hostname',
+      } as Response;
+
       const mockResponse = {
         clearCookie: jest.fn(),
       } as unknown as Response;
 
-      service.removeAuthCookie(mockResponse);
+      service.removeAuthCookie(mockRequest, mockResponse);
 
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
         'openmfp_auth_cookie',
+        {
+          domain: 'test-hostname',
+          httpOnly: true,
+          path: '/',
+          sameSite: 'lax',
+          secure: true,
+        },
       );
     });
   });

@@ -172,6 +172,7 @@ describe('AuthController', () => {
         authTokenServiceMock.exchangeTokenForRefreshToken,
       ).toHaveBeenCalledWith(requestMock, responseMock, 'authCookie');
       expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
+        requestMock,
         responseMock,
       );
     });
