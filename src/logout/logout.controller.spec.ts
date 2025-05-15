@@ -65,6 +65,7 @@ describe('LogoutController', () => {
 
     // Assert
     expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
+      requestMock,
       responseMock,
     );
   });

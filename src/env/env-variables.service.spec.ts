@@ -1,6 +1,5 @@
-import { AuthTokenData } from '../auth';
-import { EnvVariablesServiceImpl } from './env-variables.service';
-import { EnvService } from './env.service';
+import { EnvVariablesServiceImpl } from './env-variables.service.js';
+import { EnvService, ServerAuthVariables } from './env.service.js';
 import type { Request, Response } from 'express';
 
 describe('EnvVariablesServiceImpl', () => {
@@ -9,10 +8,14 @@ describe('EnvVariablesServiceImpl', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
 
-  const currentAuthEnv = {
+  const currentAuthEnv: ServerAuthVariables = {
     oauthServerUrl: 'oauthServerUrl',
     oauthTokenUrl: 'oauthTokenUrl',
     clientId: 'clientId',
+    idpName: 'idpName',
+    baseDomain: 'baseDomain',
+    organization: 'organization',
+    clientSecret: 'clientSecret',
   };
 
   const env = {
@@ -42,7 +45,12 @@ describe('EnvVariablesServiceImpl', () => {
       );
 
       expect(result).toEqual({
-        ...currentAuthEnv,
+        idpName: 'idpName',
+        baseDomain: 'baseDomain',
+        organization: 'organization',
+        oauthServerUrl: 'oauthServerUrl',
+        oauthTokenUrl: 'oauthTokenUrl',
+        clientId: 'clientId',
         validWebcomponentUrls: 'validWebcomponentUrls',
         logoutRedirectUrl: 'logoutRedirectUrl',
         isLocal: true,
