@@ -215,6 +215,9 @@ describe('EnvService', () => {
 
       expect(envWithAuth.clientId).toBe(clientIdApp);
       expect(envWithAuth.oauthTokenUrl).toBe(oauthTokenUrlAPP);
+      expect(envWithAuth.idpName).toBe('app');
+      expect(envWithAuth.organization).toBe('app');
+      expect(envWithAuth.baseDomain).toBe('app.k8s.ondemand.com');
     });
 
     it('should map the idp of foo to a different base url', async () => {
