@@ -259,7 +259,7 @@ describe('EnvService', () => {
       );
     });
 
-    it('should return the base domain in case the idp is not existing in the env variables', async () => {
+    it('should return the base domain in case the idp is not existing in the env variables, and the organization indicated by the sub domain', async () => {
       const request = mock<Request>();
       request.hostname = 'not-existing.app.k8s.ondemand.com';
 
@@ -268,6 +268,7 @@ describe('EnvService', () => {
       expect(envWithAuth.baseDomain).toBe('app.k8s.ondemand.com');
       // the idp value here is used to retrieve the auth configuration from env variables, for the idp not-existing there are no env variables
       expect(envWithAuth.idpName).toBe('app');
+      expect(envWithAuth.organization).toBe('not-existing');
     });
 
     it('should throw when the token url is not configured is not existing', async () => {
