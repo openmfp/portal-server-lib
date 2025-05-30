@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.151.1",
+  "version": "0.151.2",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
@@ -49,7 +49,7 @@
     "@nestjs/testing": "^11.0.0",
     "@openmfp/config-prettier": "^0.8.0",
     "@types/jest": "29.5.14",
-    "@types/node": "22.15.14",
+    "@types/node": "22.15.27",
     "@types/supertest": "6.0.3",
     "typescript-eslint": "^8.0.0",
     "concurrently": "^9.0.0",
