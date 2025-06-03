@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.151.2",
+  "version": "0.152.3",
   "description": "",
   "engines": {
     "node": ">=20.0.0",
@@ -61,11 +61,11 @@
     "jest-junit": "16.0.0",
     "jest-mock-extended": "3.0.7",
     "mkdirp": "^3.0.1",
-    "nock": "14.0.4",
+    "nock": "14.0.5",
     "nodemon": "^3.1.4",
     "prettier": "^3.2.0",
     "rimraf": "^6.0.1",
-    "supertest": "7.1.0",
+    "supertest": "7.1.1",
     "ts-jest": "29.3.2",
     "ts-loader": "9.5.2",
     "ts-node": "10.9.2",
