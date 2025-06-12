@@ -85,6 +85,18 @@ describe('EnvService', () => {
     delete process.env['ENVIRONMENT'];
   });
 
+  it('should get empty string for default frontend port', () => {
+    expect(service.getEnv().frontendPort).toEqual('');
+  });
+
+  it('should get frontend port', () => {
+    process.env['FRONTEND_PORT'] = '4700';
+
+    expect(service.getEnv().frontendPort).toBe('4700');
+
+    delete process.env['FRONTEND_PORT'];
+  });
+
   it('should get if it is a local instance', () => {
     process.env['ENVIRONMENT'] = 'local';
 
