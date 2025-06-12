@@ -136,7 +136,7 @@ describe('AuthTokenService', () => {
           .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
-            redirect_uri: `http://localhost:4300/callback?storageType=none`,
+            redirect_uri: `http://localhost/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
@@ -162,7 +162,7 @@ describe('AuthTokenService', () => {
           .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
-            redirect_uri: `https://example.com:4300/callback?storageType=none`,
+            redirect_uri: `https://example.com/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
@@ -181,6 +181,7 @@ describe('AuthTokenService', () => {
 
     it('handles an auth server error', async () => {
       // Arrange
+      process.env['FRONTEND_PORT'] = '4700';
       const env = await envService.getCurrentAuthEnv(requestMock);
       const code = 'secret code';
 
@@ -188,7 +189,7 @@ describe('AuthTokenService', () => {
         .post('', {
           client_id: env.clientId,
           grant_type: 'authorization_code',
-          redirect_uri: `http://localhost:4300/callback?storageType=none`,
+          redirect_uri: `http://localhost:4700/callback?storageType=none`,
           code: code,
         })
         .reply(500, 'oh nose');
@@ -203,6 +204,7 @@ describe('AuthTokenService', () => {
       await expect(authTokenResponsePromise).rejects.toThrowError(
         'Error response from auth token server: AxiosError: Request failed with status code 500',
       );
+      delete process.env['FRONTEND_PORT'];
     });
   });
 });
