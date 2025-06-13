@@ -13,7 +13,7 @@ export interface ServerAuthVariables {
   clientSecret: string;
 }
 
-export interface EnvVariables {
+export interface EnvVariables extends Record<string, any> {
   idpNames?: string[];
   oauthServerUrl?: string;
   oauthTokenUrl?: string;
@@ -42,7 +42,7 @@ export class EnvService {
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
-      frontendPort: process.env.FRONTEND_PORT || '4300',
+      frontendPort: process.env.FRONTEND_PORT || '',
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
         ',',
       ),

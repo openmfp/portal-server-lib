@@ -126,12 +126,14 @@ export class AuthTokenService {
   ) {
     let redirectionUrl: string;
     const env = this.envService.getEnv();
+    const isStandardOrEmptyPort =
+      env.frontendPort === '80' ||
+      env.frontendPort === '443' ||
+      !env.frontendPort;
+    const port = isStandardOrEmptyPort ? '' : ':' + env.frontendPort;
     if (env.isLocal) {
-      redirectionUrl = `http://localhost:${env.frontendPort}`;
+      redirectionUrl = `http://localhost${port}`;
     } else {
-      const isStandardPort =
-        env.frontendPort === '80' || env.frontendPort === '443';
-      const port = isStandardPort ? '' : ':' + env.frontendPort;
       redirectionUrl = `https://${currentAuthEnv.baseDomain}${port}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
