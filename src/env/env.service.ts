@@ -172,6 +172,11 @@ export class EnvService {
       );
     }
 
+    // if we have configured the subdomain idp name in the environment, we use it as a baseDomain
+    if (idpName === subDomainIdpName) {
+      baseDomain = `${subDomainIdpName}.${baseDomain}`;
+    }
+
     return {
       idpName,
       baseDomain,
