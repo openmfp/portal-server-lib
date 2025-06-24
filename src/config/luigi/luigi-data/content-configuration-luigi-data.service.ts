@@ -1,8 +1,7 @@
 import { RawServiceProvider } from '../../context/service-provider.js';
 import {
-  ContentConfiguration,
-  LuigiConfigData,
   LuigiAppConfig,
+  LuigiConfigData,
   LuigiNodeDefaults,
 } from '../../model/content-configuration.js';
 import { LuigiNode } from '../../model/luigi.node.js';
@@ -125,6 +124,8 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
 
     if (node.url) {
       viewUrl = `${node.url}`;
+    } else if (node.urlSuffix && urlTemplateUrl) {
+      viewUrl = `${urlTemplateUrl}${node.urlSuffix}`;
     }
 
     if (node.children) {

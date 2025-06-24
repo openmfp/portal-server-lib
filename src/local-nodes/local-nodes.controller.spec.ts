@@ -194,7 +194,7 @@ describe('LocalNodesController', () => {
 
   const expectedResultFormProcessing = [
     {
-      _preloadUrl: '/#/preload',
+      _preloadUrl: 'http://localhost:8080/#/preload',
       _requiredIFramePermissionsForViewGroup: undefined,
       _userSettingsConfig: {
         groups: {
@@ -212,7 +212,7 @@ describe('LocalNodesController', () => {
             },
             sublabel: 'sublabel',
             title: 'title',
-            viewUrl: 'viewUrl',
+            viewUrl: 'http://localhost:8080/viewUrl',
           },
         },
       },
@@ -230,7 +230,7 @@ describe('LocalNodesController', () => {
       tabNav: true,
       urlSuffix: '/#/global-catalog',
       viewGroup: undefined,
-      viewUrl: undefined,
+      viewUrl: 'http://localhost:8080/#/global-catalog',
       visibleForFeatureToggles: ['!global-catalog'],
     },
     {
@@ -248,7 +248,7 @@ describe('LocalNodesController', () => {
       tabNav: true,
       urlSuffix: '/#/new-global-catalog',
       viewGroup: undefined,
-      viewUrl: undefined,
+      viewUrl: 'http://localhost:8080/#/new-global-catalog',
       visibleForFeatureToggles: ['global-catalog'],
     },
     {
@@ -264,7 +264,7 @@ describe('LocalNodesController', () => {
           pathSegment: ':extClassName',
           urlSuffix: '/#/extensions/:extClassName',
           viewGroup: undefined,
-          viewUrl: undefined,
+          viewUrl: 'http://localhost:8080/#/extensions/:extClassName',
         },
       ],
       context: {},
@@ -282,6 +282,7 @@ describe('LocalNodesController', () => {
     creationTimestamp: undefined,
     name: 'extension-manager',
     contentType: 'json',
+    url: 'http://localhost:8080',
     luigiConfigFragment: {
       data: {
         userSettings: {
@@ -291,7 +292,7 @@ describe('LocalNodesController', () => {
               sublabel: 'sublabel',
               title: 'title',
               icon: 'icon',
-              viewUrl: 'viewUrl',
+              viewUrl: '/viewUrl',
               settings: {
                 option1: {
                   type: 'type',
