@@ -9,7 +9,7 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
   private readonly openmfpPortalContext = 'OPENMFP_PORTAL_CONTEXT_';
 
   getContextValues(request: Request): Promise<Record<string, any>> {
-    const context: Record<string, any> = {};
+    const portalContext: Record<string, any> = {};
 
     const keys = Object.keys(process.env).filter((item) =>
       item.startsWith(this.openmfpPortalContext),
@@ -18,27 +18,25 @@ export class OpenmfpPortalContextService implements PortalContextProvider {
       const keyName = key.substring(this.openmfpPortalContext.length).trim();
       if (keyName.length > 0) {
         const camelCaseName = this.toCamelCase(keyName);
-        context[camelCaseName] = process.env[key];
+        portalContext[camelCaseName] = process.env[key];
       }
     });
 
-    this.addGraphQLGatewayApiUrl(request, context);
-    return Promise.resolve(context);
+    this.processGraphQLGatewayApiUrl(request, portalContext);
+    return Promise.resolve(portalContext);
   }
 
   constructor(private envService: EnvService) {}
 
-  addGraphQLGatewayApiUrl(
+  private processGraphQLGatewayApiUrl(
     request: Request,
-    context: Record<string, any>,
+    portalContext: Record<string, any>,
   ): void {
     const org = this.envService.getDomain(request);
     const subDomain = request.hostname === org.domain ? '' : `${org.idpName}.`;
-    context.crdGatewayApiUrl =
-      process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL?.replace(
-        '${org-subdomain}',
-        subDomain,
-      ).replace('${org-name}', `${org.idpName}`);
+    portalContext.crdGatewayApiUrl = portalContext.crdGatewayApiUrl
+      ?.replace('${org-subdomain}', subDomain)
+      .replace('${org-name}', `${org.idpName}`);
   }
 
   private toCamelCase(text: string): string {

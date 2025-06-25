@@ -2,165 +2,187 @@ import { EnvService } from '../../env/index.js';
 import { OpenmfpPortalContextService } from './openmfp-portal-context.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import process from 'node:process';
 
 describe('OpenmfpPortalContextService', () => {
   let service: OpenmfpPortalContextService;
-  let envService: EnvService;
-  const originalEnv = process.env;
+  let envService: jest.Mocked<EnvService>;
+  let mockRequest: Partial<Request>;
 
   beforeEach(async () => {
-    process.env = { ...originalEnv };
-
-    const mockEnvService = {
+    const envServiceMock = {
       getDomain: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OpenmfpPortalContextService,
-        { provide: EnvService, useValue: mockEnvService },
+        {
+          provide: EnvService,
+          useValue: envServiceMock,
+        },
       ],
     }).compile();
 
     service = module.get<OpenmfpPortalContextService>(
       OpenmfpPortalContextService,
     );
-    envService = module.get<EnvService>(EnvService);
+    envService = module.get(EnvService);
+
+    mockRequest = {
+      hostname: 'test.example.com',
+    };
+
+    jest.spyOn(console, 'log').mockImplementation();
   });
 
   afterEach(() => {
-    process.env = originalEnv;
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getContextValues', () => {
-    it('should extract environment variables with OPENMFP_PORTAL_CONTEXT_ prefix', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_API_URL = 'http://api.example.com';
-      process.env.OPENMFP_PORTAL_CONTEXT_USER_NAME = 'testuser';
-      process.env.OPENMFP_PORTAL_CONTEXT_SOME_LONG_VALUE = 'longvalue';
-      process.env.OTHER_ENV_VAR = 'should not be included';
+  it('should return empty context when no environment variables match prefix', async () => {
+    envService.getDomain.mockReturnValue({
+      domain: 'example.com',
+      idpName: 'test-org',
+    });
 
-      const mockRequest = {} as Request;
-      jest.spyOn(service, 'addGraphQLGatewayApiUrl').mockImplementation();
+    const result = await service.getContextValues(mockRequest as Request);
 
-      const result = await service.getContextValues(mockRequest);
+    expect(result).toEqual({});
+  });
+
+  it('should process environment variables with correct prefix', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_TEST_KEY = 'test-value';
+    process.env.OPENMFP_PORTAL_CONTEXT_ANOTHER_TEST_KEY = 'another-value';
+    process.env.OTHER_ENV_VAR = 'should-be-ignored';
+
+    try {
+      envService.getDomain.mockReturnValue({
+        domain: 'example.com',
+        idpName: 'test-org',
+      });
+
+      const result = await service.getContextValues(mockRequest as Request);
 
       expect(result).toEqual({
-        apiUrl: 'http://api.example.com',
-        userName: 'testuser',
-        someLongValue: 'longvalue',
+        testKey: 'test-value',
+        anotherTestKey: 'another-value',
       });
-      expect(service.addGraphQLGatewayApiUrl).toHaveBeenCalledWith(
-        mockRequest,
-        result,
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_TEST_KEY;
+      delete process.env.OPENMFP_PORTAL_CONTEXT_ANOTHER_TEST_KEY;
+      delete process.env.OTHER_ENV_VAR;
+    }
+  });
+
+  it('should convert snake_case to camelCase', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_SNAKE_CASE_KEY = 'value';
+    process.env.OPENMFP_PORTAL_CONTEXT_MULTIPLE_SNAKE_CASE_KEYS = 'value2';
+
+    try {
+      envService.getDomain.mockReturnValue({
+        domain: 'example.com',
+        idpName: 'test-org',
+      });
+
+      const result = await service.getContextValues(mockRequest as Request);
+
+      expect(result).toEqual({
+        snakeCaseKey: 'value',
+        multipleSnakeCaseKeys: 'value2',
+      });
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_SNAKE_CASE_KEY;
+      delete process.env.OPENMFP_PORTAL_CONTEXT_MULTIPLE_SNAKE_CASE_KEYS;
+    }
+  });
+
+  it('should process GraphQL gateway API URL with subdomain when hostname differs from domain', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL =
+      'https://${org-subdomain}api.example.com/${org-name}/graphql';
+
+    try {
+      envService.getDomain.mockReturnValue({
+        domain: 'example.com',
+        idpName: 'test-org',
+      });
+
+      mockRequest.hostname = 'subdomain.example.com';
+
+      const result = await service.getContextValues(mockRequest as Request);
+
+      expect(result.crdGatewayApiUrl).toBe(
+        'https://test-org.api.example.com/test-org/graphql',
       );
-    });
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL;
+    }
+  });
 
-    it('should ignore environment variables with empty key names', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_ = 'empty';
-      process.env.OPENMFP_PORTAL_CONTEXT_VALID_KEY = 'valid';
+  it('should process GraphQL gateway API URL without subdomain when hostname matches domain', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL =
+      'https://${org-subdomain}api.example.com/${org-name}/graphql';
 
-      const mockRequest = {} as Request;
-      jest.spyOn(service, 'addGraphQLGatewayApiUrl').mockImplementation();
+    try {
+      envService.getDomain.mockReturnValue({
+        domain: 'example.com',
+        idpName: 'test-org',
+      });
 
-      const result = await service.getContextValues(mockRequest);
+      mockRequest.hostname = 'example.com';
+
+      const result = await service.getContextValues(mockRequest as Request);
+
+      expect(result.crdGatewayApiUrl).toBe(
+        'https://api.example.com/test-org/graphql',
+      );
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL;
+    }
+  });
+
+  it('should ignore keys with empty names after trimming', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_ = 'should-be-ignored';
+    process.env['OPENMFP_PORTAL_CONTEXT_   '] = 'should-also-be-ignored';
+    process.env.OPENMFP_PORTAL_CONTEXT_VALID_KEY = 'valid-value';
+
+    try {
+      envService.getDomain.mockReturnValue({
+        domain: 'example.com',
+        idpName: 'test-org',
+      });
+
+      const result = await service.getContextValues(mockRequest as Request);
 
       expect(result).toEqual({
-        validKey: 'valid',
+        validKey: 'valid-value',
       });
-    });
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_;
+      delete process.env['OPENMFP_PORTAL_CONTEXT_   '];
+      delete process.env.OPENMFP_PORTAL_CONTEXT_VALID_KEY;
+    }
   });
 
-  describe('addGraphQLGatewayApiUrl', () => {
-    it('should properly format gateway URL when hostname matches domain', () => {
-      const mockRequest = {
-        hostname: 'example.com',
-      } as Request;
+  it('should handle undefined crdGatewayApiUrl gracefully', async () => {
+    process.env.OPENMFP_PORTAL_CONTEXT_OTHER_KEY = 'value';
 
-      const context = {};
-      process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL =
-        'https://${org-subdomain}api.${org-name}.example.com';
-
-      jest.spyOn(envService, 'getDomain').mockReturnValue({
+    try {
+      envService.getDomain.mockReturnValue({
         domain: 'example.com',
         idpName: 'test-org',
       });
 
-      service.addGraphQLGatewayApiUrl(mockRequest, context);
+      const result = await service.getContextValues(mockRequest as Request);
 
-      expect(context).toEqual({
-        crdGatewayApiUrl: 'https://api.test-org.example.com',
+      expect(result).toEqual({
+        otherKey: 'value',
       });
-    });
-
-    it('should properly format gateway URL when hostname does not match domain', () => {
-      const mockRequest = {
-        hostname: 'subdomain.example.com',
-      } as Request;
-
-      const context = {};
-      process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL =
-        'https://${org-subdomain}api.${org-name}.example.com';
-
-      jest.spyOn(envService, 'getDomain').mockReturnValue({
-        domain: 'example.com',
-        idpName: 'test-org',
-      });
-
-      service.addGraphQLGatewayApiUrl(mockRequest, context);
-
-      expect(context).toEqual({
-        crdGatewayApiUrl: 'https://test-org.api.test-org.example.com',
-      });
-    });
-
-    it('should handle undefined KUBERNETES_GRAPHQL_GATEWAY_API_URL', () => {
-      const mockRequest = {
-        hostname: 'example.com',
-      } as Request;
-
-      const context = {};
-      process.env.KUBERNETES_GRAPHQL_GATEWAY_API_URL = undefined;
-
-      jest.spyOn(envService, 'getDomain').mockReturnValue({
-        domain: 'example.com',
-        idpName: 'test-org',
-      });
-
-      service.addGraphQLGatewayApiUrl(mockRequest, context);
-
-      expect(context).toEqual({
-        crdGatewayApiUrl: undefined,
-      });
-    });
-  });
-
-  describe('toCamelCase', () => {
-    it('should convert snake_case to camelCase', () => {
-      const result = service['toCamelCase']('TEST_SNAKE_CASE_STRING');
-      expect(result).toBe('testSnakeCaseString');
-    });
-
-    it('should handle single word', () => {
-      const result = service['toCamelCase']('SINGLE');
-      expect(result).toBe('single');
-    });
-  });
-
-  describe('capitalizeFirstLetter', () => {
-    it('should capitalize first letter', () => {
-      const result = service['capitalizeFirstLetter']('test');
-      expect(result).toBe('Test');
-    });
-
-    it('should handle empty string', () => {
-      const result = service['capitalizeFirstLetter']('');
-      expect(result).toBe('');
-    });
+    } finally {
+      delete process.env.OPENMFP_PORTAL_CONTEXT_OTHER_KEY;
+    }
   });
 });
