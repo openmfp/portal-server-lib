@@ -1,3 +1,4 @@
+import { EnvService } from '../env/index.js';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -38,6 +39,7 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
+    private envService: EnvService,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
@@ -58,9 +60,10 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ): Promise<PortalConfig> {
     const token = this.headerParser.extractBearerToken(request);
+    const context = this.retrieveRequestContext(request);
 
     const providersPromise = this.luigiConfigNodesService
-      .getNodes(token, [], acceptLanguage)
+      .getNodes(token, [], acceptLanguage, context)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -103,9 +106,10 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ) {
     const token = this.headerParser.extractBearerToken(request);
+    const context = this.retrieveRequestContext(request);
 
     const providersPromise = this.luigiConfigNodesService
-      .getNodes(token, [params.entity], acceptLanguage, request.query)
+      .getNodes(token, [params.entity], acceptLanguage, context)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -113,7 +117,7 @@ export class ConfigController {
 
     const eCP = this.entityContextProviders[params.entity];
     const entityContextPromise = eCP
-      ? eCP.getContextValues(token, request.query).catch((e: Error) => {
+      ? eCP.getContextValues(token, context).catch((e: Error) => {
           this.logger.error(e);
           return e;
         })
@@ -135,5 +139,12 @@ export class ConfigController {
       throw v;
     }
     return v;
+  }
+
+  private retrieveRequestContext(request: Request) {
+    return {
+      ...request.query,
+      organization: this.envService.getDomain(request).idpName,
+    };
   }
 }
