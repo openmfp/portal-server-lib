@@ -397,6 +397,7 @@ describe('EnvService', () => {
       const result = service.getDomain(request);
 
       expect(result).toEqual({
+        domain: 'app.k8s.ondemand.com',
         idpName: 'test',
       });
     });
@@ -417,6 +418,7 @@ describe('EnvService', () => {
       const result = service.getDomain(request);
 
       expect(result).toEqual({
+        domain: 'hyper.space',
         idpName: 'test',
       });
     });
@@ -440,6 +442,7 @@ describe('EnvService', () => {
       const result = service.getDomain(request);
 
       expect(result).toEqual({
+        domain: 'app.k8s.ondemand.com',
         idpName: 'test.sub',
       });
     });

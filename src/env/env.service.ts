@@ -63,7 +63,7 @@ export class EnvService {
     return result;
   }
 
-  public getDomain(request: Request) {
+  public getDomain(request: Request): { idpName?: string; domain?: string } {
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
       (x) => x.baseDomain === request.hostname,
@@ -85,6 +85,7 @@ export class EnvService {
       let subDomainIdpName = regExpExecArray[1];
       return {
         idpName: subDomainIdpName,
+        domain: baseDomainToIdp.baseDomain,
       };
     }
     return {};

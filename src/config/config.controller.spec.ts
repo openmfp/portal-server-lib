@@ -1,3 +1,4 @@
+import { EnvService } from '../env/index.js';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -33,6 +34,7 @@ describe('ConfigController', () => {
   let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
+  let envService: EnvService;
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
@@ -53,10 +55,12 @@ describe('ConfigController', () => {
         }),
       ],
     }).compile();
+
     controller = module.get<ConfigController>(ConfigController);
     luigiConfigNodesService = module.get<LuigiConfigNodesService>(
       LuigiConfigNodesService,
     );
+    envService = module.get<EnvService>(EnvService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -90,6 +94,8 @@ describe('ConfigController', () => {
         .spyOn(luigiConfigNodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
 
+      jest.spyOn(envService, 'getDomain').mockReturnValue({ idpName: 'app' });
+
       const config = await controller.getConfig(
         requestMock,
         responseMock,
@@ -97,7 +103,10 @@ describe('ConfigController', () => {
       );
 
       expect(config.providers).toBe(resultingNodes);
-      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage);
+      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
+        key: 'val',
+        organization: 'app',
+      });
     });
 
     it('should handle portalContextProvider error', async () => {
