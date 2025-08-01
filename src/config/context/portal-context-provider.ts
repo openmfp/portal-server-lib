@@ -8,3 +8,9 @@ export interface PortalContextProvider {
     providersPromise: Promise<ServiceProvider[] | Error>,
   ): Promise<Record<string, any>>;
 }
+
+export class EmptyPortalContextProvider implements PortalContextProvider {
+  async getContextValues(): Promise<Record<string, any>> {
+    return {};
+  }
+}
