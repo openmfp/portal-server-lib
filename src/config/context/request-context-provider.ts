@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 
 export interface RequestContextProvider {
-  getContextValues(request: Request): Promise<Record<string, any>>;
+  getContextValues(
+    request: Request,
+    entity?: string,
+  ): Promise<Record<string, any>>;
 }
 
 @Injectable()

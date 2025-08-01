@@ -110,7 +110,10 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ) {
     const token = this.headerParser.extractBearerToken(request);
-    const context = await this.requestContextProvider.getContextValues(request);
+    const context = await this.requestContextProvider.getContextValues(
+      request,
+      params.entity,
+    );
 
     const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [params.entity], acceptLanguage, context)
