@@ -5,10 +5,6 @@ import {
   NoopAuthCallback,
 } from './auth/index.js';
 import {
-  RequestContextProvider,
-  RequestContextProviderImpl,
-} from './config/context/request-context-provider.js';
-import {
   ConfigController,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
@@ -19,6 +15,8 @@ import {
   LuigiConfigNodesService,
   LuigiDataService,
   PortalContextProvider,
+  RequestContextProvider,
+  RequestContextProviderImpl,
   ServiceProviderService,
 } from './config/index.js';
 import { ConfigTransferNodeService } from './config/luigi/luigi-data/config-transfer-node.service.js';
