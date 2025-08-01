@@ -105,7 +105,6 @@ describe('ConfigController', () => {
       expect(config.providers).toBe(resultingNodes);
       expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
         key: 'val',
-        organization: 'app',
       });
     });
 
