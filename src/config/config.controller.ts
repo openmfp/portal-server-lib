@@ -3,6 +3,7 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
+  REQUEST_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens.js';
 import { HeaderParserService } from '../services/index.js';
 import {
@@ -13,6 +14,7 @@ import {
 } from './context/entity-context-provider.js';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
 import { PortalContextProvider } from './context/portal-context-provider.js';
+import { RequestContextProvider } from './context/request-context-provider.js';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
 import { EntityParams } from './model/entity.js';
 import { PortalConfig } from './model/luigi.node.js';
@@ -40,6 +42,8 @@ export class ConfigController {
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
     private envService: EnvService,
+    @Inject(REQUEST_CONTEXT_INJECTION_TOKEN)
+    private requestContextProvider: RequestContextProvider,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
@@ -60,7 +64,7 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ): Promise<PortalConfig> {
     const token = this.headerParser.extractBearerToken(request);
-    const context = this.retrieveRequestContext(request);
+    const context = await this.requestContextProvider.getContextValues(request);
 
     const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [], acceptLanguage, context)
@@ -106,7 +110,7 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ) {
     const token = this.headerParser.extractBearerToken(request);
-    const context = this.retrieveRequestContext(request);
+    const context = await this.requestContextProvider.getContextValues(request);
 
     const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [params.entity], acceptLanguage, context)
@@ -139,12 +143,5 @@ export class ConfigController {
       throw v;
     }
     return v;
-  }
-
-  private retrieveRequestContext(request: Request) {
-    return {
-      ...request.query,
-      organization: this.envService.getDomain(request).idpName,
-    };
   }
 }

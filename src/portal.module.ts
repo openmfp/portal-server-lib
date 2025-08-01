@@ -5,6 +5,10 @@ import {
   NoopAuthCallback,
 } from './auth/index.js';
 import {
+  RequestContextProvider,
+  RequestContextProviderImpl,
+} from './config/context/request-context-provider.js';
+import {
   ConfigController,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
@@ -14,7 +18,6 @@ import {
   IntentResolveService,
   LuigiConfigNodesService,
   LuigiDataService,
-  OpenmfpPortalContextService,
   PortalContextProvider,
   ServiceProviderService,
 } from './config/index.js';
@@ -42,6 +45,7 @@ import {
   LOGOUT_CALLBACK_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
+  REQUEST_CONTEXT_INJECTION_TOKEN,
   SERVICE_PROVIDER_INJECTION_TOKEN,
 } from './injection-tokens.js';
 import { LocalNodesController } from './local-nodes/index.js';
@@ -98,6 +102,11 @@ export interface PortalModuleOptions {
    * The values will be available in the context under the property 'frameContext'
    */
   portalContextProvider?: Type<PortalContextProvider>;
+
+  /**
+   * Makes it possible to extend the request parameters context with additional data required and used by service providers
+   */
+  requestContextProvider?: Type<RequestContextProvider>;
 
   /**
    * Makes it possible to extend the luigi context with values relevant for the respective entity instance.
@@ -158,7 +167,6 @@ export class PortalModule implements NestModule {
       ConfigTransferNodeService,
       NodeExtendedDataService,
       AuthTokenService,
-      OpenmfpPortalContextService,
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
       {
@@ -179,7 +187,11 @@ export class PortalModule implements NestModule {
       },
       {
         provide: PORTAL_CONTEXT_INJECTION_TOKEN,
-        useClass: options.portalContextProvider || OpenmfpPortalContextService,
+        useClass: options.portalContextProvider,
+      },
+      {
+        provide: REQUEST_CONTEXT_INJECTION_TOKEN,
+        useClass: options.requestContextProvider || RequestContextProviderImpl,
       },
       {
         provide: ENTITY_CONTEXT_INJECTION_TOKEN,

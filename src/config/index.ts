@@ -10,6 +10,7 @@ export * from './model/content-configuration-validation.js';
 export * from './model/luigi.node.js';
 export * from './model/breadcrumb-badge.js';
 export * from './model/entity.js';
+export * from './context/index.js';
 export {
   EntityContextProvider,
   EntityContextProviders,
@@ -17,7 +18,6 @@ export {
   EntityAccessForbiddenException,
 } from './context/entity-context-provider.js';
 export { PortalContextProvider } from './context/portal-context-provider.js';
-export { OpenmfpPortalContextService } from './context/openmfp-portal-context.service.js';
 export { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
 export { IntentResolveService } from './luigi/luigi-data/intent-resolve.service.js';
 export { ConfigController } from './config.controller.js';
