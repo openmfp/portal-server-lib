@@ -176,7 +176,6 @@ describe('LocalNodesController', () => {
         )
         .mockResolvedValue(Promise.resolve(validationResults));
 
-      body = mock<ConfigDto>();
       body = {
         language: 'any',
         contentConfigurations: [
@@ -229,7 +228,7 @@ describe('LocalNodesController', () => {
       showBreadcrumbs: false,
       tabNav: true,
       urlSuffix: '/#/global-catalog',
-      viewGroup: undefined,
+      viewGroup: 'http://localhost:8080',
       viewUrl: 'http://localhost:8080/#/global-catalog',
       visibleForFeatureToggles: ['!global-catalog'],
     },
@@ -247,7 +246,7 @@ describe('LocalNodesController', () => {
       showBreadcrumbs: false,
       tabNav: true,
       urlSuffix: '/#/new-global-catalog',
-      viewGroup: undefined,
+      viewGroup: 'http://localhost:8080',
       viewUrl: 'http://localhost:8080/#/new-global-catalog',
       visibleForFeatureToggles: ['global-catalog'],
     },
@@ -263,7 +262,7 @@ describe('LocalNodesController', () => {
           isolateView: false,
           pathSegment: ':extClassName',
           urlSuffix: '/#/extensions/:extClassName',
-          viewGroup: undefined,
+          viewGroup: 'http://localhost:8080',
           viewUrl: 'http://localhost:8080/#/extensions/:extClassName',
         },
       ],
