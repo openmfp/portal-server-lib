@@ -108,16 +108,21 @@ export class ContentConfigurationLuigiDataService implements LuigiDataService {
       viewUrl: string,
       children = [];
 
-    if (node.url && node.viewGroup) {
+    if (node.viewGroup) {
+      viewGroup = node.viewGroup;
+    } else if (
+      urlTemplateUrl &&
+      (node.url || node.urlSuffix) &&
+      !node.isolateView
+    ) {
+      viewGroup = urlTemplateUrl;
+    } else if (node.url) {
       try {
         const nodeUrl = new URL(node.url);
-        viewGroup =
-          urlTemplateUrl + '#' + nodeUrl.origin + '#' + node.viewGroup;
+        viewGroup = nodeUrl.origin;
       } catch (e) {
         console.warn('Invalid URL: ', node.url);
       }
-    } else if (urlTemplateUrl && node.url && !node.isolateView) {
-      viewGroup = urlTemplateUrl;
     }
 
     this.processCompoundChildrenUrls(node.compound, urlTemplateUrl);

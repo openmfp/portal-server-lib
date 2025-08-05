@@ -176,7 +176,7 @@ describe('ContentConfigurationLuigiDataService', () => {
                       pathSegment: 'home',
                       label: 'Home',
                       url: 'https://example.com/home',
-                      viewGroup: 'main',
+                      viewGroup: 'https://example.com/viewGroup',
                     },
                     {
                       pathSegment: 'about',
@@ -192,11 +192,10 @@ describe('ContentConfigurationLuigiDataService', () => {
 
         const result = await service.getLuigiData(mockProvider, 'en');
 
-        expect(result[0].viewGroup).toContain(
-          'https://app.example.com#https://example.com#main',
-        );
+        expect(result[0].viewGroup).toContain('https://example.com/viewGroup');
         expect(result[0].viewUrl).toBe('https://example.com/home');
         expect(result[1].viewUrl).toBe('https://app.example.com/about');
+        expect(result[1].viewGroup).toBe('https://app.example.com');
       });
 
       it('should process compound children URLs', async () => {
