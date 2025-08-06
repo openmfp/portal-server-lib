@@ -198,6 +198,36 @@ describe('ContentConfigurationLuigiDataService', () => {
         expect(result[1].viewGroup).toBe('https://app.example.com');
       });
 
+      it('should resolve viewGroup only from node url', async () => {
+        const mockProvider: RawServiceProvider = {
+          contentConfiguration: [
+            {
+              luigiConfigFragment: {
+                data: {
+                  nodes: [
+                    {
+                      pathSegment: 'home',
+                      label: 'Home',
+                      url: 'https://example.com/home',
+                    },
+                    {
+                      pathSegment: 'about',
+                      label: 'About',
+                      url: 'about',
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        } as any as RawServiceProvider;
+
+        const result = await service.getLuigiData(mockProvider, 'en');
+
+        expect(result[0].viewGroup).toContain('https://example.com');
+        expect(result[1].viewGroup).toBeUndefined();
+      });
+
       it('should process compound children URLs', async () => {
         const mockProvider: RawServiceProvider = {
           contentConfiguration: [
