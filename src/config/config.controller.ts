@@ -12,9 +12,11 @@ import {
   EntityContextProviders,
   EntityNotFoundException,
 } from './context/entity-context-provider.js';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
-import { PortalContextProvider } from './context/portal-context-provider.js';
-import { RequestContextProvider } from './context/request-context-provider.js';
+import {
+  FeatureTogglesProvider,
+  PortalContextProvider,
+  RequestContextProvider,
+} from './context/index.js';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
 import { EntityParams } from './model/entity.js';
 import { PortalConfig } from './model/luigi.node.js';
@@ -81,7 +83,7 @@ export class ConfigController {
       });
 
     const portalContextPromise = this.portalContextProvider
-      .getContextValues(request, response, providersPromise)
+      .getContextValues(request, response)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
