@@ -1,5 +1,5 @@
 import { DiscoveryService } from './discovery.service.js';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 import _ from 'lodash';
 
@@ -94,6 +94,18 @@ export class EnvService {
   public async getCurrentAuthEnv(
     request: Request,
   ): Promise<ServerAuthVariables> {
+    const idpNames = this.getIdpNames();
+    if (!idpNames.length) {
+      throw new HttpException(
+        {
+          message: 'Identity provider not found nor configured',
+          error: 'The identity provider is not present!',
+          statusCode: HttpStatus.NOT_FOUND,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const baseDomainsToIdps = this.getBaseDomainsToIdp();
     const defaultTenant = baseDomainsToIdps.find(
       (x) => x.baseDomain === request.hostname,
@@ -128,12 +140,17 @@ export class EnvService {
       }
     }
 
-    throw new Error(
-      `${
-        request.hostname
-      } is not listed in the portal's base urls: '${baseDomainsToIdps
-        .map((x) => x.baseDomain)
-        .join(',')}'`,
+    throw new HttpException(
+      {
+        message: 'Domain not supported',
+        error: `${
+          request.hostname
+        } is not listed in the portal's base urls: '${baseDomainsToIdps
+          .map((x) => x.baseDomain)
+          .join(',')}'`,
+        statusCode: HttpStatus.NOT_FOUND,
+      },
+      HttpStatus.NOT_FOUND,
     );
   }
 
@@ -145,7 +162,14 @@ export class EnvService {
     const env = this.getEnv();
 
     if (!env.idpNames.includes(idpName)) {
-      throw new Error(`the idp '${idpName}' is not configured!`);
+      throw new HttpException(
+        {
+          message: 'Identity provider not configured',
+          error: `The idp '${idpName}' is not configured!`,
+          statusCode: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const idpEnvName = this.formatIdpNameForEnvVar(idpName);
@@ -166,10 +190,15 @@ export class EnvService {
 
     if (!oauthServerUrl || !oauthTokenUrl || !clientId || !clientSecret) {
       const hasClientSecret = !!clientSecret;
-      throw new Error(
-        `the idp ${idpName} is not properly configured. oauthServerUrl: '${oauthServerUrl}' oauthTokenUrl: '${oauthTokenUrl}' clientId: '${clientId}', has client secret (${clientSecretEnvVar}): ${String(
-          hasClientSecret,
-        )}`,
+      throw new HttpException(
+        {
+          message: 'Identity provider configuration incomplete',
+          error: `the idp ${idpName} is not properly configured. oauthServerUrl: '${oauthServerUrl}' oauthTokenUrl: '${oauthTokenUrl}' clientId: '${clientId}', has client secret (${clientSecretEnvVar}): ${String(
+            hasClientSecret,
+          )}`,
+          statusCode: HttpStatus.NOT_FOUND,
+        },
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -191,7 +220,7 @@ export class EnvService {
 
   private getIdpNames(): Array<string> {
     const idpNames = process.env.IDP_NAMES || '';
-    return idpNames.split(',');
+    return idpNames.split(',').filter(Boolean);
   }
 
   private formatIdpNameForEnvVar(idpName: string) {

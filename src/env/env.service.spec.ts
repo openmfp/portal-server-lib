@@ -1,5 +1,6 @@
 import { DiscoveryService } from './discovery.service.js';
 import { EnvService } from './env.service.js';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
 import { mock } from 'jest-mock-extended';
@@ -161,6 +162,46 @@ describe('EnvService', () => {
     });
 
     describe('getEnvWithAuth', () => {
+      it('should throw when no identity providers are configured', async () => {
+        delete process.env['IDP_NAMES'];
+
+        const request = mock<Request>();
+        request.hostname = 'app.k8s.ondemand.com';
+
+        try {
+          await service.getCurrentAuthEnv(request);
+          fail('Expected HttpException to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual({
+            message: 'Identity provider not found nor configured',
+            error: 'The identity provider is not present!',
+            statusCode: HttpStatus.NOT_FOUND,
+          });
+        }
+      });
+
+      it('should throw when IDP_NAMES is empty string', async () => {
+        process.env['IDP_NAMES'] = '';
+
+        const request = mock<Request>();
+        request.hostname = 'app.k8s.ondemand.com';
+
+        try {
+          await service.getCurrentAuthEnv(request);
+          fail('Expected HttpException to be thrown');
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual({
+            message: 'Identity provider not found nor configured',
+            error: 'The identity provider is not present!',
+            statusCode: HttpStatus.NOT_FOUND,
+          });
+        }
+      });
+
       it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT when discoveryService returns proper values', async () => {
         const request = mock<Request>();
         request.hostname = 'app.hyper.space';
@@ -283,9 +324,18 @@ describe('EnvService', () => {
         const request = mock<Request>();
         request.hostname = 'not-existing.app.k8s.ondemand2.com';
 
-        await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-          "not-existing.app.k8s.ondemand2.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
-        );
+        try {
+          await service.getCurrentAuthEnv(request);
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual({
+            message: 'Domain not supported',
+            error:
+              "not-existing.app.k8s.ondemand2.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
+            statusCode: HttpStatus.NOT_FOUND,
+          });
+        }
       });
 
       it('should return the base domain in case the idp is not existing in the env variables, and the organization indicated by the sub domain', async () => {
@@ -305,25 +355,56 @@ describe('EnvService', () => {
         request.hostname = 'app.k8s.ondemand.com';
         delete process.env[`TOKEN_URL_APP`];
 
-        await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(Error);
+        try {
+          await service.getCurrentAuthEnv(request);
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual(
+            expect.objectContaining({
+              message: 'Identity provider configuration incomplete',
+              statusCode: HttpStatus.NOT_FOUND,
+            }),
+          );
+        }
       });
 
       it('should throw when the domain is not existing', async () => {
         const request = mock<Request>();
         request.hostname = 'app-too.foo.com';
 
-        await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-          "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
-        );
+        try {
+          await service.getCurrentAuthEnv(request);
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual({
+            message: 'Domain not supported',
+            error:
+              "app-too.foo.com is not listed in the portal's base urls: 'app.k8s.ondemand.com,hyper.space,localhost'",
+            statusCode: HttpStatus.NOT_FOUND,
+          });
+        }
       });
 
       it('should throw when the idp is not properly configured', async () => {
         const request = mock<Request>();
         request.hostname = 'not-configured.app.k8s.ondemand.com';
 
-        await expect(service.getCurrentAuthEnv(request)).rejects.toThrow(
-          "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false",
-        );
+        try {
+          await service.getCurrentAuthEnv(request);
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+          expect(error.getResponse()).toEqual(
+            expect.objectContaining({
+              message: 'Identity provider configuration incomplete',
+              error:
+                "the idp not-configured is not properly configured. oauthServerUrl: 'undefined' oauthTokenUrl: 'undefined' clientId: 'undefined', has client secret (OIDC_CLIENT_SECRET_NOT_CONFIGURED): false",
+              statusCode: HttpStatus.NOT_FOUND,
+            }),
+          );
+        }
       });
     });
   });
