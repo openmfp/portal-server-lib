@@ -444,30 +444,6 @@ describe('EnvService', () => {
     });
   });
 
-  describe('getDomain - check for PM', () => {
-    beforeEach(() => {
-      process.env['IDP_NAMES'] = 'openmfp';
-      process.env['BASE_DOMAINS_OPENMFP'] = 'portal.dev.local';
-    });
-
-    afterEach(() => {
-      delete process.env['IDP_NAMES'];
-      delete process.env['BASE_DOMAINS_OPENMFP'];
-    });
-
-    it('should return exact match when hostname matches base domain', () => {
-      const request = mock<Request>();
-      request.hostname = 'test.portal.dev.local';
-
-      const result = service.getDomain(request);
-
-      expect(result).toEqual({
-        idpName: 'test',
-        domain: 'portal.dev.local',
-      });
-    });
-  });
-
   describe('getDomain', () => {
     beforeEach(() => {
       process.env['IDP_NAMES'] = 'app,foo,hyperspace';

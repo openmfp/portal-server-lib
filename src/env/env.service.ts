@@ -99,7 +99,7 @@ export class EnvService {
       throw new HttpException(
         {
           message: 'Identity provider not found nor configured',
-          error: `The identity provider is not present!`,
+          error: 'The identity provider is not present!',
           statusCode: HttpStatus.NOT_FOUND,
         },
         HttpStatus.NOT_FOUND,
