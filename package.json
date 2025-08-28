@@ -33,6 +33,8 @@
     "rxjs": ">=7.8.1"
   },
   "dependencies": {
+    "graphql": "16.11.0",
+    "graphql-request": "5.1.0",
     "@nestjs/axios": ">=3.0.0",
     "@nestjs/common": ">=10.0.0",
     "@nestjs/serve-static": ">=4.0.0",
