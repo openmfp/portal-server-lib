@@ -1,28 +1,33 @@
-import {
-  RequestContextProvider,
-} from '../../config/index.js';
+import { RequestContextProvider } from '../../config/index.js';
+import { EnvService } from '../../env/index.js';
 import { IAMService } from './models/iam-service.js';
 import { MUTATION_LOGIN } from './queries.js';
 import { Injectable } from '@nestjs/common';
 import { GraphQLClient } from 'graphql-request';
 
-
 @Injectable()
 export class IAMGraphQlService implements IAMService {
-  private client: GraphQLClient;
-
-  constructor(requestContextProvider: RequestContextProvider) {
-    const requestContext = requestContextProvider.getContextValues({});
-    const iamUrl = ''
-
-    this.client = new GraphQLClient(iamUrl);
-  }
+  constructor(
+    private requestContextProvider: RequestContextProvider,
+    private envService: EnvService,
+  ) {}
 
   async addUser(token: string): Promise<void> {
-    this.client.setHeader('authorization', `Bearer ${token}`);
-    this.client.request(MUTATION_LOGIN).catch((e) => {
-      console.error(e);
+    const serverAuthVariables = await this.envService.getCurrentAuthEnv({});
+    const requestContext = await this.requestContextProvider.getContextValues(
+      {},
+    );
+    const iamUrl = serverAuthVariables.oauthServerUrl;
+    const client = new GraphQLClient(iamUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    return undefined;
+
+    try {
+      const response = await client.request(MUTATION_LOGIN);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
