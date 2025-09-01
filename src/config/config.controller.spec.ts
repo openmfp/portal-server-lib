@@ -1,6 +1,5 @@
 import { EnvService } from '../env/index.js';
 import {
-  ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens.js';
@@ -93,8 +92,6 @@ describe('ConfigController', () => {
       const getNodesMock = jest
         .spyOn(luigiConfigNodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
-
-      jest.spyOn(envService, 'getDomain').mockReturnValue({ idpName: 'app' });
 
       const config = await controller.getConfig(
         requestMock,
