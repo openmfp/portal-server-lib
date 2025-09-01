@@ -1,7 +1,12 @@
-import { EnvService, ServerAuthVariables } from '../env/env.service.js';
+import { EnvService } from '../env/env.service.js';
+import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
 import { CookiesService } from '../services/index.js';
+import {
+  AuthConfigService,
+  ServerAuthVariables,
+} from './auth-config.service.js';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import type { Request, Response } from 'express';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -19,6 +24,8 @@ export interface AuthTokenData {
 @Injectable()
 export class AuthTokenService {
   constructor(
+    @Inject(AUTH_CONFIG_INJECTION_TOKEN)
+    private authConfigService: AuthConfigService,
     private envService: EnvService,
     private httpService: HttpService,
     private cookiesService: CookiesService,
@@ -35,16 +42,16 @@ export class AuthTokenService {
     response: Response,
     code: string,
   ): Promise<AuthTokenData> {
-    const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
-    const redirectUri = this.getRedirectUri(request, currentAuthEnv);
+    const authConfig = await this.authConfigService.getAuthConfig(request);
+    const redirectUri = this.getRedirectUri(request, authConfig);
 
     const body = new URLSearchParams({
-      client_id: currentAuthEnv.clientId,
+      client_id: authConfig.clientId,
       grant_type: 'authorization_code',
       redirect_uri: redirectUri,
       code: code,
     });
-    return this.requestToken(request, response, currentAuthEnv, body);
+    return this.requestToken(request, response, authConfig, body);
   }
 
   /**
@@ -58,23 +65,23 @@ export class AuthTokenService {
     response: Response,
     refreshToken: string,
   ): Promise<AuthTokenData> {
-    const currentAuthEnv = await this.envService.getCurrentAuthEnv(request);
+    const authConfig = await this.authConfigService.getAuthConfig(request);
 
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     });
-    return this.requestToken(request, response, currentAuthEnv, body);
+    return this.requestToken(request, response, authConfig, body);
   }
 
   private async requestToken(
     request: Request,
     response: Response,
-    currentAuthEnv: ServerAuthVariables,
+    authConfig: ServerAuthVariables,
     body: URLSearchParams,
   ): Promise<AuthTokenData> {
     const authorization = `${Buffer.from(
-      `${currentAuthEnv.clientId}:${currentAuthEnv.clientSecret}`,
+      `${authConfig.clientId}:${authConfig.clientSecret}`,
     ).toString('base64')}`;
 
     const redirectUriMsg =
@@ -83,7 +90,7 @@ export class AuthTokenService {
         : '';
     const tokenFetchResult = await firstValueFrom(
       this.httpService
-        .post<AuthTokenData>(currentAuthEnv.oauthTokenUrl, body, {
+        .post<AuthTokenData>(authConfig.oauthTokenUrl, body, {
           headers: {
             Authorization: `Basic ${authorization}`,
             'content-type': 'application/x-www-form-urlencoded',
