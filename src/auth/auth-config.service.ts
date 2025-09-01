@@ -54,18 +54,19 @@ export class EnvAuthConfigService implements AuthConfigService {
     }
 
     for (const baseDomainToIdp of baseDomainsToIdps) {
-      const r = this.getBaseDomainRegex(baseDomainToIdp.baseDomain);
-      const regExpExecArray = r.exec(request.hostname);
+      const baseDomainRegex = this.getBaseDomainRegex(
+        baseDomainToIdp.baseDomain,
+      );
+      const regExpExecArray = baseDomainRegex.exec(request.hostname);
       if (!regExpExecArray) {
         continue;
       }
 
-      let subDomain = regExpExecArray[1];
-      let subDomainIdpName = regExpExecArray[1];
       const env = this.envService.getEnv();
-      if (!env.idpNames.includes(subDomainIdpName)) {
-        subDomainIdpName = baseDomainToIdp.idpName;
-      }
+      const subDomain = regExpExecArray[1];
+      const subDomainIdpName = env.idpNames.includes(subDomain)
+        ? subDomain
+        : baseDomainToIdp.idpName;
 
       if (regExpExecArray.length > 1) {
         return await this.getAuthEnv(
@@ -112,13 +113,10 @@ export class EnvAuthConfigService implements AuthConfigService {
 
     const oidc = await this.discoveryService.getOIDC(idpEnvName);
     const oauthServerUrl =
-      oidc && oidc.authorization_endpoint
-        ? oidc.authorization_endpoint
-        : process.env[`AUTH_SERVER_URL_${idpEnvName}`];
+      oidc?.authorization_endpoint ??
+      process.env[`AUTH_SERVER_URL_${idpEnvName}`];
     const oauthTokenUrl =
-      oidc && oidc.token_endpoint
-        ? oidc.token_endpoint
-        : process.env[`TOKEN_URL_${idpEnvName}`];
+      oidc?.token_endpoint ?? process.env[`TOKEN_URL_${idpEnvName}`];
 
     const clientId = process.env[`OIDC_CLIENT_ID_${idpEnvName}`];
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
@@ -190,13 +188,15 @@ export class EnvAuthConfigService implements AuthConfigService {
     }
 
     for (const baseDomainToIdp of baseDomainsToIdps) {
-      const r = this.getBaseDomainRegex(baseDomainToIdp.baseDomain);
-      const regExpExecArray = r.exec(request.hostname);
+      const baseDomainRegex = this.getBaseDomainRegex(
+        baseDomainToIdp.baseDomain,
+      );
+      const regExpExecArray = baseDomainRegex.exec(request.hostname);
       if (!regExpExecArray) {
         continue;
       }
 
-      let subDomainIdpName = regExpExecArray[1];
+      const subDomainIdpName = regExpExecArray[1];
       return {
         idpName: subDomainIdpName,
         domain: baseDomainToIdp.baseDomain,
