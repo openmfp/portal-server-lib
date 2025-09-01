@@ -1,4 +1,3 @@
-import { EnvService } from '../env/index.js';
 import {
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
@@ -33,7 +32,6 @@ describe('ConfigController', () => {
   let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  let envService: EnvService;
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
@@ -59,7 +57,6 @@ describe('ConfigController', () => {
     luigiConfigNodesService = module.get<LuigiConfigNodesService>(
       LuigiConfigNodesService,
     );
-    envService = module.get<EnvService>(EnvService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN,
