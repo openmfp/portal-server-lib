@@ -1,4 +1,3 @@
-import { EnvService } from '../env/index.js';
 import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -43,7 +42,6 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
-    private envService: EnvService,
     @Inject(REQUEST_CONTEXT_INJECTION_TOKEN)
     private requestContextProvider: RequestContextProvider,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)

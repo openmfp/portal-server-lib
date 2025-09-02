@@ -1,10 +1,13 @@
+import { AuthConfigService, ServerAuthVariables } from '../auth/index.js';
 import { EnvVariablesServiceImpl } from './env-variables.service.js';
-import { EnvService, ServerAuthVariables } from './env.service.js';
+import { EnvService } from './env.service.js';
 import type { Request, Response } from 'express';
+import { mock } from 'jest-mock-extended';
 
 describe('EnvVariablesServiceImpl', () => {
   let envVariablesService: EnvVariablesServiceImpl;
   let envServiceMock: EnvService;
+  let authConfigServiceMock: jest.Mocked<AuthConfigService>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
 
@@ -14,7 +17,6 @@ describe('EnvVariablesServiceImpl', () => {
     clientId: 'clientId',
     idpName: 'idpName',
     baseDomain: 'baseDomain',
-    organization: 'organization',
     clientSecret: 'clientSecret',
   };
 
@@ -27,11 +29,16 @@ describe('EnvVariablesServiceImpl', () => {
 
   beforeEach(() => {
     envServiceMock = {
-      getCurrentAuthEnv: jest.fn().mockReturnValue(currentAuthEnv),
       getEnv: jest.fn().mockReturnValue(env),
     } as any;
 
-    envVariablesService = new EnvVariablesServiceImpl(envServiceMock);
+    authConfigServiceMock = mock();
+    authConfigServiceMock.getAuthConfig.mockResolvedValue(currentAuthEnv);
+
+    envVariablesService = new EnvVariablesServiceImpl(
+      envServiceMock,
+      authConfigServiceMock,
+    );
 
     mockRequest = {};
     mockResponse = {};
@@ -47,7 +54,6 @@ describe('EnvVariablesServiceImpl', () => {
       expect(result).toEqual({
         idpName: 'idpName',
         baseDomain: 'baseDomain',
-        organization: 'organization',
         oauthServerUrl: 'oauthServerUrl',
         oauthTokenUrl: 'oauthTokenUrl',
         clientId: 'clientId',

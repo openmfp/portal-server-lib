@@ -1,6 +1,4 @@
-import { EnvService } from '../env/index.js';
 import {
-  ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens.js';
@@ -34,7 +32,6 @@ describe('ConfigController', () => {
   let portalContextProvider: PortalContextProvider;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
-  let envService: EnvService;
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
@@ -60,7 +57,6 @@ describe('ConfigController', () => {
     luigiConfigNodesService = module.get<LuigiConfigNodesService>(
       LuigiConfigNodesService,
     );
-    envService = module.get<EnvService>(EnvService);
     headerParserService = module.get<HeaderParserService>(HeaderParserService);
     featureTogglesProvider = module.get<FeatureTogglesProvider>(
       FEATURE_TOGGLES_INJECTION_TOKEN,
@@ -93,8 +89,6 @@ describe('ConfigController', () => {
       const getNodesMock = jest
         .spyOn(luigiConfigNodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
-
-      jest.spyOn(envService, 'getDomain').mockReturnValue({ idpName: 'app' });
 
       const config = await controller.getConfig(
         requestMock,
