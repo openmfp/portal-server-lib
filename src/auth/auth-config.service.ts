@@ -19,7 +19,6 @@ export interface ServerAuthVariables {
 
 export interface AuthConfigService {
   getAuthConfig(request: Request): Promise<ServerAuthVariables>;
-  getDomain(request: Request): { idpName?: string; domain?: string };
 }
 
 @Injectable()
@@ -173,36 +172,6 @@ export class EnvAuthConfigService implements AuthConfigService {
 
   private formatIdpNameForEnvVar(idpName: string) {
     return idpName.toUpperCase().replace('-', '_');
-  }
-
-  public getDomain(request: Request): { idpName?: string; domain?: string } {
-    const baseDomainsToIdps = this.getBaseDomainsToIdp();
-    const defaultTenant = baseDomainsToIdps.find(
-      (x) => x.baseDomain === request.hostname,
-    );
-    if (defaultTenant) {
-      return {
-        idpName: defaultTenant.idpName,
-        domain: defaultTenant.baseDomain,
-      };
-    }
-
-    for (const baseDomainToIdp of baseDomainsToIdps) {
-      const baseDomainRegex = this.getBaseDomainRegex(
-        baseDomainToIdp.baseDomain,
-      );
-      const regExpExecArray = baseDomainRegex.exec(request.hostname);
-      if (!regExpExecArray) {
-        continue;
-      }
-
-      const subDomainIdpName = regExpExecArray[1];
-      return {
-        idpName: subDomainIdpName,
-        domain: baseDomainToIdp.baseDomain,
-      };
-    }
-    return {};
   }
 
   private getBaseDomainRegex(baseDomain: string): RegExp {
