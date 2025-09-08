@@ -139,7 +139,13 @@ export interface LuigiNode extends PortalLuigiNodeExtensions {
   viewUrl?: string;
   visibleForFeatureToggles?: string[];
   virtualTree?: boolean;
-  webcomponent?: boolean;
+  webcomponent?:
+    | boolean
+    | {
+        selfRegistered: boolean;
+        type?: string;
+        tagName?: string;
+      };
 
   // undocumented luigi features
   navHeader?: any; // experimental
