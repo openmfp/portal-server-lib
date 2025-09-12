@@ -177,8 +177,8 @@ describe('ConfigController', () => {
         .accept(acceptLanguage)
         .expect(200);
 
-      expect(getNodesMock).toBeCalled();
-      expect(getEntityContextMock).toBeCalled();
+      expect(getNodesMock).toHaveBeenCalled();
+      expect(getEntityContextMock).toHaveBeenCalled();
       expect(body).toStrictEqual({ providers: resultingNodes, entityContext });
     });
   });

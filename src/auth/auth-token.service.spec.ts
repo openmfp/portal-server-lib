@@ -126,7 +126,7 @@ describe('AuthTokenService', () => {
             responseMock,
             refreshToken,
           ),
-        ).rejects.toThrowError(
+        ).rejects.toThrow(
           'Unexpected response code from auth token server: 206, Partial Content',
         );
       });
@@ -207,7 +207,7 @@ describe('AuthTokenService', () => {
         code,
       );
 
-      await expect(authTokenResponsePromise).rejects.toThrowError(
+      await expect(authTokenResponsePromise).rejects.toThrow(
         'Error response from auth token server: AxiosError: Request failed with status code 500',
       );
       delete process.env['FRONTEND_PORT'];

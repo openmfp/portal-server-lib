@@ -6,7 +6,6 @@ import {
 } from '../src/index.js';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
 import request from 'supertest';
 
 describe('LocalnodesController', () => {
@@ -127,8 +126,8 @@ describe('LocalnodesController', () => {
         })
         .expect(201);
 
-      expect(validateContentConfiguration).toBeCalled();
-      expect(getLuigiData).toBeCalled();
+      expect(validateContentConfiguration).toHaveBeenCalled();
+      expect(getLuigiData).toHaveBeenCalled();
       expect(body).toStrictEqual({ nodes: [] });
     });
   });
