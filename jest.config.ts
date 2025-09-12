@@ -1,6 +1,6 @@
-const baseConfig = require('./base.jest.config.cjs');
+import baseConfig from './base.jest.config.cjs';
 
-module.exports = {
+export default {
   ...baseConfig,
   rootDir: 'src',
   testRegex: '.spec.ts$',
