@@ -1,11 +1,12 @@
+import { AuthConfigService } from '../auth/auth-config.service.js';
+import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
 import { EnvService, EnvVariables } from './env.service.js';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 export interface EnvConfigVariables extends EnvVariables {
   idpName: string;
   baseDomain: string;
-  organization: string;
   oauthServerUrl: string;
   oauthTokenUrl: string;
   clientId: string;
@@ -20,20 +21,18 @@ export interface EnvVariablesService {
 
 @Injectable()
 export class EnvVariablesServiceImpl implements EnvVariablesService {
-  constructor(private envService: EnvService) {}
+  constructor(
+    private envService: EnvService,
+    @Inject(AUTH_CONFIG_INJECTION_TOKEN)
+    private authConfigService: AuthConfigService,
+  ) {}
 
   async getEnv(
     request: Request,
     response: Response,
   ): Promise<EnvConfigVariables> {
-    const {
-      oauthServerUrl,
-      oauthTokenUrl,
-      clientId,
-      idpName,
-      baseDomain,
-      organization,
-    } = await this.envService.getCurrentAuthEnv(request);
+    const { oauthServerUrl, oauthTokenUrl, clientId, idpName, baseDomain } =
+      await this.authConfigService.getAuthConfig(request);
     const {
       validWebcomponentUrls,
       logoutRedirectUrl,
@@ -43,7 +42,6 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     return {
       idpName,
       baseDomain,
-      organization,
       oauthServerUrl,
       oauthTokenUrl,
       clientId,

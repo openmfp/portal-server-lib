@@ -2,6 +2,7 @@ import {
   ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
+  REQUEST_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens.js';
 import { HeaderParserService } from '../services/index.js';
 import {
@@ -10,8 +11,11 @@ import {
   EntityContextProviders,
   EntityNotFoundException,
 } from './context/entity-context-provider.js';
-import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
-import { PortalContextProvider } from './context/portal-context-provider.js';
+import {
+  FeatureTogglesProvider,
+  PortalContextProvider,
+  RequestContextProvider,
+} from './context/index.js';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
 import { EntityParams } from './model/entity.js';
 import { PortalConfig } from './model/luigi.node.js';
@@ -38,6 +42,8 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
+    @Inject(REQUEST_CONTEXT_INJECTION_TOKEN)
+    private requestContextProvider: RequestContextProvider,
     @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
     private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
@@ -58,9 +64,10 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ): Promise<PortalConfig> {
     const token = this.headerParser.extractBearerToken(request);
+    const context = await this.requestContextProvider.getContextValues(request);
 
     const providersPromise = this.luigiConfigNodesService
-      .getNodes(token, [], acceptLanguage)
+      .getNodes(token, [], acceptLanguage, context)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -74,7 +81,7 @@ export class ConfigController {
       });
 
     const portalContextPromise = this.portalContextProvider
-      .getContextValues(request, response, providersPromise)
+      .getContextValues(request, response)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -103,9 +110,13 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ) {
     const token = this.headerParser.extractBearerToken(request);
+    const context = await this.requestContextProvider.getContextValues(
+      request,
+      params.entity,
+    );
 
     const providersPromise = this.luigiConfigNodesService
-      .getNodes(token, [params.entity], acceptLanguage, request.query)
+      .getNodes(token, [params.entity], acceptLanguage, context)
       .catch((e: Error) => {
         this.logger.error(e);
         return e;
@@ -113,7 +124,7 @@ export class ConfigController {
 
     const eCP = this.entityContextProviders[params.entity];
     const entityContextPromise = eCP
-      ? eCP.getContextValues(token, request.query).catch((e: Error) => {
+      ? eCP.getContextValues(token, context).catch((e: Error) => {
           this.logger.error(e);
           return e;
         })

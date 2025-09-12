@@ -46,11 +46,19 @@ export class LocalNodesController {
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: ExpressResponse,
   ): Promise<TransformResult> {
-    const validationResultsErrors = await this.validate(
-      config.contentConfigurations,
-    );
-    if (validationResultsErrors.length) {
-      return { errors: validationResultsErrors };
+    const validationResults =
+      await this.contentConfigurationValidatorService.validateContentConfigurations(
+        config.contentConfigurations,
+      );
+
+    if (
+      validationResults.some(
+        (validationResult) =>
+          validationResult.validationErrors &&
+          validationResult.validationErrors.length,
+      )
+    ) {
+      return { errors: validationResults };
     }
 
     try {
@@ -72,20 +80,5 @@ export class LocalNodesController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  private async validate(
-    contentConfigurations: ContentConfiguration[],
-  ): Promise<ValidationResult[]> {
-    const validationResults =
-      await this.contentConfigurationValidatorService.validateContentConfigurations(
-        contentConfigurations,
-      );
-
-    return validationResults.filter(
-      (validationResult) =>
-        validationResult.validationErrors &&
-        validationResult.validationErrors.length,
-    );
   }
 }

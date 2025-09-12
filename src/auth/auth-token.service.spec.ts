@@ -1,6 +1,10 @@
 import { EnvService } from '../env/index.js';
 import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
+import {
+  AuthConfigService,
+  EnvAuthConfigService,
+} from './auth-config.service.js';
 import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +18,7 @@ describe('AuthTokenService', () => {
   let requestMock: Request;
   let envService: EnvService;
   let authCallbackMock: AuthCallback;
+  let authConfigService: AuthConfigService;
 
   beforeEach(async () => {
     process.env['IDP_NAMES'] = 'app';
@@ -34,6 +39,7 @@ describe('AuthTokenService', () => {
 
     service = module.get<AuthTokenService>(AuthTokenService);
     envService = module.get<EnvService>(EnvService);
+    authConfigService = module.get<AuthConfigService>(EnvAuthConfigService);
     responseMock = mock<Response>();
     requestMock = mock<Request>();
   });
@@ -85,7 +91,7 @@ describe('AuthTokenService', () => {
 
       it('should set the cookies', async () => {
         // Arrange
-        nock((await envService.getCurrentAuthEnv(requestMock)).oauthTokenUrl)
+        nock((await authConfigService.getAuthConfig(requestMock)).oauthTokenUrl)
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -105,7 +111,7 @@ describe('AuthTokenService', () => {
 
       it('should not set the cookies, authorization exception', async () => {
         // Arrange
-        nock((await envService.getCurrentAuthEnv(requestMock)).oauthTokenUrl)
+        nock((await authConfigService.getAuthConfig(requestMock)).oauthTokenUrl)
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -129,14 +135,14 @@ describe('AuthTokenService', () => {
     describe('token for code - authorization_code flow', () => {
       it('should set the cookies', async () => {
         // Arrange
-        const env = await envService.getCurrentAuthEnv(requestMock);
+        const env = await authConfigService.getAuthConfig(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
           .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
-            redirect_uri: `http://localhost:4300/callback?storageType=none`,
+            redirect_uri: `http://localhost/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
@@ -155,14 +161,14 @@ describe('AuthTokenService', () => {
       it('should set the cookies for none local env', async () => {
         // Arrange
         process.env['ENVIRONMENT'] = 'prod';
-        const env = await envService.getCurrentAuthEnv(requestMock);
+        const env = await authConfigService.getAuthConfig(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
           .post('', {
             client_id: env.clientId,
             grant_type: 'authorization_code',
-            redirect_uri: `https://example.com:4300/callback?storageType=none`,
+            redirect_uri: `https://example.com/callback?storageType=none`,
             code: code,
           })
           .reply(200, serverResponse);
@@ -181,14 +187,15 @@ describe('AuthTokenService', () => {
 
     it('handles an auth server error', async () => {
       // Arrange
-      const env = await envService.getCurrentAuthEnv(requestMock);
+      process.env['FRONTEND_PORT'] = '4700';
+      const env = await authConfigService.getAuthConfig(requestMock);
       const code = 'secret code';
 
       nock(env.oauthTokenUrl)
         .post('', {
           client_id: env.clientId,
           grant_type: 'authorization_code',
-          redirect_uri: `http://localhost:4300/callback?storageType=none`,
+          redirect_uri: `http://localhost:4700/callback?storageType=none`,
           code: code,
         })
         .reply(500, 'oh nose');
@@ -203,6 +210,7 @@ describe('AuthTokenService', () => {
       await expect(authTokenResponsePromise).rejects.toThrowError(
         'Error response from auth token server: AxiosError: Request failed with status code 500',
       );
+      delete process.env['FRONTEND_PORT'];
     });
   });
 });

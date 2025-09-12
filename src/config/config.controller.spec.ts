@@ -1,5 +1,4 @@
 import {
-  ENTITY_CONTEXT_INJECTION_TOKEN,
   FEATURE_TOGGLES_INJECTION_TOKEN,
   PORTAL_CONTEXT_INJECTION_TOKEN,
 } from '../injection-tokens.js';
@@ -53,6 +52,7 @@ describe('ConfigController', () => {
         }),
       ],
     }).compile();
+
     controller = module.get<ConfigController>(ConfigController);
     luigiConfigNodesService = module.get<LuigiConfigNodesService>(
       LuigiConfigNodesService,
@@ -97,7 +97,9 @@ describe('ConfigController', () => {
       );
 
       expect(config.providers).toBe(resultingNodes);
-      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage);
+      expect(getNodesMock).toHaveBeenCalledWith(token, [], acceptLanguage, {
+        key: 'val',
+      });
     });
 
     it('should handle portalContextProvider error', async () => {

@@ -176,7 +176,6 @@ describe('LocalNodesController', () => {
         )
         .mockResolvedValue(Promise.resolve(validationResults));
 
-      body = mock<ConfigDto>();
       body = {
         language: 'any',
         contentConfigurations: [
@@ -194,7 +193,7 @@ describe('LocalNodesController', () => {
 
   const expectedResultFormProcessing = [
     {
-      _preloadUrl: '/#/preload',
+      _preloadUrl: 'http://localhost:8080/#/preload',
       _requiredIFramePermissionsForViewGroup: undefined,
       _userSettingsConfig: {
         groups: {
@@ -212,7 +211,7 @@ describe('LocalNodesController', () => {
             },
             sublabel: 'sublabel',
             title: 'title',
-            viewUrl: 'viewUrl',
+            viewUrl: 'http://localhost:8080/viewUrl',
           },
         },
       },
@@ -229,8 +228,8 @@ describe('LocalNodesController', () => {
       showBreadcrumbs: false,
       tabNav: true,
       urlSuffix: '/#/global-catalog',
-      viewGroup: undefined,
-      viewUrl: undefined,
+      viewGroup: 'http://localhost:8080',
+      viewUrl: 'http://localhost:8080/#/global-catalog',
       visibleForFeatureToggles: ['!global-catalog'],
     },
     {
@@ -247,8 +246,8 @@ describe('LocalNodesController', () => {
       showBreadcrumbs: false,
       tabNav: true,
       urlSuffix: '/#/new-global-catalog',
-      viewGroup: undefined,
-      viewUrl: undefined,
+      viewGroup: 'http://localhost:8080',
+      viewUrl: 'http://localhost:8080/#/new-global-catalog',
       visibleForFeatureToggles: ['global-catalog'],
     },
     {
@@ -263,8 +262,8 @@ describe('LocalNodesController', () => {
           isolateView: false,
           pathSegment: ':extClassName',
           urlSuffix: '/#/extensions/:extClassName',
-          viewGroup: undefined,
-          viewUrl: undefined,
+          viewGroup: 'http://localhost:8080',
+          viewUrl: 'http://localhost:8080/#/extensions/:extClassName',
         },
       ],
       context: {},
@@ -282,6 +281,7 @@ describe('LocalNodesController', () => {
     creationTimestamp: undefined,
     name: 'extension-manager',
     contentType: 'json',
+    url: 'http://localhost:8080',
     luigiConfigFragment: {
       data: {
         userSettings: {
@@ -291,7 +291,7 @@ describe('LocalNodesController', () => {
               sublabel: 'sublabel',
               title: 'title',
               icon: 'icon',
-              viewUrl: 'viewUrl',
+              viewUrl: '/viewUrl',
               settings: {
                 option1: {
                   type: 'type',
