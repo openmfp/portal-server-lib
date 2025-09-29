@@ -110,7 +110,8 @@ export class EnvAuthConfigService implements AuthConfigService {
 
     const idpEnvName = this.formatIdpNameForEnvVar(idpName);
 
-    const oidc = await this.discoveryService.getOIDC(idpEnvName);
+    const oidcUrl = process.env[`DISCOVERY_ENDPOINT_${idpEnvName}`];
+    const oidc = await this.discoveryService.getOIDC(oidcUrl);
     const oauthServerUrl =
       oidc?.authorization_endpoint ??
       process.env[`AUTH_SERVER_URL_${idpEnvName}`];

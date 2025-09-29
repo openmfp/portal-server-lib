@@ -1,4 +1,4 @@
-import { EnvService } from '../env/env.service.js';
+import { EnvService } from '../env/index.js';
 import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
 import { CookiesService } from '../services/index.js';
 import {
@@ -43,7 +43,7 @@ export class AuthTokenService {
     code: string,
   ): Promise<AuthTokenData> {
     const authConfig = await this.authConfigService.getAuthConfig(request);
-    const redirectUri = this.getRedirectUri(request, authConfig);
+    const redirectUri = this.getRedirectUri(request);
 
     const body = new URLSearchParams({
       client_id: authConfig.clientId,
@@ -127,10 +127,7 @@ export class AuthTokenService {
    *  When running locally after executing token retrieval the call will be redirected to localhost and port set in FRONTEND_PORT system variable,
    *  otherwise to the host of the initiating request
    */
-  private getRedirectUri(
-    request: Request,
-    currentAuthEnv: ServerAuthVariables,
-  ) {
+  private getRedirectUri(request: Request) {
     let redirectionUrl: string;
     const env = this.envService.getEnv();
     const isStandardOrEmptyPort =
@@ -141,7 +138,7 @@ export class AuthTokenService {
     if (env.isLocal) {
       redirectionUrl = `http://localhost${port}`;
     } else {
-      redirectionUrl = `https://${currentAuthEnv.baseDomain}${port}`;
+      redirectionUrl = `https://${request.hostname}${port}`;
     }
     return `${redirectionUrl}/callback?storageType=none`;
   }
