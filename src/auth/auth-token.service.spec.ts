@@ -77,11 +77,10 @@ describe('AuthTokenService', () => {
         'openmfp_auth_cookie',
         refreshTokenValue,
         {
-          domain: 'example.com',
           path: '/',
           httpOnly: true,
           secure: true,
-          sameSite: 'lax',
+          sameSite: 'strict',
         },
       );
     }

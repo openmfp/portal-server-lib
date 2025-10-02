@@ -1,4 +1,4 @@
-import { AuthTokenData } from '../auth/auth-token.service.js';
+import { AuthTokenData } from '../auth/index.js';
 import { CookiesService } from './cookies.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
@@ -56,11 +56,10 @@ describe('CookiesService', () => {
         'openmfp_auth_cookie',
         'test-refresh-token',
         {
-          domain: 'test-hostname',
           path: '/',
           httpOnly: true,
           secure: true,
-          sameSite: 'lax',
+          sameSite: 'strict',
         },
       );
     });
@@ -81,10 +80,9 @@ describe('CookiesService', () => {
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
         'openmfp_auth_cookie',
         {
-          domain: 'test-hostname',
           httpOnly: true,
           path: '/',
-          sameSite: 'lax',
+          sameSite: 'strict',
           secure: true,
         },
       );
