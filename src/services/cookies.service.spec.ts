@@ -56,7 +56,6 @@ describe('CookiesService', () => {
         'openmfp_auth_cookie',
         'test-refresh-token',
         {
-          domain: 'test-hostname',
           path: '/',
           httpOnly: true,
           secure: true,
@@ -81,7 +80,6 @@ describe('CookiesService', () => {
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
         'openmfp_auth_cookie',
         {
-          domain: 'test-hostname',
           httpOnly: true,
           path: '/',
           sameSite: 'strict',
