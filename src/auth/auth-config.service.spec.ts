@@ -113,6 +113,7 @@ describe('EnvAuthConfigService', () => {
         discoveryServiceMockGetOIDC.mockResolvedValue({
           authorization_endpoint: 'example.com/authorization_endpoint',
           token_endpoint: 'example.com/token_endpoint',
+          issuer: 'example.com/oidcIssuerUrl',
         });
 
         process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
