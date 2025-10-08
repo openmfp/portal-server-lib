@@ -1,5 +1,8 @@
-import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens';
-import { EnvVariablesService } from './env-variables.service';
+import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens.js';
+import {
+  EnvConfigVariables,
+  EnvVariablesService,
+} from './env-variables.service.js';
 import { EnvController } from './env.controller.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
@@ -35,7 +38,7 @@ describe('EnvController', () => {
       isLocal: false,
       idpNames: [],
       frontendPort: '',
-    };
+    } as EnvConfigVariables;
 
     beforeEach(function () {
       envVariablesProvider.getEnv.mockReturnValue(Promise.resolve(env));

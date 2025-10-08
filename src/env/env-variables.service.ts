@@ -15,10 +15,7 @@ export interface EnvConfigVariables extends EnvVariables {
 }
 
 export interface EnvVariablesService {
-  getEnv: (
-    request: Request,
-    response: Response,
-  ) => Promise<Record<string, any>>;
+  getEnv: (request: Request, response: Response) => Promise<EnvConfigVariables>;
 }
 
 @Injectable()
