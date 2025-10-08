@@ -10,7 +10,6 @@ export interface EnvConfigVariables extends EnvVariables {
   oauthServerUrl: string;
   oauthTokenUrl: string;
   oidcIssuerUrl?: string;
-  clusterServerUrl?: string;
   clientId: string;
 }
 
@@ -34,7 +33,6 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       oauthServerUrl,
       oauthTokenUrl,
       oidcIssuerUrl,
-      clusterServerUrl,
       clientId,
       idpName,
       baseDomain,
@@ -51,7 +49,6 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       oauthServerUrl,
       oauthTokenUrl,
       oidcIssuerUrl,
-      clusterServerUrl,
       clientId,
       validWebcomponentUrls,
       logoutRedirectUrl,

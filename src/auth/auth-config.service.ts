@@ -16,7 +16,6 @@ export interface ServerAuthVariables {
   clientId: string;
   clientSecret: string;
   oidcIssuerUrl: string;
-  clusterServerUrl?: string;
 }
 
 export interface AuthConfigService {
