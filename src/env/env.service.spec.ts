@@ -120,6 +120,14 @@ describe('EnvService', () => {
     delete process.env['VALID_WEBCOMPONENT_URLS'];
   });
 
+  it('should the uiOptions', () => {
+    process.env['UI_OPTIONS'] = 'ab,cd';
+
+    expect(service.getEnv().uiOptions).toEqual(['ab', 'cd']);
+
+    delete process.env['UI_OPTIONS'];
+  });
+
   describe('getFeatureToggles', function () {
     [
       {
