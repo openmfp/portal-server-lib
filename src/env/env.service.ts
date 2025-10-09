@@ -11,6 +11,7 @@ export interface EnvVariables extends Record<string, any> {
   frontendPort?: string;
   developmentInstance?: boolean;
   validWebcomponentUrls?: string[];
+  uiOptions?: string[];
 }
 
 @Injectable()
@@ -28,6 +29,7 @@ export class EnvService {
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
         ',',
       ),
+      uiOptions: (process.env.UI_OPTIONS || '').split(','),
     };
   }
 

@@ -26,6 +26,7 @@ describe('EnvVariablesServiceImpl', () => {
     logoutRedirectUrl: 'logoutRedirectUrl',
     isLocal: true,
     developmentInstance: true,
+    uiOptions: 'uiOptions',
   };
 
   beforeEach(() => {
@@ -63,6 +64,7 @@ describe('EnvVariablesServiceImpl', () => {
         logoutRedirectUrl: 'logoutRedirectUrl',
         isLocal: true,
         developmentInstance: true,
+        uiOptions: 'uiOptions',
       });
     });
 

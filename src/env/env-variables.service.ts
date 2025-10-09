@@ -42,6 +42,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       logoutRedirectUrl,
       isLocal,
       developmentInstance,
+      uiOptions,
     } = this.envService.getEnv();
     return {
       idpName,
@@ -54,6 +55,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       logoutRedirectUrl,
       isLocal,
       developmentInstance,
+      uiOptions,
     };
   }
 }
