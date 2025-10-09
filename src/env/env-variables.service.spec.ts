@@ -14,6 +14,7 @@ describe('EnvVariablesServiceImpl', () => {
   const currentAuthEnv: ServerAuthVariables = {
     oauthServerUrl: 'oauthServerUrl',
     oauthTokenUrl: 'oauthTokenUrl',
+    oidcIssuerUrl: 'oidcIssuerUrl',
     clientId: 'clientId',
     idpName: 'idpName',
     baseDomain: 'baseDomain',
@@ -57,6 +58,7 @@ describe('EnvVariablesServiceImpl', () => {
         baseDomain: 'baseDomain',
         oauthServerUrl: 'oauthServerUrl',
         oauthTokenUrl: 'oauthTokenUrl',
+        oidcIssuerUrl: 'oidcIssuerUrl',
         clientId: 'clientId',
         validWebcomponentUrls: 'validWebcomponentUrls',
         logoutRedirectUrl: 'logoutRedirectUrl',

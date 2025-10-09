@@ -4,6 +4,7 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 
 interface OIDC {
+  issuer: string;
   authorization_endpoint: string;
   token_endpoint: string;
 }

@@ -15,6 +15,7 @@ export interface ServerAuthVariables {
   oauthTokenUrl: string;
   clientId: string;
   clientSecret: string;
+  oidcIssuerUrl: string;
 }
 
 export interface AuthConfigService {
@@ -144,10 +145,11 @@ export class EnvAuthConfigService implements AuthConfigService {
     return {
       idpName,
       baseDomain,
-      oauthServerUrl: oauthServerUrl,
-      clientId: clientId,
-      clientSecret: clientSecret,
-      oauthTokenUrl: oauthTokenUrl,
+      oauthServerUrl,
+      clientId,
+      clientSecret,
+      oauthTokenUrl,
+      oidcIssuerUrl: oidc?.issuer ?? '',
     };
   }
 

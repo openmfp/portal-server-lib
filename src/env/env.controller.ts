@@ -1,5 +1,8 @@
 import { ENV_VARIABLES_PROVIDER_INJECTION_TOKEN } from '../injection-tokens.js';
-import { EnvVariablesService } from './env-variables.service.js';
+import {
+  EnvConfigVariables,
+  EnvVariablesService,
+} from './env-variables.service.js';
 import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
@@ -14,7 +17,7 @@ export class EnvController {
   async getEnv(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<Record<string, any>> {
+  ): Promise<EnvConfigVariables> {
     return this.envVariablesProvider.getEnv(request, response);
   }
 }
