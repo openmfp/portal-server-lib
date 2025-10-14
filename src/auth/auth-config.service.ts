@@ -16,6 +16,7 @@ export interface ServerAuthVariables {
   clientId: string;
   clientSecret: string;
   oidcIssuerUrl: string;
+  endSessionUrl?: string;
 }
 
 export interface AuthConfigService {
