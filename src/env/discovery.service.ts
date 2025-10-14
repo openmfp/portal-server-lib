@@ -7,6 +7,7 @@ interface OIDC {
   issuer: string;
   authorization_endpoint: string;
   token_endpoint: string;
+  end_session_endpoint: string;
 }
 
 @Injectable()
