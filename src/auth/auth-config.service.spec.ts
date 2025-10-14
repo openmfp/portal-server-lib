@@ -114,6 +114,7 @@ describe('EnvAuthConfigService', () => {
           authorization_endpoint: 'example.com/authorization_endpoint',
           token_endpoint: 'example.com/token_endpoint',
           issuer: 'example.com/oidcIssuerUrl',
+          end_session_endpoint: 'example.com/oendSessionUrl',
         });
 
         process.env['DISCOVERY_ENDPOINT_APP'] = 'example.com';
