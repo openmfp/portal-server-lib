@@ -22,12 +22,11 @@ describe('AuthTokenService', () => {
 
   beforeEach(async () => {
     process.env['IDP_NAMES'] = 'app';
-    process.env['BASE_DOMAINS_APP'] = 'example.com';
+    process.env['BASE_DOMAINS_APP'] = 'example.com,localhost';
     process.env['AUTH_SERVER_URL_APP'] = 'https://serv-example.com/auth';
     process.env['TOKEN_URL_APP'] = 'https://serv-example.com/token';
     process.env['OIDC_CLIENT_ID_APP'] = '1fd3f7a6-d506-4289-9fcf';
     process.env['OIDC_CLIENT_SECRET_APP'] = 'test secret';
-    process.env['ENVIRONMENT'] = 'local';
 
     authCallbackMock = mock<AuthCallback>();
     const module: TestingModule = await Test.createTestingModule({
@@ -134,6 +133,8 @@ describe('AuthTokenService', () => {
     describe('token for code - authorization_code flow', () => {
       it('should set the cookies', async () => {
         // Arrange
+        requestMock.hostname = 'localhost';
+        requestMock.protocol = 'http';
         const env = await authConfigService.getAuthConfig(requestMock);
         const code = 'secret code';
 
@@ -159,7 +160,6 @@ describe('AuthTokenService', () => {
 
       it('should set the cookies for none local env', async () => {
         // Arrange
-        process.env['ENVIRONMENT'] = 'prod';
         const env = await authConfigService.getAuthConfig(requestMock);
         const code = 'secret code';
 
@@ -186,6 +186,8 @@ describe('AuthTokenService', () => {
 
     it('handles an auth server error', async () => {
       // Arrange
+      requestMock.hostname = 'localhost';
+      requestMock.protocol = 'http';
       process.env['FRONTEND_PORT'] = '4700';
       const env = await authConfigService.getAuthConfig(requestMock);
       const code = 'secret code';

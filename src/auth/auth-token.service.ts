@@ -135,11 +135,7 @@ export class AuthTokenService {
       env.frontendPort === '443' ||
       !env.frontendPort;
     const port = isStandardOrEmptyPort ? '' : ':' + env.frontendPort;
-    if (env.isLocal) {
-      redirectionUrl = `http://localhost${port}`;
-    } else {
-      redirectionUrl = `https://${request.hostname}${port}`;
-    }
+    redirectionUrl = `${request.protocol}://${request.hostname}${port}`;
     return `${redirectionUrl}/callback?storageType=none`;
   }
 }
