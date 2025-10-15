@@ -10,6 +10,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import type { Request, Response } from 'express';
 import { catchError, firstValueFrom } from 'rxjs';
+import { getRedirectUri } from './redirect-uri.js';
 
 export interface AuthTokenData {
   access_token: string;
@@ -43,7 +44,7 @@ export class AuthTokenService {
     code: string,
   ): Promise<AuthTokenData> {
     const authConfig = await this.authConfigService.getAuthConfig(request);
-    const redirectUri = this.getRedirectUri(request);
+    const redirectUri = getRedirectUri(request, this.envService.getEnv());
 
     const body = new URLSearchParams({
       client_id: authConfig.clientId,
@@ -120,20 +121,5 @@ export class AuthTokenService {
     throw new Error(
       `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`,
     );
-  }
-
-  /**
-   *  Redirection URL is calculated based on the incoming request
-   */
-  private getRedirectUri(request: Request) {
-    const env = this.envService.getEnv();
-    const isStandardOrEmptyPort =
-      env.frontendPort === '80' ||
-      env.frontendPort === '443' ||
-      !env.frontendPort;
-    const port = isStandardOrEmptyPort ? '' : ':' + env.frontendPort;
-    const protocol = request.headers['x-forwarded-proto'] ?? request.protocol;
-    const redirectionUrl = `${protocol}://${request.hostname}${port}`;
-    return `${redirectionUrl}/callback?storageType=none`;
   }
 }
