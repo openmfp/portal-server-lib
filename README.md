@@ -3,20 +3,20 @@
 ![Build Status](https://github.com/openmfp/portal-server-lib/actions/workflows/pipeline.yaml/badge.svg)
 [![REUSE status](https://api.reuse.software/badge/github.com/openmfp/portal-server-lib)](https://api.reuse.software/info/github.com/openmfp/portal-server-lib)
 
-This library help you to set up a [Nest.js](https://nestjs.com/) server to serve a dynamic luigi configuration.
+This library helps you to set up a [Nest.js](https://nestjs.com/) server to serve a dynamic luigi configuration.
 It is closely related to the [portal ui library](https://github.com/openmfp/portal-ui-lib).
 
-Main features of this library are:
+The main features of this library are:
 
-- Provide a Dynamic Luigi configuration, without the need to deploy a library
+- Provide a Dynamic Luigi configuration without the need to deploy a library
 - Authentication capabilities with GitHub and Auth Server
 - Dynamic development capabilities - Embed your local MicroFrontend into a running luigi frame.
 
 # Getting started
 
-## Set up environment
+## Set up an environment
 
-In order to be able to use the library following environment properties have to be provided:
+To be able to use the library, the following environment properties have to be provided:
 
 - **Mandatory**
 
@@ -38,7 +38,6 @@ In order to be able to use the library following environment properties have to 
 | LOGOUT_REDIRECT_URL     | The url to redirect user after logout action, by default _/logout_.                                                                                                                                         |
 | ENVIRONMENT             | This property indicates the environment in which the application is running, _local_ indicates development environment.                                                                                     |
 | DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
-| FRONTEND_PORT           | Set the port number on which the frontend of the application will run in _local_ environment.                                                                                                               |
 | VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
 | FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                            |
 
@@ -101,8 +100,8 @@ bootstrap();
 
 ## Requirements
 
-The portal requires a installation of node.js and npm.
-Checkout the [package.json](package.json) for the required node version and dependencies.
+The portal requires an installation of node.js and npm.
+Check out the [package.json](package.json) for the required node version and dependencies.
 
 ## Contributing
 
