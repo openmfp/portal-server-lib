@@ -123,19 +123,17 @@ export class AuthTokenService {
   }
 
   /**
-   *  Redirection URL is calculated based on the ENVIRONMENT system variable.
-   *  When running locally after executing token retrieval the call will be redirected to localhost and port set in FRONTEND_PORT system variable,
-   *  otherwise to the host of the initiating request
+   *  Redirection URL is calculated based on the incoming request
    */
   private getRedirectUri(request: Request) {
-    let redirectionUrl: string;
     const env = this.envService.getEnv();
     const isStandardOrEmptyPort =
       env.frontendPort === '80' ||
       env.frontendPort === '443' ||
       !env.frontendPort;
     const port = isStandardOrEmptyPort ? '' : ':' + env.frontendPort;
-    redirectionUrl = `${request.protocol}://${request.hostname}${port}`;
+    const protocol = request.headers['x-forwarded-proto'] ?? request.protocol;
+    const redirectionUrl = `${protocol}://${request.hostname}${port}`;
     return `${redirectionUrl}/callback?storageType=none`;
   }
 }
