@@ -32,14 +32,15 @@ To be able to use the library, the following environment properties have to be p
 
 - **Optional**
 
-| Property name           | Description                                                                                                                                                                                                 |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| HEALTH_CHECK_INTERVAL   | The interval in _milliseconds_ at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                         |
-| LOGOUT_REDIRECT_URL     | The url to redirect user after logout action, by default _/logout_.                                                                                                                                         |
-| ENVIRONMENT             | This property indicates the environment in which the application is running, _local_ indicates development environment.                                                                                     |
-| DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                             |
+| Property name           | Description                                                                                                                                                                                                |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HEALTH_CHECK_INTERVAL   | The interval in _milliseconds_ at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                        |
+| LOGOUT_REDIRECT_URL     | The url to redirect user after logout action, by default _/logout_.                                                                                                                                        |
+| ENVIRONMENT             | This property indicates the environment in which the application is running, _local_ indicates development environment.                                                                                    |
+| DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                            |
+| FRONTEND_PORT           | Set the port number on which the frontend of the application will run.                                                                                                               |
 | VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
-| FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                            |
+| FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                           |
 
 Below is an example of a `.env` file for configuring the application:
 
