@@ -8,8 +8,9 @@ export const getRedirectUri = (request: Request) => {
   const forwardedPortValue = Array.isArray(forwardedPort)
     ? forwardedPort[0]
     : forwardedPort;
-  const hostPort = request.headers.host?.split(':')[1];
-  const portFromRequest = forwardedPortValue || hostPort || '';
+  const requestHostPort = request.headers.host?.split(':')[1];
+  const portFromRequest =
+    process.env.FRONTEND_PORT || forwardedPortValue || requestHostPort || '';
 
   const isStandardOrEmptyPort =
     portFromRequest === '80' || portFromRequest === '443' || !portFromRequest;
