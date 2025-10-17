@@ -1,16 +1,15 @@
-import { EnvService } from '../env/index.js';
 import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
 import { CookiesService } from '../services/index.js';
 import {
   AuthConfigService,
   ServerAuthVariables,
 } from './auth-config.service.js';
+import { getRedirectUri } from './redirect-uri.js';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import type { Request, Response } from 'express';
 import { catchError, firstValueFrom } from 'rxjs';
-import { getRedirectUri } from './redirect-uri.js';
 
 export interface AuthTokenData {
   access_token: string;
@@ -27,7 +26,6 @@ export class AuthTokenService {
   constructor(
     @Inject(AUTH_CONFIG_INJECTION_TOKEN)
     private authConfigService: AuthConfigService,
-    private envService: EnvService,
     private httpService: HttpService,
     private cookiesService: CookiesService,
   ) {}
@@ -44,7 +42,7 @@ export class AuthTokenService {
     code: string,
   ): Promise<AuthTokenData> {
     const authConfig = await this.authConfigService.getAuthConfig(request);
-    const redirectUri = getRedirectUri(request, this.envService.getEnv());
+    const redirectUri = getRedirectUri(request);
 
     const body = new URLSearchParams({
       client_id: authConfig.clientId,

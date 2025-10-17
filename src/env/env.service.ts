@@ -8,7 +8,6 @@ export interface EnvVariables extends Record<string, any> {
   logoutRedirectUrl?: string;
   healthCheckInterval?: number;
   isLocal?: boolean;
-  frontendPort?: string;
   developmentInstance?: boolean;
   validWebcomponentUrls?: string[];
   uiOptions?: string[];
@@ -25,7 +24,6 @@ export class EnvService {
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
-      frontendPort: process.env.FRONTEND_PORT || '',
       validWebcomponentUrls: (process.env.VALID_WEBCOMPONENT_URLS || '').split(
         ',',
       ),
