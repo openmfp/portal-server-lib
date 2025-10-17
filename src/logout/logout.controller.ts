@@ -17,9 +17,9 @@ export class LogoutController {
   @Get()
   async logout(@Req() request: Request, @Res() response: Response): Response {
     this.cookiesService.removeAuthCookie(request, response);
-    await this.logoutCallback.handleLogout(request, response);
+    const redirect = await this.logoutCallback.handleLogout(request, response);
 
-    let redirectURL = this.envService.getEnv().logoutRedirectUrl;
+    let redirectURL = redirect || this.envService.getEnv().logoutRedirectUrl;
     if (request.query.error) {
       const error = request.query.error as string;
       redirectURL += `?error=${error}`;
