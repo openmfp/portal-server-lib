@@ -58,7 +58,10 @@ export class AuthController {
 
   private isDomainOrSubdomain(appStateUrl: url.URL) {
     const baseDomain = process.env['BASE_DOMAINS_DEFAULT'];
-    return appStateUrl.hostname.endsWith(baseDomain);
+    if (!baseDomain) return false;
+
+    const hostname = appStateUrl.hostname;
+    return hostname === baseDomain || hostname.endsWith(`.${baseDomain}`);
   }
 
   private createAppStateUrl(state: string): url.URL {
