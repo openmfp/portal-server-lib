@@ -1,4 +1,4 @@
-import { RequestCodeParamGuard } from './request-code-param.guard';
+import { RequestCodeParamGuard } from './request-code-param.guard.js';
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -23,7 +23,7 @@ describe('RequestCodeParamGuard', () => {
     const context = {
       switchToHttp: () => ({
         getRequest: () => ({
-          query: { code: 'validCode' },
+          query: { code: 'validCode', state: 'validState' },
         }),
       }),
     } as ExecutionContext;

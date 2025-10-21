@@ -45,7 +45,7 @@ describe('PortalModule', () => {
 
     const expectedModule = ServeStaticModule.forRoot({
       rootPath: expectedPath,
-      exclude: ['/rest'],
+      exclude: ['/rest', '/callback'],
     });
 
     const portalModule = PortalModule.create({
