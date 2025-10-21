@@ -188,7 +188,7 @@ describe('AuthTokenService', () => {
       // Arrange
       requestMock.hostname = 'localhost';
       requestMock.protocol = 'http';
-      process.env['FRONTEND_PORT'] = '4700';
+      requestMock.headers = { host: 'localhost:4700' };
       const env = await authConfigService.getAuthConfig(requestMock);
       const code = 'secret code';
 
@@ -211,7 +211,6 @@ describe('AuthTokenService', () => {
       await expect(authTokenResponsePromise).rejects.toThrow(
         'Error response from auth token server: AxiosError: Request failed with status code 500',
       );
-      delete process.env['FRONTEND_PORT'];
     });
   });
 });

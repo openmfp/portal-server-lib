@@ -37,7 +37,6 @@ describe('EnvController', () => {
       developmentInstance: false,
       isLocal: false,
       idpNames: [],
-      frontendPort: '',
     } as EnvConfigVariables;
 
     beforeEach(function () {
