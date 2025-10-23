@@ -24,10 +24,10 @@ describe('AuthController', () => {
     await app.init();
   });
 
-  describe('POST /rest/auth', () => {
+  describe('GET /callback', () => {
     it('should fail due to the lack of auth code param in the query params', async () => {
       await request(app.getHttpServer())
-        .post(`/rest/auth?coder=uio`)
+        .get(`/callback?coder=uio`)
         .accept(acceptLanguage)
         .expect(400)
         .expect((response) => {
@@ -39,9 +39,11 @@ describe('AuthController', () => {
 
     it('should pass with auth code param', async () => {
       await request(app.getHttpServer())
-        .post(`/rest/auth?code=auth_code`)
+        .get(
+          `/callback?code=auth_code&state=aHR0cDovL3N1Yi5sb2NhbGhvc3Q6NDMwMC9fbHVpZ2lOb25jZT1QUUNWODdlck5uVkZzNE1rMzUxNw==`,
+        )
         .accept(acceptLanguage)
-        .expect(201);
+        .expect(302);
     });
   });
 

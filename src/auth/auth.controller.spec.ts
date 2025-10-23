@@ -20,6 +20,7 @@ describe('AuthController', () => {
 
   beforeEach(async () => {
     jest.resetAllMocks();
+    (responseMock.redirect as any) = jest.fn((href: string) => href);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
@@ -32,6 +33,7 @@ describe('AuthController', () => {
       .useValue(cookiesServiceMock)
       .compile();
     controller = module.get<AuthController>(AuthController);
+    process.env.BASE_DOMAINS_DEFAULT = 'localhost';
   });
 
   it('should be defined', () => {
@@ -39,62 +41,83 @@ describe('AuthController', () => {
   });
 
   describe('auth', () => {
-    it('should get the config for tenant', async () => {
-      // arrange
-      const callback = jest.spyOn(authCallbackMock, 'handleSuccess');
-      const getTokenForCode = jest.spyOn(
-        authTokenServiceMock,
-        'exchangeTokenForCode',
-      );
-      requestMock.query = { code: 'foo' };
-      const idToken = 'id_token';
+    it('redirects to decoded state URL after successful token exchange', async () => {
+      const decodedUrl = 'http://sub.localhost:4300/';
+      requestMock.query = {
+        code: 'foo',
+        state: encodeURIComponent(btoa(`${decodedUrl}_luigiNonce=SOME_NONCE`)),
+      } as any;
+
       const authTokenResponse = {
-        id_token: idToken,
+        id_token: 'id',
         refresh_token: 'ref',
-        expires_in: '12312',
-        access_token: 'access',
+        access_token: 'acc',
+        expires_in: '111',
       } as AuthTokenData;
-      getTokenForCode.mockResolvedValue(authTokenResponse);
+      authTokenServiceMock.exchangeTokenForCode.mockResolvedValue(
+        authTokenResponse,
+      );
 
-      // act
-      const tokenResponse = await controller.auth(requestMock, responseMock);
+      const result = await controller.auth(requestMock, responseMock);
 
-      // assert
-      expect(callback).toHaveBeenCalledWith(
+      expect(authTokenServiceMock.exchangeTokenForCode).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        'foo',
+      );
+      expect(authCallbackMock.handleSuccess).toHaveBeenCalledWith(
         requestMock,
         responseMock,
         authTokenResponse,
       );
-      expect(getTokenForCode).toHaveBeenCalledWith(
-        requestMock,
-        responseMock,
-        'foo',
-      );
-      expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
+      expect(responseMock.redirect).toHaveBeenCalledWith(decodedUrl);
+      expect(result).toBe(decodedUrl);
     });
 
-    it('should log the error if there is a problem retrieving the token', async () => {
-      // arrange
-      const getTokenForCode = jest.spyOn(
-        authTokenServiceMock,
-        'exchangeTokenForCode',
+    it('redirects to /logout with error when token exchange fails', async () => {
+      const origin = 'http://sub.localhost:4300';
+      const stateUrl = `${origin}/path?x=1#frag`;
+      requestMock.query = {
+        code: 'foo',
+        state: encodeURIComponent(btoa(`${stateUrl}_luigiNonce=N`)),
+      } as any;
+
+      authTokenServiceMock.exchangeTokenForCode.mockRejectedValue(
+        new Error('boom'),
       );
-      requestMock.query = { code: 'foo' };
-      getTokenForCode.mockRejectedValue(new Error('error'));
 
-      // act
-      const response = await controller.auth(requestMock, responseMock);
+      const result = await controller.auth(requestMock, responseMock);
 
-      // assert
-      expect(response).toBeUndefined();
-      expect(getTokenForCode).toHaveBeenCalledWith(
+      expect(authCallbackMock.handleFailure).toHaveBeenCalledWith(
         requestMock,
         responseMock,
-        'foo',
       );
+      expect(responseMock.redirect).toHaveBeenCalledWith(
+        `${origin}/logout?error=loginError`,
+      );
+      expect(result).toBe(`${origin}/logout?error=loginError`);
     });
 
-    it('should ', () => {});
+    it('redirects to /logout with error when state URL domain is not allowed', async () => {
+      const badOrigin = 'http://malicious.example.com';
+      const stateUrl = `${badOrigin}/`;
+      requestMock.query = {
+        code: 'foo',
+        state: encodeURIComponent(btoa(`${stateUrl}_luigiNonce=N`)),
+      } as any;
+
+      const result = await controller.auth(requestMock, responseMock);
+
+      expect(authTokenServiceMock.exchangeTokenForCode).not.toHaveBeenCalled();
+      expect(authCallbackMock.handleFailure).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+      );
+      expect(responseMock.redirect).toHaveBeenCalledWith(
+        `${badOrigin}/logout?error=loginError`,
+      );
+      expect(result).toBe(`${badOrigin}/logout?error=loginError`);
+    });
   });
 
   describe('refresh', () => {
@@ -149,7 +172,6 @@ describe('AuthController', () => {
 
     it('should remove the auth cookies on auth server error', async () => {
       // arrange
-      const logoutRedirectUrl = 'logoutRedirectUrl';
       cookiesServiceMock.getAuthCookie.mockReturnValue('authCookie');
       authTokenServiceMock.exchangeTokenForRefreshToken.mockRejectedValue(
         new Error('error'),

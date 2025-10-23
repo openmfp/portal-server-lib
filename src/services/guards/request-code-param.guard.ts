@@ -10,11 +10,18 @@ import {
 export class RequestCodeParamGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const code = request.query.code;
+    const { code, state } = request.query;
 
     if (!code) {
       throw new HttpException(
         "No 'code' was provided in the query.",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!state) {
+      throw new HttpException(
+        "No 'state' was provided in the query.",
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -240,7 +240,7 @@ export class PortalModule implements NestModule {
       moduleImports.push(
         ServeStaticModule.forRoot({
           rootPath: options.frontendDistSources,
-          exclude: ['/rest'],
+          exclude: ['/rest', '/callback'],
         }),
       );
     }

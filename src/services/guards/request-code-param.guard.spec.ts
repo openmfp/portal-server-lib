@@ -1,51 +1,61 @@
-import { RequestCodeParamGuard } from './request-code-param.guard';
+import { RequestCodeParamGuard } from './request-code-param.guard.js';
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-
-// Adjust the import path as needed
 
 describe('RequestCodeParamGuard', () => {
   let guard: RequestCodeParamGuard;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [RequestCodeParamGuard],
-    }).compile();
-
-    guard = module.get<RequestCodeParamGuard>(RequestCodeParamGuard);
-  });
-
-  it('should be defined', () => {
-    expect(guard).toBeDefined();
-  });
-
-  it('should allow access when code is provided', () => {
-    const context = {
+  const createContext = (query: any): ExecutionContext =>
+    ({
       switchToHttp: () => ({
-        getRequest: () => ({
-          query: { code: 'validCode' },
-        }),
+        getRequest: () => ({ query }),
       }),
-    } as ExecutionContext;
+    }) as unknown as ExecutionContext;
 
-    expect(guard.canActivate(context)).toBe(true);
+  beforeEach(() => {
+    guard = new RequestCodeParamGuard();
   });
 
-  it('should throw HttpException when code is not provided', () => {
-    const context = {
-      switchToHttp: () => ({
-        getRequest: () => ({
-          query: {},
-        }),
-      }),
-    } as ExecutionContext;
+  it('returns true when code and state exist', () => {
+    const ctx = createContext({ code: 'abc', state: 'xyz' });
+    expect(guard.canActivate(ctx)).toBe(true);
+  });
 
+  it('throws 400 when code is missing', () => {
+    const ctx = createContext({ state: 'xyz' });
     try {
-      guard.canActivate(context);
-    } catch (error) {
-      expect(error).toBeInstanceOf(HttpException);
-      expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
-      expect(error.message).toBe("No 'code' was provided in the query.");
+      guard.canActivate(ctx);
+      fail('should throw');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);
+      expect((e as HttpException).message).toBe(
+        "No 'code' was provided in the query.",
+      );
+    }
+  });
+
+  it('throws 400 when state is missing', () => {
+    const ctx = createContext({ code: 'abc' });
+    try {
+      guard.canActivate(ctx);
+      fail('should throw');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);
+      expect((e as HttpException).message).toBe(
+        "No 'state' was provided in the query.",
+      );
+    }
+  });
+
+  it('throws 400 when both are missing', () => {
+    const ctx = createContext({});
+    try {
+      guard.canActivate(ctx);
+      fail('should throw');
+    } catch (e) {
+      expect(e).toBeInstanceOf(HttpException);
+      expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);
     }
   });
 });

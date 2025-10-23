@@ -13,8 +13,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import url from 'url';
 
-@Controller('/rest/auth')
+@Controller('/')
 export class AuthController {
   private logger: Logger = new Logger(AuthController.name);
 
@@ -26,34 +27,57 @@ export class AuthController {
   ) {}
 
   @UseGuards(RequestCodeParamGuard)
-  @Post('')
-  async auth(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<AuthTokenData | void> {
-    let authTokenData: AuthTokenData = null;
+  @Get('callback')
+  async auth(@Req() request: Request, @Res() response: Response): Response {
+    const { code, state } = request.query;
+    let postLoginRedirectUrl = this.createAppStateUrl(state);
+
     try {
-      authTokenData = await this.authTokenService.exchangeTokenForCode(
+      if (!this.isDomainOrSubdomain(postLoginRedirectUrl)) {
+        throw new Error('Bad redirection url: ' + postLoginRedirectUrl);
+      }
+
+      const authTokenData = await this.authTokenService.exchangeTokenForCode(
         request,
         response,
-        request.query.code.toString(),
+        code,
       );
+
+      await this.handleTokenRetrieval(request, response, authTokenData);
     } catch (e: any) {
       this.logger.error(
         `Error while retrieving token from code, logging out: ${e}`,
       );
-      return await this.handleAuthError(request, response);
+      await this.handleAuthError(request, response);
+      postLoginRedirectUrl = new URL(`${postLoginRedirectUrl.origin}/logout`);
+      postLoginRedirectUrl.searchParams.set('error', 'loginError');
     }
-    return await this.handleTokenRetrieval(request, response, authTokenData);
+
+    return response.redirect(postLoginRedirectUrl.href);
   }
 
-  @Get('refresh')
+  private isDomainOrSubdomain(appStateUrl: url.URL) {
+    const baseDomain = process.env['BASE_DOMAINS_DEFAULT'];
+    if (!baseDomain) return false;
+
+    const hostname = appStateUrl.hostname;
+    return hostname === baseDomain || hostname.endsWith(`.${baseDomain}`);
+  }
+
+  private createAppStateUrl(state: string): url.URL {
+    const decodedState = atob(decodeURIComponent(state)).split('_luigiNonce=');
+    const appState = decodeURI(decodedState[0] || '');
+    return new URL(appState);
+  }
+
+  @Post('rest/auth/refresh')
   async refresh(
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AuthTokenData | void> {
     const refreshToken = this.cookiesService.getAuthCookie(request);
     if (!refreshToken) {
+      this.logger.warn('No refresh token present');
       return;
     }
 
