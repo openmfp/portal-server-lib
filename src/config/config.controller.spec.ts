@@ -1,7 +1,4 @@
-import {
-  FEATURE_TOGGLES_INJECTION_TOKEN,
-  PORTAL_CONTEXT_INJECTION_TOKEN,
-} from '../injection-tokens.js';
+import { FEATURE_TOGGLES_INJECTION_TOKEN } from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
 import { HeaderParserService } from '../services/index.js';
 import { ConfigController } from './config.controller.js';
@@ -10,7 +7,10 @@ import {
   EntityNotFoundException,
 } from './context/entity-context-provider.js';
 import { FeatureTogglesProvider } from './context/feature-toggles-provider.js';
-import { PortalContextProvider } from './context/portal-context-provider.js';
+import {
+  PortalContextProvider,
+  PortalContextProviderImpl,
+} from './context/portal-context-provider.js';
 import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
 import { ServiceProvider } from './model/luigi.node.js';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
@@ -62,7 +62,7 @@ describe('ConfigController', () => {
       FEATURE_TOGGLES_INJECTION_TOKEN,
     );
     portalContextProvider = module.get<PortalContextProvider>(
-      PORTAL_CONTEXT_INJECTION_TOKEN,
+      PortalContextProviderImpl,
     );
 
     jest
