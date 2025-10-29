@@ -1,25 +1,4 @@
 import {
-  ENTITY_CONTEXT_INJECTION_TOKEN,
-  FEATURE_TOGGLES_INJECTION_TOKEN,
-  PORTAL_CONTEXT_INJECTION_TOKEN,
-  REQUEST_CONTEXT_INJECTION_TOKEN,
-} from '../injection-tokens.js';
-import { HeaderParserService } from '../services/index.js';
-import {
-  EntityAccessForbiddenException,
-  EntityContextProvider,
-  EntityContextProviders,
-  EntityNotFoundException,
-} from './context/entity-context-provider.js';
-import {
-  FeatureTogglesProvider,
-  PortalContextProvider,
-  RequestContextProvider,
-} from './context/index.js';
-import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
-import { EntityParams } from './model/entity.js';
-import { PortalConfig } from './model/luigi.node.js';
-import {
   Controller,
   ForbiddenException,
   Get,
@@ -33,6 +12,26 @@ import {
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import type { Request, Response } from 'express';
+import {
+  ENTITY_CONTEXT_INJECTION_TOKEN,
+  FEATURE_TOGGLES_INJECTION_TOKEN,
+  REQUEST_CONTEXT_INJECTION_TOKEN,
+} from '../injection-tokens.js';
+import { HeaderParserService } from '../services/index.js';
+import {
+  EntityAccessForbiddenException,
+  EntityContextProvider,
+  EntityContextProviders,
+  EntityNotFoundException,
+} from './context/entity-context-provider.js';
+import {
+  FeatureTogglesProvider,
+  PortalContextProviderImpl,
+  RequestContextProvider
+} from './context/index.js';
+import { LuigiConfigNodesService } from './luigi/luigi-config-nodes/luigi-config-nodes.service.js';
+import { EntityParams } from './model/entity.js';
+import { PortalConfig } from './model/luigi.node.js';
 
 @Controller('/rest/config')
 export class ConfigController {
@@ -42,10 +41,9 @@ export class ConfigController {
     private logger: Logger,
     private luigiConfigNodesService: LuigiConfigNodesService,
     private headerParser: HeaderParserService,
+    private portalContextProvider: PortalContextProviderImpl,
     @Inject(REQUEST_CONTEXT_INJECTION_TOKEN)
     private requestContextProvider: RequestContextProvider,
-    @Inject(PORTAL_CONTEXT_INJECTION_TOKEN)
-    private portalContextProvider: PortalContextProvider,
     @Inject(ENTITY_CONTEXT_INJECTION_TOKEN)
     entityContextProviders: EntityContextProviders,
     @Inject(FEATURE_TOGGLES_INJECTION_TOKEN)

@@ -10,7 +10,6 @@ import {
   ConfigController,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
-  EmptyPortalContextProvider,
   EmptyServiceProviderService,
   EntityContextProviders,
   EnvFeatureTogglesProvider,
@@ -18,6 +17,7 @@ import {
   LuigiConfigNodesService,
   LuigiDataService,
   PortalContextProvider,
+  PortalContextProviderImpl,
   RequestContextProvider,
   RequestContextProviderImpl,
   ServiceProviderService,
@@ -177,6 +177,7 @@ export class PortalModule implements NestModule {
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
       EnvAuthConfigService,
+      PortalContextProviderImpl,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
         useClass: options.authCallbackProvider || NoopAuthCallback,
@@ -196,10 +197,6 @@ export class PortalModule implements NestModule {
       {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,
         useClass: options.logoutCallbackProvider || NoopLogoutService,
-      },
-      {
-        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
-        useClass: options.portalContextProvider || EmptyPortalContextProvider,
       },
       {
         provide: REQUEST_CONTEXT_INJECTION_TOKEN,
@@ -223,6 +220,13 @@ export class PortalModule implements NestModule {
           options.luigiDataService || ContentConfigurationLuigiDataService,
       },
     ];
+
+    if (options.portalContextProvider) {
+      providers.push({
+        provide: PORTAL_CONTEXT_INJECTION_TOKEN,
+        useClass: options.portalContextProvider,
+      });
+    }
 
     if (options.additionalControllers) {
       controllers = controllers.concat(options.additionalControllers);
