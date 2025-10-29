@@ -16,5 +16,5 @@ jobs:
     uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@npmjs-publish
     secrets: inherit
     with:
-      npmjs: true
+      environment: npmjs:@openmfp/portal-server-lib
 
