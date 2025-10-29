@@ -1,13 +1,16 @@
 {
   "name": "@openmfp/portal-server-lib",
   "version": "0.161.0",
-  "description": "",
+  "description": "This library helps you to set up an openmfp based micro frontend portal server with ease.",
+  "repository": {
+    "url": "git+https://github.com/openmfp/portal-server-lib.git"
+  },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=9.0.0"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "files": [
     "dist/**/*"
