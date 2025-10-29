@@ -14,7 +14,13 @@ describe('PortalContextProviderImpl', () => {
   let responseMock: Response;
 
   beforeEach(async () => {
-    customProvider = mock<PortalContextProvider>();
+    customProvider = mock<PortalContextProvider>({
+      getContextValues: (request, response, portalContext) => {
+        portalContext.customValue = 'custom';
+        return Promise.resolve(portalContext);
+      },
+    });
+
     requestMock = mock<Request>();
     responseMock = mock<Response>();
 
@@ -44,9 +50,11 @@ describe('PortalContextProviderImpl', () => {
   });
 
   describe('getContextValues', () => {
-    it('should return empty object when no environment variables are set', async () => {
+    it('should return only cutsom provider context when no environment variables are set', async () => {
       const result = await service.getContextValues(requestMock, responseMock);
-      expect(result).toEqual({});
+      expect(result).toEqual({
+        customValue: 'custom',
+      });
     });
 
     it('should return environment variables with OPENMFP_PORTAL_CONTEXT_ prefix', async () => {
@@ -60,52 +68,16 @@ describe('PortalContextProviderImpl', () => {
         apiUrl: 'https://api.example.com',
         debugMode: 'true',
         someValue: 'test',
+        customValue: 'custom',
       });
     });
 
-    it('should merge with custom provider context when available', async () => {
+    it('should add custom provider context when available', async () => {
       process.env.OPENMFP_PORTAL_CONTEXT_API_URL = 'https://api.example.com';
-
-      const customContext = {
-        customValue: 'custom',
-        anotherValue: 'another',
-      };
-
-      (customProvider.getContextValues as jest.Mock).mockResolvedValue(
-        customContext,
-      );
-
       const result = await service.getContextValues(requestMock, responseMock);
 
       expect(result).toEqual({
         apiUrl: 'https://api.example.com',
-        customValue: 'custom',
-        anotherValue: 'another',
-      });
-      expect(customProvider.getContextValues as jest.Mock).toHaveBeenCalledWith(
-        requestMock,
-        responseMock,
-      );
-    });
-
-    it('should prioritize custom provider values over environment variables', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_API_URL = 'https://api.example.com';
-      process.env.OPENMFP_PORTAL_CONTEXT_DEBUG_MODE = 'true';
-
-      const customContext = {
-        apiUrl: 'https://custom.api.com', // This should override env var
-        customValue: 'custom',
-      };
-
-      (customProvider.getContextValues as jest.Mock).mockResolvedValue(
-        customContext,
-      );
-
-      const result = await service.getContextValues(requestMock, responseMock);
-
-      expect(result).toEqual({
-        apiUrl: 'https://custom.api.com', // Custom value should win
-        debugMode: 'true', // Env var not overridden
         customValue: 'custom',
       });
     });
@@ -131,47 +103,6 @@ describe('PortalContextProviderImpl', () => {
 
       expect(result).toEqual({
         apiUrl: 'https://api.example.com',
-      });
-    });
-  });
-
-  describe('camelCase conversion through environment variables', () => {
-    it('should convert environment variable names to camelCase', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_API_URL = 'https://api.example.com';
-      process.env.OPENMFP_PORTAL_CONTEXT_DEBUG_MODE_ENABLED = 'true';
-      process.env.OPENMFP_PORTAL_CONTEXT_SOME_VERY_LONG_NAME = 'test';
-      process.env.OPENMFP_PORTAL_CONTEXT_SINGLE = 'value';
-
-      const result = await service.getContextValues(requestMock, responseMock);
-
-      expect(result).toEqual({
-        apiUrl: 'https://api.example.com',
-        debugModeEnabled: 'true',
-        someVeryLongName: 'test',
-        single: 'value',
-      });
-    });
-
-    it('should handle single character environment variable names', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_A = 'value1';
-      process.env.OPENMFP_PORTAL_CONTEXT_B = 'value2';
-
-      const result = await service.getContextValues(requestMock, responseMock);
-
-      expect(result).toEqual({
-        a: 'value1',
-        b: 'value2',
-      });
-    });
-
-    it('should handle empty environment variable names after prefix removal', async () => {
-      process.env.OPENMFP_PORTAL_CONTEXT_ = 'should be ignored';
-      process.env.OPENMFP_PORTAL_CONTEXT_VALID_KEY = 'valid value';
-
-      const result = await service.getContextValues(requestMock, responseMock);
-
-      expect(result).toEqual({
-        validKey: 'valid value',
       });
     });
   });

@@ -6,6 +6,7 @@ export interface PortalContextProvider {
   getContextValues(
     request: Request,
     response: Response,
+    portalContext: Record<string, any>,
   ): Promise<Record<string, any>>;
 }
 
@@ -44,12 +45,10 @@ export class PortalContextProviderImpl implements PortalContextProvider {
       await this.customPortalContextProvider.getContextValues(
         request,
         response,
+        portalContext,
       );
 
-    return {
-      ...portalContext,
-      ...customContext,
-    };
+    return customContext;
   }
 
   private toCamelCase(text: string): string {
