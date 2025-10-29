@@ -4,6 +4,7 @@ import type { Request } from 'express';
 export interface RequestContextProvider {
   getContextValues(
     request: Request,
+    response: Response,
     entity?: string,
   ): Promise<Record<string, any>>;
 }

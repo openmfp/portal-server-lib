@@ -62,7 +62,7 @@ export class ConfigController {
     @Headers('Accept-language') acceptLanguage: string,
   ): Promise<PortalConfig> {
     const token = this.headerParser.extractBearerToken(request);
-    const context = await this.requestContextProvider.getContextValues(request);
+    const context = await this.requestContextProvider.getContextValues(request, response);
 
     const providersPromise = this.luigiConfigNodesService
       .getNodes(token, [], acceptLanguage, context)
@@ -110,6 +110,7 @@ export class ConfigController {
     const token = this.headerParser.extractBearerToken(request);
     const context = await this.requestContextProvider.getContextValues(
       request,
+      response,
       params.entity,
     );
 
