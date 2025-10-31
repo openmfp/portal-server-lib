@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 export interface RequestContextProvider {
   getContextValues(
