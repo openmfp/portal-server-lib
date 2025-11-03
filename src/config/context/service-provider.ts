@@ -1,5 +1,6 @@
 import { ContentConfiguration } from '../model/content-configuration.js';
 import { StackSearch } from '../model/luigi.node.js';
+import { DEFAULT_SERVICE_PROVIDERS } from './service-provider-default.js';
 
 export interface HelpCenterData {
   stackSearch?: StackSearch;
@@ -32,10 +33,10 @@ export interface ServiceProviderService {
   ): Promise<ServiceProviderResponse>;
 }
 
-export class EmptyServiceProviderService implements ServiceProviderService {
+export class DefaultServiceProviderService implements ServiceProviderService {
   getServiceProviders(): Promise<ServiceProviderResponse> {
     return Promise.resolve({
-      rawServiceProviders: [],
+      rawServiceProviders: DEFAULT_SERVICE_PROVIDERS,
     });
   }
 }

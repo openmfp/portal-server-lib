@@ -10,7 +10,7 @@ import {
   ConfigController,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
-  EmptyServiceProviderService,
+  DefaultServiceProviderService,
   EntityContextProviders,
   EnvFeatureTogglesProvider,
   IntentResolveService,
@@ -212,7 +212,8 @@ export class PortalModule implements NestModule {
       },
       {
         provide: SERVICE_PROVIDER_INJECTION_TOKEN,
-        useClass: options.serviceProviderService || EmptyServiceProviderService,
+        useClass:
+          options.serviceProviderService || DefaultServiceProviderService,
       },
       {
         provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,
