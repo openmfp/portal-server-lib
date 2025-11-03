@@ -5,12 +5,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
 export interface EnvConfigVariables extends EnvVariables {
-  idpName: string;
-  baseDomain: string;
-  oauthServerUrl: string;
-  oauthTokenUrl: string;
+  idpName?: string;
+  baseDomain?: string;
+  oauthServerUrl?: string;
+  oauthTokenUrl?: string;
   oidcIssuerUrl?: string;
-  clientId: string;
+  clientId?: string;
 }
 
 export interface EnvVariablesService {

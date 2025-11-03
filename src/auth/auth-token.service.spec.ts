@@ -1,8 +1,12 @@
 import { EnvService } from '../env/index.js';
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
+  AUTH_CONFIG_INJECTION_TOKEN,
+} from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
 import {
   AuthConfigService,
+  EmptyAuthConfigService,
   EnvAuthConfigService,
 } from './auth-config.service.js';
 import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
@@ -30,7 +34,11 @@ describe('AuthTokenService', () => {
 
     authCallbackMock = mock<AuthCallback>();
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PortalModule.create({})],
+      imports: [
+        PortalModule.create({
+          authConfigProvider: EnvAuthConfigService,
+        }),
+      ],
     })
       .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
       .useValue(authCallbackMock)
@@ -38,7 +46,9 @@ describe('AuthTokenService', () => {
 
     service = module.get<AuthTokenService>(AuthTokenService);
     envService = module.get<EnvService>(EnvService);
-    authConfigService = module.get<AuthConfigService>(EnvAuthConfigService);
+    authConfigService = module.get<AuthConfigService>(
+      AUTH_CONFIG_INJECTION_TOKEN,
+    );
     responseMock = mock<Response>();
     requestMock = mock<Request>();
   });
@@ -128,6 +138,29 @@ describe('AuthTokenService', () => {
           'Unexpected response code from auth token server: 206, Partial Content',
         );
       });
+
+      it('should throw error when clientId is not configured', async () => {
+        const module: TestingModule = await Test.createTestingModule({
+          imports: [
+            PortalModule.create({
+              authConfigProvider: EmptyAuthConfigService,
+            }),
+          ],
+        })
+          .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
+          .useValue(authCallbackMock)
+          .compile();
+
+        const emptyService = module.get<AuthTokenService>(AuthTokenService);
+
+        await expect(
+          emptyService.exchangeTokenForRefreshToken(
+            requestMock,
+            responseMock,
+            refreshToken,
+          ),
+        ).rejects.toThrow('Client ID is not configured');
+      });
     });
 
     describe('token for code - authorization_code flow', () => {
@@ -181,6 +214,29 @@ describe('AuthTokenService', () => {
 
         // Assert
         assertResponseAndCookies(authTokenResponse);
+      });
+
+      it('should throw error when clientId is not configured', async () => {
+        const module: TestingModule = await Test.createTestingModule({
+          imports: [
+            PortalModule.create({
+              authConfigProvider: EmptyAuthConfigService,
+            }),
+          ],
+        })
+          .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
+          .useValue(authCallbackMock)
+          .compile();
+
+        const emptyService = module.get<AuthTokenService>(AuthTokenService);
+
+        await expect(
+          emptyService.exchangeTokenForCode(
+            requestMock,
+            responseMock,
+            'test-code',
+          ),
+        ).rejects.toThrow('Client ID is not configured');
       });
     });
 
