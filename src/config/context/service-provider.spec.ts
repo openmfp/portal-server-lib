@@ -1,23 +1,26 @@
+import { DEFAULT_SERVICE_PROVIDERS } from './service-provider-default.js';
 import {
-  EmptyServiceProviderService,
+  DefaultServiceProviderService,
   ServiceProviderService,
-} from './service-provider';
+} from './service-provider.js';
 import { Test, TestingModule } from '@nestjs/testing';
 
-describe('EmptyServiceProviderService', () => {
+describe('DefaultServiceProviderService', () => {
   let service: ServiceProviderService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmptyServiceProviderService],
+      providers: [DefaultServiceProviderService],
     }).compile();
 
-    service = module.get<ServiceProviderService>(EmptyServiceProviderService);
+    service = module.get<ServiceProviderService>(DefaultServiceProviderService);
   });
 
-  it('should return an empty serviceProviders', async () => {
+  it('should return an default serviceProviders', async () => {
     const response = await service.getServiceProviders('token', [], {});
 
-    expect(response).toEqual({ rawServiceProviders: [] });
+    expect(response).toEqual({
+      rawServiceProviders: DEFAULT_SERVICE_PROVIDERS,
+    });
   });
 });

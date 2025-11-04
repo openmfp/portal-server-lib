@@ -44,6 +44,10 @@ export class AuthTokenService {
     const authConfig = await this.authConfigService.getAuthConfig(request);
     const redirectUri = getRedirectUri(request);
 
+    if (!authConfig.clientId) {
+      throw new Error('Client ID is not configured');
+    }
+
     const body = new URLSearchParams({
       client_id: authConfig.clientId,
       grant_type: 'authorization_code',
@@ -65,6 +69,10 @@ export class AuthTokenService {
     refreshToken: string,
   ): Promise<AuthTokenData> {
     const authConfig = await this.authConfigService.getAuthConfig(request);
+
+    if (!authConfig.clientId) {
+      throw new Error('Client ID is not configured');
+    }
 
     const body = new URLSearchParams({
       grant_type: 'refresh_token',

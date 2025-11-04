@@ -9,18 +9,27 @@ interface BaseDomainsToIdp {
 }
 
 export interface ServerAuthVariables {
-  idpName: string;
-  baseDomain: string;
-  oauthServerUrl: string;
-  oauthTokenUrl: string;
-  clientId: string;
-  clientSecret: string;
-  oidcIssuerUrl: string;
+  idpName?: string;
+  baseDomain?: string;
+  oauthServerUrl?: string;
+  oauthTokenUrl?: string;
+  clientId?: string;
+  clientSecret?: string;
+  oidcIssuerUrl?: string;
   endSessionUrl?: string;
 }
 
 export interface AuthConfigService {
   getAuthConfig(request: Request): Promise<ServerAuthVariables>;
+}
+
+@Injectable()
+export class EmptyAuthConfigService implements AuthConfigService {
+  constructor() {}
+
+  public async getAuthConfig(request: Request): Promise<ServerAuthVariables> {
+    return {};
+  }
 }
 
 @Injectable()

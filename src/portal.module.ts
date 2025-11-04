@@ -1,16 +1,16 @@
+import { EmptyAuthConfigService } from './auth/auth-config.service.js';
 import {
   AuthCallback,
   AuthConfigService,
   AuthController,
   AuthTokenService,
-  EnvAuthConfigService,
   NoopAuthCallback,
 } from './auth/index.js';
 import {
   ConfigController,
   ContentConfigurationLuigiDataService,
   ContentConfigurationValidatorService,
-  EmptyServiceProviderService,
+  DefaultServiceProviderService,
   EntityContextProviders,
   EnvFeatureTogglesProvider,
   IntentResolveService,
@@ -176,7 +176,7 @@ export class PortalModule implements NestModule {
       AuthTokenService,
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
-      EnvAuthConfigService,
+      EmptyAuthConfigService,
       PortalContextProviderImpl,
       {
         provide: AUTH_CALLBACK_INJECTION_TOKEN,
@@ -184,7 +184,7 @@ export class PortalModule implements NestModule {
       },
       {
         provide: AUTH_CONFIG_INJECTION_TOKEN,
-        useClass: options.authConfigProvider || EnvAuthConfigService,
+        useClass: options.authConfigProvider || EmptyAuthConfigService,
       },
       {
         provide: HEALTH_CHECKER_INJECTION_TOKEN,
@@ -212,7 +212,8 @@ export class PortalModule implements NestModule {
       },
       {
         provide: SERVICE_PROVIDER_INJECTION_TOKEN,
-        useClass: options.serviceProviderService || EmptyServiceProviderService,
+        useClass:
+          options.serviceProviderService || DefaultServiceProviderService,
       },
       {
         provide: LUIGI_DATA_SERVICE_INJECTION_TOKEN,

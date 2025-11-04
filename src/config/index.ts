@@ -2,7 +2,7 @@ export {
   ServiceProviderResponse,
   ServiceProviderService,
   RawServiceProvider,
-  EmptyServiceProviderService,
+  DefaultServiceProviderService,
   HelpCenterData,
 } from './context/service-provider.js';
 export * from './model/content-configuration.js';

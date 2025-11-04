@@ -72,5 +72,56 @@ describe('EnvVariablesServiceImpl', () => {
       const result = envVariablesService.getEnv(mockRequest, mockResponse);
       expect(result).toBeInstanceOf(Promise);
     });
+
+    it('should handle empty auth config values', async () => {
+      const emptyAuthConfig: ServerAuthVariables = {};
+      authConfigServiceMock.getAuthConfig.mockResolvedValue(emptyAuthConfig);
+
+      const result = await envVariablesService.getEnv(
+        mockRequest,
+        mockResponse,
+      );
+
+      expect(result).toEqual({
+        idpName: undefined,
+        baseDomain: undefined,
+        oauthServerUrl: undefined,
+        oauthTokenUrl: undefined,
+        oidcIssuerUrl: undefined,
+        clientId: undefined,
+        validWebcomponentUrls: 'validWebcomponentUrls',
+        logoutRedirectUrl: 'logoutRedirectUrl',
+        isLocal: true,
+        developmentInstance: true,
+        uiOptions: 'uiOptions',
+      });
+    });
+
+    it('should handle partial auth config values', async () => {
+      const partialAuthConfig: ServerAuthVariables = {
+        idpName: 'test-idp',
+        baseDomain: 'test.com',
+      };
+      authConfigServiceMock.getAuthConfig.mockResolvedValue(partialAuthConfig);
+
+      const result = await envVariablesService.getEnv(
+        mockRequest,
+        mockResponse,
+      );
+
+      expect(result).toEqual({
+        idpName: 'test-idp',
+        baseDomain: 'test.com',
+        oauthServerUrl: undefined,
+        oauthTokenUrl: undefined,
+        oidcIssuerUrl: undefined,
+        clientId: undefined,
+        validWebcomponentUrls: 'validWebcomponentUrls',
+        logoutRedirectUrl: 'logoutRedirectUrl',
+        isLocal: true,
+        developmentInstance: true,
+        uiOptions: 'uiOptions',
+      });
+    });
   });
 });

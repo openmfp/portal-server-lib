@@ -11,16 +11,21 @@ It is closely related to the [portal ui library](https://github.com/openmfp/port
 The main features of this library are:
 
 - Provide a Dynamic Luigi configuration without the need to deploy a library
-- Authentication capabilities with GitHub and Auth Server
+- Optional authentication capabilities with GitHub and Auth Server
 - Dynamic development capabilities - Embed your local MicroFrontend into a running luigi frame.
+- Can run without any authentication infrastructure
 
 # Getting started
 
 ## Set up an environment
 
-To be able to use the library, the following environment properties have to be provided:
+The portal can run without any authentication infrastructure. Authentication configuration is optional and only required if you want to enable user authentication.
 
-- **Mandatory**
+### Environment properties
+
+- **Optional - Authentication**
+
+> **Note:** All authentication-related environment variables are optional. The portal can run without any auth services to display node configurations. Configure these only if you want to enable authentication features.
 
 | Property name                           | Description                                                                                                                                                                                    |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -44,17 +49,19 @@ To be able to use the library, the following environment properties have to be p
 | VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
 | FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                           |
 
-Below is an example of a `.env` file for configuring the application:
+#### Full configuration (with authentication)
 
 ```properties
 ## Mandatory
 CONTENT_CONFIGURATION_VALIDATOR_API_URL=https://example.com/validate
+
+## Auth Optional
 IDP_NAMES=app,dev
 BASE_DOMAINS_APP=localhost,example.com
 AUTH_SERVER_URL_APP=https://example.com/auth
 TOKEN_URL_APP=https://example.com/token
 OIDC_CLIENT_ID_APP=app_client_id
-OIDC_CLIENT_SECRET_APP= app_client_secret
+OIDC_CLIENT_SECRET_APP=app_client_secret
 
 ## Portal
 OPENMFP_PORTAL_CONTEXT_CRD_GATEWAY_API_URL=https://example.com/graphql
