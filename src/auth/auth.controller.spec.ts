@@ -1,6 +1,10 @@
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
+  AUTH_CONFIG_INJECTION_TOKEN,
+} from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
 import { CookiesService } from '../services/index.js';
+import { AuthConfigService } from './auth-config.service.js';
 import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
@@ -15,6 +19,8 @@ describe('AuthController', () => {
   const responseMock: Response = mock<Response>();
   const authTokenServiceMock: jest.Mocked<AuthTokenService> =
     mock<AuthTokenService>();
+  const authConfigServicekMock: jest.Mocked<AuthConfigService> =
+    mock<AuthConfigService>();
   const cookiesServiceMock: jest.Mocked<CookiesService> =
     mock<CookiesService>();
 
@@ -27,6 +33,8 @@ describe('AuthController', () => {
     })
       .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
       .useValue(authCallbackMock)
+      .overrideProvider(AUTH_CONFIG_INJECTION_TOKEN)
+      .useValue(authConfigServicekMock)
       .overrideProvider(AuthTokenService)
       .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
@@ -47,6 +55,9 @@ describe('AuthController', () => {
         code: 'foo',
         state: encodeURIComponent(btoa(`${decodedUrl}_luigiNonce=SOME_NONCE`)),
       } as any;
+      authConfigServicekMock.getAuthConfig.mockResolvedValue({
+        baseDomain: 'localhost',
+      });
 
       const authTokenResponse = {
         id_token: 'id',
