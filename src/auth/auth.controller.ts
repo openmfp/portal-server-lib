@@ -1,5 +1,9 @@
-import { AUTH_CALLBACK_INJECTION_TOKEN } from '../injection-tokens.js';
+import {
+  AUTH_CALLBACK_INJECTION_TOKEN,
+  AUTH_CONFIG_INJECTION_TOKEN,
+} from '../injection-tokens.js';
 import { CookiesService, RequestCodeParamGuard } from '../services/index.js';
+import { AuthConfigService } from './auth-config.service.js';
 import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import {
@@ -22,6 +26,8 @@ export class AuthController {
   constructor(
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
+    @Inject(AUTH_CONFIG_INJECTION_TOKEN)
+    private authConfigService: AuthConfigService,
     private cookiesService: CookiesService,
     private authTokenService: AuthTokenService,
   ) {}
@@ -33,7 +39,7 @@ export class AuthController {
     let postLoginRedirectUrl = this.createAppStateUrl(state);
 
     try {
-      if (!this.isDomainOrSubdomain(postLoginRedirectUrl)) {
+      if (!(await this.isDomainOrSubdomain(request, postLoginRedirectUrl))) {
         throw new Error('Bad redirection url: ' + postLoginRedirectUrl);
       }
 
@@ -56,8 +62,8 @@ export class AuthController {
     return response.redirect(postLoginRedirectUrl.href);
   }
 
-  private isDomainOrSubdomain(appStateUrl: url.URL) {
-    const baseDomain = process.env['BASE_DOMAINS_DEFAULT'];
+  private async isDomainOrSubdomain(request: Request, appStateUrl: url.URL) {
+    const { baseDomain } = await this.authConfigService.getAuthConfig(request);
     if (!baseDomain) return false;
 
     const hostname = appStateUrl.hostname;
