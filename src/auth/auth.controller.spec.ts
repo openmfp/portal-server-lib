@@ -85,6 +85,31 @@ describe('AuthController', () => {
       expect(result).toBe(decodedUrl);
     });
 
+    it('redirects to logout URL after failure while token exchange', async () => {
+      const decodedUrl = 'http://sub.localhost:4300/';
+      requestMock.query = {
+        code: 'foo',
+        state: encodeURIComponent(btoa(`${decodedUrl}_luigiNonce=SOME_NONCE`)),
+      } as any;
+      authConfigServicekMock.getAuthConfig.mockResolvedValue({
+        baseDomain: 'otherdomain',
+      });
+
+      const result = await controller.auth(requestMock, responseMock);
+
+      expect(cookiesServiceMock.removeAuthCookie).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+      );
+      expect(authCallbackMock.handleFailure).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+      );
+      const resultRedirectUrl = `${decodedUrl}logout?error=loginError`;
+      expect(responseMock.redirect).toHaveBeenCalledWith(resultRedirectUrl);
+      expect(result).toBe(resultRedirectUrl);
+    });
+
     it('redirects to /logout with error when token exchange fails', async () => {
       const origin = 'http://sub.localhost:4300';
       const stateUrl = `${origin}/path?x=1#frag`;
