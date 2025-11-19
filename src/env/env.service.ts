@@ -8,6 +8,7 @@ export interface EnvVariables extends Record<string, any> {
   logoutRedirectUrl?: string;
   healthCheckInterval?: number;
   isLocal?: boolean;
+  userAvatarUrl?: string;
   developmentInstance?: boolean;
   validWebcomponentUrls?: string[];
   uiOptions?: string[];
@@ -21,6 +22,7 @@ export class EnvService {
     return {
       idpNames: this.getIdpNames(),
       healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL, 10),
+      userAvatarUrl: process.env.USER_AVATAR_URL || '',
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
