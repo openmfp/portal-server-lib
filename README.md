@@ -35,19 +35,20 @@ The portal can run without any authentication infrastructure. Authentication con
 | TOKEN*URL*${idp}                        | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
 | OIDC*CLIENT_ID*${idp}                   | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
 | OIDC*CLIENT_SECRET*${idp}               | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
-| CONTENT_CONFIGURATION_VALIDATOR_API_URL | Endpoint URL for custom content configuration validation. Endpoint returns useful error message when configuration is invalid.                                                                 |
 
 - **Optional**
 
-| Property name           | Description                                                                                                                                                                                                |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| HEALTH_CHECK_INTERVAL   | The interval in _milliseconds_ at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                        |
-| LOGOUT_REDIRECT_URL     | The url to redirect user after logout action, by default _/logout_.                                                                                                                                        |
-| ENVIRONMENT             | This property indicates the environment in which the application is running, _local_ indicates development environment.                                                                                    |
-| DEVELOPMENT_INSTANCE    | This property indicates if the portal runs in development mode.                                                                                                                                            |
-| FRONTEND_PORT           | Set the port number on which the frontend of the application will run.                                                                                                               |
-| VALID_WEBCOMPONENT_URLS | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everyhere. |
-| FEATURE_TOGGLES         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                           |
+| Property name                           | Description                                                                                                                                                                                                            |
+|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CONTENT_CONFIGURATION_VALIDATOR_API_URL | Endpoint URL for custom content configuration validation. Endpoint returns useful error message when configuration is invalid.                                                                                         |
+| HEALTH_CHECK_INTERVAL                   | The interval in _milliseconds_ at which the application performs health checks to ensure its components are functioning correctly. Default 2000 ms.                                                                    |
+| LOGOUT_REDIRECT_URL                     | The url to redirect user after logout action, by default _/logout_.                                                                                                                                                    |
+| ENVIRONMENT                             | This property indicates the environment in which the application is running, _local_ indicates development environment.                                                                                                |
+| DEVELOPMENT_INSTANCE                    | This property indicates if the portal runs in development mode.                                                                                                                                                        |
+| FRONTEND_PORT                           | Set the port number on which the frontend of the application will run.                                                                                                                                                 |
+| VALID_WEBCOMPONENT_URLS                 | To enable CORS Web component Loading: basically you need to add external domains where the Web Components are hosted; `".?"` in this examle, we are sepcify that we can load Web Components from everywhere.           |
+| FEATURE_TOGGLES                         | Comma separated values of features following the convention `featureName=boolean`. Boolean value indicates is the feature is on/off (true/false)                                                                       |
+| USER_AVATAR_URL                         | Url that indicates where to find a user avatar to be displayed in the application along with the user information. Should contain a user id placeholder ${userId} which will be automatically replaced with the value. |
 
 #### Full configuration (with authentication)
 
@@ -71,6 +72,7 @@ DEVELOPMENT_INSTANCE=true
 ENVIRONMENT='local'
 VALID_WEBCOMPONENT_URLS=".?"
 FEATURE_TOGGLES="foo=true,boo=false"
+USER_AVATAR_URL=https://example.com/avatar/${userId}
 ```
 
 ## Consuming the library

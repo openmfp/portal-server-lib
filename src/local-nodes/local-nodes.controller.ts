@@ -46,19 +46,23 @@ export class LocalNodesController {
     @Body() config: ConfigDto,
     @Res({ passthrough: true }) response: ExpressResponse,
   ): Promise<TransformResult> {
-    const validationResults =
-      await this.contentConfigurationValidatorService.validateContentConfigurations(
-        config.contentConfigurations,
-      );
+    const ccValidatorApiUrl =
+      process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL;
+    if (ccValidatorApiUrl) {
+      const validationResults =
+        await this.contentConfigurationValidatorService.validateContentConfigurations(
+          config.contentConfigurations,
+        );
 
-    if (
-      validationResults.some(
-        (validationResult) =>
-          validationResult.validationErrors &&
-          validationResult.validationErrors.length,
-      )
-    ) {
-      return { errors: validationResults };
+      if (
+        validationResults.some(
+          (validationResult) =>
+            validationResult.validationErrors &&
+            validationResult.validationErrors.length,
+        )
+      ) {
+        return { errors: validationResults };
+      }
     }
 
     try {

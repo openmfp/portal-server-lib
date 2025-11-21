@@ -101,6 +101,8 @@ describe('LocalnodesController', () => {
 
     it('should call the getLuigiData method on valid params', async () => {
       const resultingNodes: LuigiNode[] = [];
+      process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL =
+        'http://localhost:8080';
 
       const validateContentConfiguration = jest
         .spyOn(

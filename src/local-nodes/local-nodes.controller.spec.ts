@@ -5,15 +5,14 @@ import {
   IntentResolveService,
   LuigiNode,
   ValidationResult,
-} from '../config';
-import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service';
-import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service';
-import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service';
+} from '../config/index.js';
+import { ConfigTransferNodeService } from '../config/luigi/luigi-data/config-transfer-node.service.js';
+import { NodeExtendedDataService } from '../config/luigi/luigi-data/node-extended-data.service.js';
+import { TextsTranslateService } from '../config/luigi/luigi-data/texts-translate.service.js';
 import { ConfigDto, LocalNodesController } from './local-nodes.controller.js';
 import { HttpModule } from '@nestjs/axios';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
 import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 
@@ -135,6 +134,7 @@ describe('LocalNodesController', () => {
 
     it('should return HttpException when local nodes validator throws error', async () => {
       //Arrange
+      process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL = 'http://localhost';
       const validationResult: ValidationResult = {
         url: 'http://localhost:8080',
         validationErrors: [
