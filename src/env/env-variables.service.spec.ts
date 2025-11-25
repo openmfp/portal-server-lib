@@ -97,6 +97,18 @@ describe('EnvVariablesServiceImpl', () => {
       });
     });
 
+    it('rethrows an error in case authConfigProvider throws and error', async () => {
+      authConfigServiceMock.getAuthConfig.mockRejectedValue(
+        new Error('auth fail'),
+      );
+
+      const req = {} as Request;
+
+      await expect(
+        envVariablesService.getEnv(req, {} as Response),
+      ).rejects.toThrow('auth fail');
+    });
+
     it('should handle partial auth config values', async () => {
       const partialAuthConfig: ServerAuthVariables = {
         idpName: 'test-idp',

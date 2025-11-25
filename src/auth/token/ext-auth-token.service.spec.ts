@@ -17,7 +17,7 @@ import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
 import nock from 'nock';
 
-describe('AuthTokenService', () => {
+describe('ExtAuthTokenService', () => {
   let service: ExtAuthTokenService;
   let responseMock: Response;
   let requestMock: Request;

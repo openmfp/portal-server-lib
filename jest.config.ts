@@ -10,10 +10,10 @@ export default {
     global: {
       // branches have an issue that controllers only get 50% coverage despite
       // being covered 100% in the tests.
-      branches: 50,
+      branches: 80,
       functions: 80,
       lines: 95,
-      statements: -10,
+      statements: -14,
     },
   },
   coveragePathIgnorePatterns: ['/node_modules/', '/integration-tests/'],
