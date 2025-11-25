@@ -1,10 +1,7 @@
-import { EnvService } from '../env/index.js';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   AUTH_CONFIG_INJECTION_TOKEN,
-  LOGOUT_CALLBACK_INJECTION_TOKEN,
 } from '../injection-tokens.js';
-import { LogoutCallback } from '../logout/index.js';
 import { CookiesService, RequestCodeParamGuard } from '../services/index.js';
 import { AuthConfigProvider } from './auth-config-providers/index.js';
 import { AuthCallback } from './auth.callback.js';
@@ -31,9 +28,6 @@ export class AuthController {
     private authCallbackService: AuthCallback,
     @Inject(AUTH_CONFIG_INJECTION_TOKEN)
     private authConfigProvider: AuthConfigProvider,
-    @Inject(LOGOUT_CALLBACK_INJECTION_TOKEN)
-    private logoutCallback: LogoutCallback,
-    private envService: EnvService,
     private cookiesService: CookiesService,
     private authTokenService: AuthTokenServiceImpl,
   ) {}

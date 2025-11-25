@@ -3,7 +3,7 @@ import {
   AuthConfigProvider,
   ServerAuthVariables,
 } from './auth-config.provider.js';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import type { Request } from 'express';
 import _ from 'lodash';
 
@@ -14,6 +14,8 @@ interface BaseDomainsToIdp {
 
 @Injectable()
 export class EnvAuthConfigService implements AuthConfigProvider {
+  private logger: Logger = new Logger(EnvAuthConfigService.name);
+
   constructor(
     private envService: EnvService,
     private discoveryService: DiscoveryService,
@@ -22,9 +24,11 @@ export class EnvAuthConfigService implements AuthConfigProvider {
   public async getAuthConfig(request: Request): Promise<ServerAuthVariables> {
     const idpNames = this.envService.getIdpNames();
     if (!idpNames.length) {
+      const message = 'Identity provider not found nor configured';
+      this.logger.error(message);
       throw new HttpException(
         {
-          message: 'Identity provider not found nor configured',
+          message,
           error: 'The identity provider is not present!',
           statusCode: HttpStatus.NOT_FOUND,
         },
@@ -89,10 +93,13 @@ export class EnvAuthConfigService implements AuthConfigProvider {
     const env = this.envService.getEnv();
 
     if (!env.idpNames.includes(idpName)) {
+      const message = 'Identity provider not found nor configured';
+      const error = `The idp '${idpName}' is not configured!`;
+      this.logger.error(message, error);
       throw new HttpException(
         {
-          message: 'Identity provider not configured',
-          error: `The idp '${idpName}' is not configured!`,
+          message,
+          error,
           statusCode: HttpStatus.BAD_REQUEST,
         },
         HttpStatus.BAD_REQUEST,

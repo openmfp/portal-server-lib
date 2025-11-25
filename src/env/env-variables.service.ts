@@ -29,35 +29,40 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
     request: Request,
     _response: Response,
   ): Promise<EnvConfigVariables> {
-    const {
-      oauthServerUrl,
-      oauthTokenUrl,
-      oidcIssuerUrl,
-      clientId,
-      idpName,
-      baseDomain,
-    } = await this.authConfigProvider.getAuthConfig(request);
-    const {
-      validWebcomponentUrls,
-      logoutRedirectUrl,
-      isLocal,
-      developmentInstance,
-      uiOptions,
-      userAvatarUrl,
-    } = this.envService.getEnv();
-    return {
-      idpName,
-      baseDomain,
-      oauthServerUrl,
-      oauthTokenUrl,
-      oidcIssuerUrl,
-      clientId,
-      validWebcomponentUrls,
-      logoutRedirectUrl,
-      isLocal,
-      developmentInstance,
-      uiOptions,
-      userAvatarUrl,
-    };
+    try {
+      const {
+        oauthServerUrl,
+        oauthTokenUrl,
+        oidcIssuerUrl,
+        clientId,
+        idpName,
+        baseDomain,
+      } = await this.authConfigProvider.getAuthConfig(request);
+      const {
+        validWebcomponentUrls,
+        logoutRedirectUrl,
+        isLocal,
+        developmentInstance,
+        uiOptions,
+        userAvatarUrl,
+      } = this.envService.getEnv();
+      return {
+        idpName,
+        baseDomain,
+        oauthServerUrl,
+        oauthTokenUrl,
+        oidcIssuerUrl,
+        clientId,
+        validWebcomponentUrls,
+        logoutRedirectUrl,
+        isLocal,
+        developmentInstance,
+        uiOptions,
+        userAvatarUrl,
+      };
+    } catch (error) {
+      console.error('Error getting environment variables:', error);
+      throw error;
+    }
   }
 }
