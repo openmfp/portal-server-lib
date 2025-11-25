@@ -82,17 +82,6 @@ describe('AuthTokenService', () => {
       expect(authTokenResponse.id_token).toBe(idTokenValue);
       expect(authTokenResponse.access_token).toBe(accessTokenValue);
       expect(authTokenResponse.expires_in).toBe(12345);
-
-      expect(responseMock.cookie).toHaveBeenCalledWith(
-        'openmfp_auth_cookie',
-        refreshTokenValue,
-        {
-          path: '/',
-          httpOnly: true,
-          secure: true,
-          sameSite: 'strict',
-        },
-      );
     }
 
     describe('token for refresh token - refresh_token flow', () => {

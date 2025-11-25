@@ -7,7 +7,7 @@ import { CookiesService } from '../services/index.js';
 import { AuthConfigProvider } from './auth-config-providers/index.js';
 import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
-import { AuthTokenData, ExtAuthTokenService } from './token/index.js';
+import { AuthTokenData, AuthTokenServiceImpl } from './token/index.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
@@ -17,8 +17,8 @@ describe('AuthController', () => {
   const authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
   const requestMock: Request = mock<Request>();
   const responseMock: Response = mock<Response>();
-  const authTokenServiceMock: jest.Mocked<ExtAuthTokenService> =
-    mock<ExtAuthTokenService>();
+  const authTokenServiceMock: jest.Mocked<AuthTokenServiceImpl> =
+    mock<AuthTokenServiceImpl>();
   const authConfigProviderMock: jest.Mocked<AuthConfigProvider> =
     mock<AuthConfigProvider>();
   const cookiesServiceMock: jest.Mocked<CookiesService> =
@@ -35,7 +35,7 @@ describe('AuthController', () => {
       .useValue(authCallbackMock)
       .overrideProvider(AUTH_CONFIG_INJECTION_TOKEN)
       .useValue(authConfigProviderMock)
-      .overrideProvider(ExtAuthTokenService)
+      .overrideProvider(AuthTokenServiceImpl)
       .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
       .useValue(cookiesServiceMock)
@@ -75,6 +75,11 @@ describe('AuthController', () => {
         requestMock,
         responseMock,
         'foo',
+      );
+      expect(cookiesServiceMock.setAuthCookie).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        authTokenResponse,
       );
       expect(authCallbackMock.handleSuccess).toHaveBeenCalledWith(
         requestMock,
@@ -202,6 +207,11 @@ describe('AuthController', () => {
         requestMock,
         responseMock,
         'authCookie',
+      );
+      expect(cookiesServiceMock.setAuthCookie).toHaveBeenCalledWith(
+        requestMock,
+        responseMock,
+        authTokenResponse,
       );
       expect((tokenResponse as AuthTokenData).refresh_token).toBeUndefined();
     });

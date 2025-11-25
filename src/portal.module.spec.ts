@@ -1,8 +1,8 @@
-import { AuthController } from './auth/index.js';
+import { AuthController, GoogleAuthController } from './auth/index.js';
 import {
   PortalContextProvider,
   PortalContextProviderImpl,
-} from './config/context/portal-context-provider.js';
+} from './config/index.js';
 import { ConfigController } from './config/index.js';
 import { EnvController } from './env/index.js';
 import { HealthController } from './health/index.js';
@@ -19,6 +19,7 @@ describe('PortalModule', () => {
 
     expect(portalModule.controllers).toStrictEqual([
       AuthController,
+      GoogleAuthController,
       HealthController,
       LocalNodesController,
       EnvController,
@@ -58,7 +59,7 @@ describe('PortalModule', () => {
     });
 
     const serveStaticModule = portalModule.imports.filter((e) => {
-      return (e as DynamicModule).module.name === 'ServeStaticModule';
+      return (e as DynamicModule).module?.name === 'ServeStaticModule';
     });
 
     expect(
