@@ -1,4 +1,4 @@
-import { AuthTokenData } from './auth-token.service.js';
+import { AuthTokenData } from './token/index.js';
 import { Injectable } from '@nestjs/common';
 import type { Request, Response } from 'express';
 

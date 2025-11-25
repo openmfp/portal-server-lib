@@ -5,7 +5,7 @@ import {
 import { PortalModule } from '../portal.module.js';
 import { CookiesService } from '../services/index.js';
 import { AuthConfigService } from './auth-config.service.js';
-import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import { AuthTokenData, ExtAuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,8 +17,8 @@ describe('AuthController', () => {
   const authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
   const requestMock: Request = mock<Request>();
   const responseMock: Response = mock<Response>();
-  const authTokenServiceMock: jest.Mocked<AuthTokenService> =
-    mock<AuthTokenService>();
+  const authTokenServiceMock: jest.Mocked<ExtAuthTokenService> =
+    mock<ExtAuthTokenService>();
   const authConfigServicekMock: jest.Mocked<AuthConfigService> =
     mock<AuthConfigService>();
   const cookiesServiceMock: jest.Mocked<CookiesService> =
@@ -35,7 +35,7 @@ describe('AuthController', () => {
       .useValue(authCallbackMock)
       .overrideProvider(AUTH_CONFIG_INJECTION_TOKEN)
       .useValue(authConfigServicekMock)
-      .overrideProvider(AuthTokenService)
+      .overrideProvider(ExtAuthTokenService)
       .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
       .useValue(cookiesServiceMock)

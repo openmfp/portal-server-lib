@@ -1,11 +1,14 @@
+import { EnvService } from '../env/index.js';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   AUTH_CONFIG_INJECTION_TOKEN,
+  LOGOUT_CALLBACK_INJECTION_TOKEN,
 } from '../injection-tokens.js';
+import { LogoutCallback } from '../logout/index.js';
 import { CookiesService, RequestCodeParamGuard } from '../services/index.js';
-import { AuthConfigService } from './auth-config.service.js';
-import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import { AuthConfigProvider } from './auth-config-providers/index.js';
 import { AuthCallback } from './auth.callback.js';
+import { AuthTokenData, AuthTokenServiceImpl } from './token/index.js';
 import {
   Controller,
   Get,
@@ -27,9 +30,12 @@ export class AuthController {
     @Inject(AUTH_CALLBACK_INJECTION_TOKEN)
     private authCallbackService: AuthCallback,
     @Inject(AUTH_CONFIG_INJECTION_TOKEN)
-    private authConfigService: AuthConfigService,
+    private authConfigProvider: AuthConfigProvider,
+    @Inject(LOGOUT_CALLBACK_INJECTION_TOKEN)
+    private logoutCallback: LogoutCallback,
+    private envService: EnvService,
     private cookiesService: CookiesService,
-    private authTokenService: AuthTokenService,
+    private authTokenService: AuthTokenServiceImpl,
   ) {}
 
   @UseGuards(RequestCodeParamGuard)
@@ -63,7 +69,7 @@ export class AuthController {
   }
 
   private async isDomainOrSubdomain(request: Request, appStateUrl: url.URL) {
-    const { baseDomain } = await this.authConfigService.getAuthConfig(request);
+    const { baseDomain } = await this.authConfigProvider.getAuthConfig(request);
     if (!baseDomain) return false;
 
     const hostname = appStateUrl.hostname;
@@ -95,8 +101,10 @@ export class AuthController {
         refreshToken,
       );
     } catch (e: any) {
-      this.logger.error(`Error while refreshing token, logging out: ${e}`);
-      return await this.handleAuthError(request, response);
+      this.logger.error(`Error while refreshing token, logging out soon: ${e}`);
+      // the redirection to logout is handled by Luigi once the token expires
+      await this.handleAuthError(request, response);
+      return;
     }
     return await this.handleTokenRetrieval(request, response, authTokenData);
   }
@@ -106,6 +114,7 @@ export class AuthController {
     response: Response,
     authTokenResponse: AuthTokenData,
   ) {
+    this.cookiesService.setAuthCookie(request, response, authTokenResponse);
     await this.authCallbackService.handleSuccess(
       request,
       response,

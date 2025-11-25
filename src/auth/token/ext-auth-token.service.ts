@@ -1,33 +1,22 @@
-import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
-import { CookiesService } from '../services/index.js';
+import { AUTH_CONFIG_INJECTION_TOKEN } from '../../injection-tokens.js';
 import {
-  AuthConfigService,
+  AuthConfigProvider,
   ServerAuthVariables,
-} from './auth-config.service.js';
-import { getRedirectUri } from './redirect-uri.js';
+} from '../auth-config-providers/index.js';
+import { getRedirectUri } from '../redirect-uri.js';
+import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import type { Request, Response } from 'express';
 import { catchError, firstValueFrom } from 'rxjs';
 
-export interface AuthTokenData {
-  access_token: string;
-  expires_in: string;
-  refresh_token: string;
-  refresh_expires_in: string;
-  id_token?: string;
-  token_type: string;
-  scope: string;
-}
-
 @Injectable()
-export class AuthTokenService {
+export class ExtAuthTokenService implements AuthTokenService {
   constructor(
     @Inject(AUTH_CONFIG_INJECTION_TOKEN)
-    private authConfigService: AuthConfigService,
+    private authConfigProvider: AuthConfigProvider,
     private httpService: HttpService,
-    private cookiesService: CookiesService,
   ) {}
 
   /**
@@ -41,7 +30,7 @@ export class AuthTokenService {
     response: Response,
     code: string,
   ): Promise<AuthTokenData> {
-    const authConfig = await this.authConfigService.getAuthConfig(request);
+    const authConfig = await this.authConfigProvider.getAuthConfig(request);
     const redirectUri = getRedirectUri(request);
 
     if (!authConfig.clientId) {
@@ -68,7 +57,7 @@ export class AuthTokenService {
     response: Response,
     refreshToken: string,
   ): Promise<AuthTokenData> {
-    const authConfig = await this.authConfigService.getAuthConfig(request);
+    const authConfig = await this.authConfigProvider.getAuthConfig(request);
 
     if (!authConfig.clientId) {
       throw new Error('Client ID is not configured');
@@ -115,17 +104,11 @@ export class AuthTokenService {
         ),
     );
 
-    if (tokenFetchResult.status === 200) {
-      this.cookiesService.setAuthCookie(
-        request,
-        response,
-        tokenFetchResult.data,
+    if (tokenFetchResult.status !== 200) {
+      throw new Error(
+        `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`,
       );
-      return tokenFetchResult.data;
     }
-
-    throw new Error(
-      `Unexpected response code from auth token server: ${tokenFetchResult.status}, ${tokenFetchResult.statusText}`,
-    );
+    return tokenFetchResult.data;
   }
 }

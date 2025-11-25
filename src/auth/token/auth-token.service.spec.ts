@@ -9,7 +9,10 @@ import {
   EmptyAuthConfigService,
   EnvAuthConfigService,
 } from './auth-config.service.js';
-import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
+import {
+  AuthTokenData,
+  ExtAuthTokenService,
+} from './auth-token-orch.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
@@ -17,7 +20,7 @@ import { mock } from 'jest-mock-extended';
 import nock from 'nock';
 
 describe('AuthTokenService', () => {
-  let service: AuthTokenService;
+  let service: ExtAuthTokenService;
   let responseMock: Response;
   let requestMock: Request;
   let envService: EnvService;
@@ -44,7 +47,7 @@ describe('AuthTokenService', () => {
       .useValue(authCallbackMock)
       .compile();
 
-    service = module.get<AuthTokenService>(AuthTokenService);
+    service = module.get<ExtAuthTokenService>(ExtAuthTokenService);
     envService = module.get<EnvService>(EnvService);
     authConfigService = module.get<AuthConfigService>(
       AUTH_CONFIG_INJECTION_TOKEN,
@@ -151,7 +154,8 @@ describe('AuthTokenService', () => {
           .useValue(authCallbackMock)
           .compile();
 
-        const emptyService = module.get<AuthTokenService>(AuthTokenService);
+        const emptyService =
+          module.get<ExtAuthTokenService>(ExtAuthTokenService);
 
         await expect(
           emptyService.exchangeTokenForRefreshToken(
@@ -228,7 +232,8 @@ describe('AuthTokenService', () => {
           .useValue(authCallbackMock)
           .compile();
 
-        const emptyService = module.get<AuthTokenService>(AuthTokenService);
+        const emptyService =
+          module.get<ExtAuthTokenService>(ExtAuthTokenService);
 
         await expect(
           emptyService.exchangeTokenForCode(

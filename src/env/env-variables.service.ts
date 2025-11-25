@@ -1,4 +1,4 @@
-import { AuthConfigService } from '../auth/index.js';
+import { AuthConfigProvider } from '../auth/index.js';
 import { AUTH_CONFIG_INJECTION_TOKEN } from '../injection-tokens.js';
 import { EnvService, EnvVariables } from './env.service.js';
 import { Inject, Injectable } from '@nestjs/common';
@@ -22,7 +22,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
   constructor(
     private envService: EnvService,
     @Inject(AUTH_CONFIG_INJECTION_TOKEN)
-    private authConfigService: AuthConfigService,
+    private authConfigProvider: AuthConfigProvider,
   ) {}
 
   async getEnv(
@@ -36,7 +36,7 @@ export class EnvVariablesServiceImpl implements EnvVariablesService {
       clientId,
       idpName,
       baseDomain,
-    } = await this.authConfigService.getAuthConfig(request);
+    } = await this.authConfigProvider.getAuthConfig(request);
     const {
       validWebcomponentUrls,
       logoutRedirectUrl,

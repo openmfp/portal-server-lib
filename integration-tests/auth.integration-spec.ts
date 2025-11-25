@@ -1,11 +1,11 @@
-import { AuthTokenService, PortalModule } from '../src/index.js';
+import { ExtAuthTokenService, PortalModule } from '../src/index.js';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
 describe('AuthController', () => {
   let app: INestApplication;
-  let authTokenService: AuthTokenService;
+  let authTokenService: ExtAuthTokenService;
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
@@ -13,7 +13,7 @@ describe('AuthController', () => {
       imports: [PortalModule.create({})],
     }).compile();
 
-    authTokenService = module.get<AuthTokenService>(AuthTokenService);
+    authTokenService = module.get<ExtAuthTokenService>(ExtAuthTokenService);
     authTokenService.exchangeTokenForRefreshToken = jest
       .fn()
       .mockResolvedValue({});

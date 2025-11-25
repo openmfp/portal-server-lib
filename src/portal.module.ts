@@ -1,10 +1,15 @@
-import { EmptyAuthConfigService } from './auth/auth-config.service.js';
 import {
   AuthCallback,
-  AuthConfigService,
+  AuthConfigProvider,
   AuthController,
-  AuthTokenService,
+  AuthTokenServiceImpl,
+  EmptyAuthConfigService,
+  ExtAuthTokenService,
+  GoogleAuthController,
+  GoogleStrategy,
+  LocalAuthTokenService,
   NoopAuthCallback,
+  TokenGenerator,
 } from './auth/index.js';
 import {
   ConfigController,
@@ -68,6 +73,8 @@ import {
   Provider,
   Type,
 } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import cookieParser from 'cookie-parser';
 
@@ -143,7 +150,7 @@ export interface PortalModuleOptions {
   /**
    * Auth config variables provider service.
    */
-  authConfigProvider?: Type<AuthConfigService>;
+  authConfigProvider?: Type<AuthConfigProvider>;
 }
 
 @Module({})
@@ -155,6 +162,7 @@ export class PortalModule implements NestModule {
   static create(options: PortalModuleOptions): DynamicModule {
     let controllers: any[] = [
       AuthController,
+      GoogleAuthController,
       HealthController,
       LocalNodesController,
       EnvController,
@@ -163,6 +171,9 @@ export class PortalModule implements NestModule {
     ];
 
     let providers: Provider[] = [
+      TokenGenerator,
+      GoogleStrategy,
+      ConfigService,
       Logger,
       EnvService,
       DiscoveryService,
@@ -173,7 +184,9 @@ export class PortalModule implements NestModule {
       TextsTranslateService,
       ConfigTransferNodeService,
       NodeExtendedDataService,
-      AuthTokenService,
+      AuthTokenServiceImpl,
+      ExtAuthTokenService,
+      LocalAuthTokenService,
       ContentConfigurationLuigiDataService,
       ContentConfigurationValidatorService,
       EmptyAuthConfigService,
@@ -239,7 +252,20 @@ export class PortalModule implements NestModule {
 
     const moduleImports: Array<
       Type | DynamicModule | Promise<DynamicModule> | ForwardReference
-    > = [HttpModule.register({})];
+    > = [
+      ConfigModule,
+      HttpModule.register({}),
+      JwtModule.registerAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService: ConfigService) => ({
+          secret: configService.get('JWT_SECRET'),
+          signOptions: {
+            expiresIn: `${configService.get('JWT_EXPIRATION_IN_SECONDS')}s`,
+          },
+        }),
+      }),
+    ];
 
     if (options.frontendDistSources) {
       moduleImports.push(

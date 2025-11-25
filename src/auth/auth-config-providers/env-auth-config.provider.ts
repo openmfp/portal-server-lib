@@ -1,4 +1,8 @@
-import { DiscoveryService, EnvService } from '../env/index.js';
+import { DiscoveryService, EnvService } from '../../env/index.js';
+import {
+  AuthConfigProvider,
+  ServerAuthVariables,
+} from './auth-config.provider.js';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 import _ from 'lodash';
@@ -8,32 +12,8 @@ interface BaseDomainsToIdp {
   baseDomain: string;
 }
 
-export interface ServerAuthVariables {
-  idpName?: string;
-  baseDomain?: string;
-  oauthServerUrl?: string;
-  oauthTokenUrl?: string;
-  clientId?: string;
-  clientSecret?: string;
-  oidcIssuerUrl?: string;
-  endSessionUrl?: string;
-}
-
-export interface AuthConfigService {
-  getAuthConfig(request: Request): Promise<ServerAuthVariables>;
-}
-
 @Injectable()
-export class EmptyAuthConfigService implements AuthConfigService {
-  constructor() {}
-
-  public async getAuthConfig(request: Request): Promise<ServerAuthVariables> {
-    return {};
-  }
-}
-
-@Injectable()
-export class EnvAuthConfigService implements AuthConfigService {
+export class EnvAuthConfigService implements AuthConfigProvider {
   constructor(
     private envService: EnvService,
     private discoveryService: DiscoveryService,
@@ -133,7 +113,7 @@ export class EnvAuthConfigService implements AuthConfigService {
     const clientSecretEnvVar = `OIDC_CLIENT_SECRET_${idpEnvName}`;
     const clientSecret = process.env[clientSecretEnvVar];
 
-    if (!oauthServerUrl || !oauthTokenUrl || !clientId || !clientSecret) {
+    if (!oauthServerUrl || !clientId || !clientSecret) {
       const hasClientSecret = !!clientSecret;
       throw new HttpException(
         {
