@@ -1,5 +1,5 @@
-import { AuthTokenData } from './auth-token.service.js';
 import { NoopAuthCallback } from './auth.callback.js';
+import { AuthTokenData } from './token/index.js';
 import type { Request, Response } from 'express';
 
 describe('NoopAuthCallback', () => {

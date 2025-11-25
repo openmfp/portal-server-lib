@@ -10,7 +10,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: configService.get('OIDC_CLIENT_ID_GOOGLE'),
       clientSecret: configService.get('OIDC_CLIENT_SECRET_GOOGLE'),
-      callbackURL: configService.get('GOOGLE_CALLBACK_URL'),
+      callbackURL: configService.get('GOOGLE_CALLBACK_URL'), // todo gkr check if the relative url would work
       scope: ['email', 'profile'],
     });
   }

@@ -1,4 +1,4 @@
-import { AuthConfigService, ServerAuthVariables } from '../auth/index.js';
+import { AuthConfigProvider, ServerAuthVariables } from '../auth/index.js';
 import { EnvVariablesServiceImpl } from './env-variables.service.js';
 import { EnvService } from './env.service.js';
 import type { Request, Response } from 'express';
@@ -7,7 +7,7 @@ import { mock } from 'jest-mock-extended';
 describe('EnvVariablesServiceImpl', () => {
   let envVariablesService: EnvVariablesServiceImpl;
   let envServiceMock: EnvService;
-  let authConfigServiceMock: jest.Mocked<AuthConfigService>;
+  let authConfigServiceMock: jest.Mocked<AuthConfigProvider>;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
 

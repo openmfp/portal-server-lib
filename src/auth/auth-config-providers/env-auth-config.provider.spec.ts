@@ -1,6 +1,6 @@
 import { DiscoveryService, EnvService } from '../../env/index.js';
 import { EnvAuthConfigService } from './env-auth-config.provider.js';
-import { HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
 import { mock } from 'jest-mock-extended';

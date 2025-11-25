@@ -4,10 +4,10 @@ import {
 } from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
 import { CookiesService } from '../services/index.js';
-import { AuthConfigService } from './auth-config.service.js';
-import { AuthTokenData, ExtAuthTokenService } from './auth-token.service.js';
+import { AuthConfigProvider } from './auth-config-providers/index.js';
 import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
+import { AuthTokenData, ExtAuthTokenService } from './token/index.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
@@ -19,8 +19,8 @@ describe('AuthController', () => {
   const responseMock: Response = mock<Response>();
   const authTokenServiceMock: jest.Mocked<ExtAuthTokenService> =
     mock<ExtAuthTokenService>();
-  const authConfigServicekMock: jest.Mocked<AuthConfigService> =
-    mock<AuthConfigService>();
+  const authConfigProviderMock: jest.Mocked<AuthConfigProvider> =
+    mock<AuthConfigProvider>();
   const cookiesServiceMock: jest.Mocked<CookiesService> =
     mock<CookiesService>();
 
@@ -34,7 +34,7 @@ describe('AuthController', () => {
       .overrideProvider(AUTH_CALLBACK_INJECTION_TOKEN)
       .useValue(authCallbackMock)
       .overrideProvider(AUTH_CONFIG_INJECTION_TOKEN)
-      .useValue(authConfigServicekMock)
+      .useValue(authConfigProviderMock)
       .overrideProvider(ExtAuthTokenService)
       .useValue(authTokenServiceMock)
       .overrideProvider(CookiesService)
@@ -55,7 +55,7 @@ describe('AuthController', () => {
         code: 'foo',
         state: encodeURIComponent(btoa(`${decodedUrl}_luigiNonce=SOME_NONCE`)),
       } as any;
-      authConfigServicekMock.getAuthConfig.mockResolvedValue({
+      authConfigProviderMock.getAuthConfig.mockResolvedValue({
         baseDomain: 'localhost',
       });
 
@@ -63,7 +63,7 @@ describe('AuthController', () => {
         id_token: 'id',
         refresh_token: 'ref',
         access_token: 'acc',
-        expires_in: '111',
+        expires_in: 111,
       } as AuthTokenData;
       authTokenServiceMock.exchangeTokenForCode.mockResolvedValue(
         authTokenResponse,
@@ -91,7 +91,7 @@ describe('AuthController', () => {
         code: 'foo',
         state: encodeURIComponent(btoa(`${decodedUrl}_luigiNonce=SOME_NONCE`)),
       } as any;
-      authConfigServicekMock.getAuthConfig.mockResolvedValue({
+      authConfigProviderMock.getAuthConfig.mockResolvedValue({
         baseDomain: 'otherdomain',
       });
 
@@ -184,7 +184,7 @@ describe('AuthController', () => {
       const authTokenResponse = {
         id_token: idToken,
         refresh_token: 'ref',
-        expires_in: '12312',
+        expires_in: 12312,
         access_token: 'access',
       } as AuthTokenData;
       exchangeTokenForRefreshToken.mockResolvedValue(authTokenResponse);

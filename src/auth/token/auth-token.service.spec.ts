@@ -1,19 +1,17 @@
-import { EnvService } from '../env/index.js';
+import { EnvService } from '../../env/index.js';
 import {
   AUTH_CALLBACK_INJECTION_TOKEN,
   AUTH_CONFIG_INJECTION_TOKEN,
-} from '../injection-tokens.js';
-import { PortalModule } from '../portal.module.js';
+} from '../../injection-tokens.js';
+import { PortalModule } from '../../portal.module.js';
 import {
-  AuthConfigService,
+  AuthConfigProvider,
   EmptyAuthConfigService,
   EnvAuthConfigService,
-} from './auth-config.service.js';
-import {
-  AuthTokenData,
-  ExtAuthTokenService,
-} from './auth-token-orch.service.js';
-import { AuthCallback } from './auth.callback.js';
+} from '../auth-config-providers/index.js';
+import { AuthCallback } from '../auth.callback.js';
+import { AuthTokenData } from './auth-token.service.js';
+import { ExtAuthTokenService } from './ext-auth-token.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { mock } from 'jest-mock-extended';
@@ -25,7 +23,7 @@ describe('AuthTokenService', () => {
   let requestMock: Request;
   let envService: EnvService;
   let authCallbackMock: AuthCallback;
-  let authConfigService: AuthConfigService;
+  let authConfigProvider: AuthConfigProvider;
 
   beforeEach(async () => {
     process.env['IDP_NAMES'] = 'app';
@@ -49,7 +47,7 @@ describe('AuthTokenService', () => {
 
     service = module.get<ExtAuthTokenService>(ExtAuthTokenService);
     envService = module.get<EnvService>(EnvService);
-    authConfigService = module.get<AuthConfigService>(
+    authConfigProvider = module.get<AuthConfigProvider>(
       AUTH_CONFIG_INJECTION_TOKEN,
     );
     responseMock = mock<Response>();
@@ -102,7 +100,9 @@ describe('AuthTokenService', () => {
 
       it('should set the cookies', async () => {
         // Arrange
-        nock((await authConfigService.getAuthConfig(requestMock)).oauthTokenUrl)
+        nock(
+          (await authConfigProvider.getAuthConfig(requestMock)).oauthTokenUrl,
+        )
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -122,7 +122,9 @@ describe('AuthTokenService', () => {
 
       it('should not set the cookies, authorization exception', async () => {
         // Arrange
-        nock((await authConfigService.getAuthConfig(requestMock)).oauthTokenUrl)
+        nock(
+          (await authConfigProvider.getAuthConfig(requestMock)).oauthTokenUrl,
+        )
           .post('', {
             grant_type: 'refresh_token',
             refresh_token: refreshToken,
@@ -172,7 +174,7 @@ describe('AuthTokenService', () => {
         // Arrange
         requestMock.hostname = 'localhost';
         requestMock.protocol = 'http';
-        const env = await authConfigService.getAuthConfig(requestMock);
+        const env = await authConfigProvider.getAuthConfig(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
@@ -197,7 +199,7 @@ describe('AuthTokenService', () => {
 
       it('should set the cookies for none local env', async () => {
         // Arrange
-        const env = await authConfigService.getAuthConfig(requestMock);
+        const env = await authConfigProvider.getAuthConfig(requestMock);
         const code = 'secret code';
 
         nock(env.oauthTokenUrl)
@@ -250,7 +252,7 @@ describe('AuthTokenService', () => {
       requestMock.hostname = 'localhost';
       requestMock.protocol = 'http';
       requestMock.headers = { host: 'localhost:4700' };
-      const env = await authConfigService.getAuthConfig(requestMock);
+      const env = await authConfigProvider.getAuthConfig(requestMock);
       const code = 'secret code';
 
       nock(env.oauthTokenUrl)
