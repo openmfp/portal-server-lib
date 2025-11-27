@@ -3,7 +3,7 @@ import { Type } from '@nestjs/common';
 export interface EntityContextProvider {
   getContextValues(
     token: string,
-    context?: Record<string, any>,
+    context: Record<string, any>,
   ): Promise<Record<string, any>>;
 }
 

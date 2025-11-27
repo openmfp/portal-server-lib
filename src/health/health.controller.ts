@@ -1,4 +1,4 @@
-import { EnvService } from '../env/env.service.js';
+import { EnvService } from '../env/index.js';
 import { HEALTH_CHECKER_INJECTION_TOKEN } from '../injection-tokens.js';
 import { HealthChecker } from './health-checker.js';
 import { Controller, Get, Inject, Logger } from '@nestjs/common';
@@ -17,8 +17,7 @@ export class HealthController {
     private healthChecker: HealthChecker,
   ) {
     this.isHealthy = false;
-    this.healthCheckInterval =
-      this.envService.getEnv().healthCheckInterval || 2000;
+    this.healthCheckInterval = this.envService.getHealthCheckInterval() || 2000;
     this.isInitialized = false;
   }
 

@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-export interface EnvVariables extends Record<string, any> {
-  idpNames?: string[];
-  oauthServerUrl?: string;
-  oauthTokenUrl?: string;
-  clientId?: string;
+export interface EnvVariables {
   logoutRedirectUrl?: string;
   healthCheckInterval?: number;
   isLocal?: boolean;
@@ -20,8 +16,6 @@ export class EnvService {
 
   public getEnv(): EnvVariables {
     return {
-      idpNames: this.getIdpNames(),
-      healthCheckInterval: parseInt(process.env.HEALTH_CHECK_INTERVAL, 10),
       userAvatarUrl: process.env.USER_AVATAR_URL || '',
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
@@ -45,6 +39,10 @@ export class EnvService {
     }
 
     return result;
+  }
+
+  public getHealthCheckInterval() {
+    return parseInt(process.env.HEALTH_CHECK_INTERVAL, 10);
   }
 
   public getIdpNames(): Array<string> {
