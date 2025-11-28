@@ -26,23 +26,14 @@ export class EnvController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ): Promise<EnvConfigVariables> {
-    const {
-      oauthServerUrl,
-      oauthTokenUrl,
-      oidcIssuerUrl,
-      clientId,
-      idpName,
-      baseDomain,
-    } = await this.authConfigService.getAuthConfig(request);
+    const { oauthServerUrl, oidcIssuerUrl, clientId } =
+      await this.authConfigService.getAuthConfig(request);
     return {
       ...this.envService.getEnv(),
       ...(await this.envVariablesProvider.getEnv(request, response)),
       oauthServerUrl,
-      oauthTokenUrl,
       oidcIssuerUrl,
       clientId,
-      idpName,
-      baseDomain,
-    } as EnvConfigVariables;
+    };
   }
 }

@@ -30,11 +30,11 @@ The portal can run without any authentication infrastructure. Authentication con
 | Property name                           | Description                                                                                                                                                                                    |
 | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | IDP_NAMES                               | Comma separated values of the name(s) of the Identity Providers (IDPs) used for authentication.                                                                                                |
-| BASE*DOMAINS*${idp}                     | Comma separated values of base domains for the application.                                                                                                                                    |
-| AUTH*SERVER_URL*${idp}                  | The URL for the authentication service provider specific to the idp name. This URL is used for retrieveing an authenticating a user.                                                           |
-| TOKEN*URL*${idp}                        | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
-| OIDC*CLIENT_ID*${idp}                   | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
-| OIDC*CLIENT_SECRET*${idp}               | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
+| BASE_DOMAINS_${idp}                     | Comma separated values of base domains for the application.                                                                                                                                    |
+| AUTH_SERVER_URL_${idp}                  | The URL for the authentication service provider specific to the idp name. This URL is used for retrieveing an authenticating a user.                                                           |
+| TOKEN_URL_${idp}                        | The URL for the authentication token service provider specific to the idp name. This URL is used for retrieveing an auth tokens.                                                               |
+| OIDC_CLIENT_ID_${idp}                   | Client ID for the OpenID Connect (OIDC) configuration. The Client ID is used to identify the application to the OIDC provider (e.g., an authorization server).                                 |
+| OIDC_CLIENT_SECRET_${idp}               | Client Secret for the OIDC configuration. The Client Secret is a confidential value known only to the application and the OIDC provider, used to authenticate the application to the provider. |
 
 - **Optional**
 

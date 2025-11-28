@@ -94,12 +94,6 @@ export interface PortalModuleOptions {
   envVariablesProvider?: Type<EnvVariablesService>;
 
   /**
-   * Will be called to execute additional logic, when a user is logged out.
-   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
-   */
-  logoutCallbackProvider?: Type<LogoutCallback>;
-
-  /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
    * The values will be available in the context under the property 'portalContext'
    */
@@ -144,6 +138,12 @@ export interface PortalModuleOptions {
    * Auth config variables provider service.
    */
   authConfigProvider?: Type<AuthConfigService>;
+
+  /**
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
+   */
+  logoutCallbackProvider?: Type<LogoutCallback>;
 }
 
 @Module({})
