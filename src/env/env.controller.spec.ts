@@ -1,4 +1,4 @@
-import { AuthConfigService } from '../auth/index.js';
+import { AuthConfigService, ServerAuthVariables } from '../auth/index.js';
 import {
   AUTH_CONFIG_INJECTION_TOKEN,
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
@@ -69,6 +69,7 @@ describe('EnvController', () => {
       oauthTokenUrl: 'token',
       oidcIssuerUrl: 'issuer',
       clientId: 'client',
+      clientSecret: 'clientSecret',
       idpName: 'idp',
       baseDomain: 'domain',
     });
@@ -85,11 +86,8 @@ describe('EnvController', () => {
       customA: 'x',
       customB: 'y',
       oauthServerUrl: 'srv',
-      oauthTokenUrl: 'token',
       oidcIssuerUrl: 'issuer',
       clientId: 'client',
-      idpName: 'idp',
-      baseDomain: 'domain',
     });
   });
 
@@ -104,6 +102,7 @@ describe('EnvController', () => {
       oauthTokenUrl: undefined,
       oidcIssuerUrl: undefined,
       clientId: undefined,
+      clientSecret: undefined,
       idpName: undefined,
       baseDomain: undefined,
     });
@@ -119,7 +118,9 @@ describe('EnvController', () => {
 
     envService.getEnv.mockReturnValue({});
     envVariablesProvider.getEnv.mockResolvedValue({});
-    authConfigService.getAuthConfig.mockResolvedValue({});
+    authConfigService.getAuthConfig.mockResolvedValue(
+      {} as ServerAuthVariables,
+    );
 
     const result = await controller.getEnv(req, res);
 
