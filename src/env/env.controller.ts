@@ -36,7 +36,7 @@ export class EnvController {
     } = await this.authConfigService.getAuthConfig(request);
     return {
       ...this.envService.getEnv(),
-      ...this.envVariablesProvider.getEnv(request, response),
+      ...(await this.envVariablesProvider.getEnv(request, response)),
       oauthServerUrl,
       oauthTokenUrl,
       oidcIssuerUrl,
