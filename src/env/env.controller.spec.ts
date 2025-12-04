@@ -81,6 +81,8 @@ describe('EnvController', () => {
     expect(authConfigService.getAuthConfig).toHaveBeenCalledWith(req);
 
     expect(result).toEqual({
+      baseDomain: 'domain',
+      idpName: 'idp',
       envA: 'a',
       envB: 'b',
       customA: 'x',
