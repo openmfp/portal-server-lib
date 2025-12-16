@@ -10,11 +10,11 @@ interface BaseDomainsToIdp {
 
 export interface ServerAuthVariables {
   idpName?: string;
-  baseDomain?: string;
-  oauthServerUrl?: string;
-  oauthTokenUrl?: string;
-  clientId?: string;
-  clientSecret?: string;
+  baseDomain: string;
+  oauthServerUrl: string;
+  oauthTokenUrl: string;
+  clientId: string;
+  clientSecret: string;
   oidcIssuerUrl?: string;
   endSessionUrl?: string;
 }
@@ -28,7 +28,7 @@ export class EmptyAuthConfigService implements AuthConfigService {
   constructor() {}
 
   public async getAuthConfig(request: Request): Promise<ServerAuthVariables> {
-    return {};
+    return {} as ServerAuthVariables;
   }
 }
 
@@ -72,9 +72,9 @@ export class EnvAuthConfigService implements AuthConfigService {
         continue;
       }
 
-      const env = this.envService.getEnv();
+      const idpNames = this.envService.getIdpNames();
       const subDomain = regExpExecArray[1];
-      const subDomainIdpName = env.idpNames.includes(subDomain)
+      const subDomainIdpName = idpNames.includes(subDomain)
         ? subDomain
         : baseDomainToIdp.idpName;
 
@@ -106,9 +106,9 @@ export class EnvAuthConfigService implements AuthConfigService {
     baseDomain: string,
     subDomainIdpName?: string,
   ): Promise<ServerAuthVariables> {
-    const env = this.envService.getEnv();
+    const idpNames = this.envService.getIdpNames();
 
-    if (!env.idpNames.includes(idpName)) {
+    if (!idpNames.includes(idpName)) {
       throw new HttpException(
         {
           message: 'Identity provider not configured',

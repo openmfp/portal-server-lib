@@ -62,7 +62,7 @@ describe('EnvService', () => {
         process.env[envVarName] = value;
       }
 
-      expect(service.getEnv()[resultName]).toStrictEqual(expected);
+      expect(service.getHealthCheckInterval()).toStrictEqual(expected);
 
       delete process.env[envVarName];
     });
@@ -95,7 +95,7 @@ describe('EnvService', () => {
   it('should the idp names', () => {
     process.env['IDP_NAMES'] = 'a,b.c,d';
 
-    expect(service.getEnv().idpNames).toEqual(['a', 'b.c', 'd']);
+    expect(service.getIdpNames()).toEqual(['a', 'b.c', 'd']);
 
     delete process.env['IDP_NAMES'];
   });

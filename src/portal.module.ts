@@ -27,10 +27,10 @@ import { NodeExtendedDataService } from './config/luigi/luigi-data/node-extended
 import { TextsTranslateService } from './config/luigi/luigi-data/texts-translate.service.js';
 import {
   DiscoveryService,
+  EmptyVariablesService,
   EnvController,
   EnvService,
   EnvVariablesService,
-  EnvVariablesServiceImpl,
 } from './env/index.js';
 import {
   EmptyHealthChecker,
@@ -83,7 +83,7 @@ export interface PortalModuleOptions {
   additionalProviders?: Provider[];
 
   /**
-   * Will be called to determine the heath of the application. If there is a rejected promise, or false is returned, the
+   * Will be called to determine the health of the application. If there is a rejected promise, or false is returned, the
    * health is not successful
    */
   healthChecker?: Type<HealthChecker>;
@@ -94,14 +94,8 @@ export interface PortalModuleOptions {
   envVariablesProvider?: Type<EnvVariablesService>;
 
   /**
-   * Will be called to execute additional logic, when a user is logged out.
-   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
-   */
-  logoutCallbackProvider?: Type<LogoutCallback>;
-
-  /**
    * Makes it possible to extend the luigi context of every luigi node with contextValues
-   * The values will be available in the context under the property 'frameContext'
+   * The values will be available in the context under the property 'portalContext'
    */
   portalContextProvider?: Type<PortalContextProvider>;
 
@@ -144,6 +138,12 @@ export interface PortalModuleOptions {
    * Auth config variables provider service.
    */
   authConfigProvider?: Type<AuthConfigService>;
+
+  /**
+   * Will be called to execute additional logic, when a user is logged out.
+   * The portal will take care of clearing the authentication cookie and the redirection logic during the logout process.
+   */
+  logoutCallbackProvider?: Type<LogoutCallback>;
 }
 
 @Module({})
@@ -192,7 +192,7 @@ export class PortalModule implements NestModule {
       },
       {
         provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
-        useClass: options.envVariablesProvider || EnvVariablesServiceImpl,
+        useClass: options.envVariablesProvider || EmptyVariablesService,
       },
       {
         provide: LOGOUT_CALLBACK_INJECTION_TOKEN,

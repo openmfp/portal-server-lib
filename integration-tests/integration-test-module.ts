@@ -2,7 +2,7 @@ import {
   ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
   PortalModule,
   PortalModuleOptions,
-} from '../src';
+} from '../src/index.js';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 
 function integrationTestModule(

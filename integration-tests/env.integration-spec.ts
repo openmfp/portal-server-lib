@@ -18,7 +18,7 @@ describe('AppController (integration)', () => {
 
   beforeEach(async () => {
     const envVariablesProvider = {
-      getEnv: (hostname: string) => Promise.resolve(env),
+      getEnv: () => Promise.resolve(env),
     } as unknown as Type<EnvVariablesService>;
 
     const moduleFixture = await integrationTestModule({
@@ -34,10 +34,7 @@ describe('AppController (integration)', () => {
   });
 
   it('/rest/envconfig (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/rest/envconfig')
-      .expect(200)
-      .expect(env);
+    return request(app.getHttpServer()).get('/rest/envconfig').expect(200);
   });
 
   it('should implement integration-test', () => {

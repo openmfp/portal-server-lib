@@ -4,7 +4,10 @@ import {
 } from '../injection-tokens.js';
 import { PortalModule } from '../portal.module.js';
 import { CookiesService } from '../services/index.js';
-import { AuthConfigService } from './auth-config.service.js';
+import {
+  AuthConfigService,
+  ServerAuthVariables,
+} from './auth-config.service.js';
 import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
@@ -57,7 +60,7 @@ describe('AuthController', () => {
       } as any;
       authConfigServicekMock.getAuthConfig.mockResolvedValue({
         baseDomain: 'localhost',
-      });
+      } as ServerAuthVariables);
 
       const authTokenResponse = {
         id_token: 'id',
@@ -93,7 +96,7 @@ describe('AuthController', () => {
       } as any;
       authConfigServicekMock.getAuthConfig.mockResolvedValue({
         baseDomain: 'otherdomain',
-      });
+      } as ServerAuthVariables);
 
       const result = await controller.auth(requestMock, responseMock);
 
