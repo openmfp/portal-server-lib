@@ -15,9 +15,9 @@ export const DEFAULT_SERVICE_PROVIDERS: RawServiceProvider[] = [
               {
                 entityType: 'global',
                 pathSegment: 'home',
-                label: 'Overview',
+                label: 'Home',
                 icon: 'home',
-                hideFromNav: true,
+                hideFromNav: false,
                 defineEntity: {
                   id: 'example',
                 },
