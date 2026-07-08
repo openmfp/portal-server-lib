@@ -1,6 +1,7 @@
 import { BreadcrumbBadge } from './breadcrumb-badge.js';
 import { LuigiUserSettings } from './luigi-user-settings.js';
 
+
 export interface LuigiNodeCategory {
   label: string;
   collapsible?: boolean;
@@ -158,6 +159,7 @@ export interface ServiceProvider {
   displayName: string;
   creationTimestamp: string;
   nodes: LuigiNode[];
+  nodeContext?: Record<string, any>;
 }
 
 export interface PortalConfig {
