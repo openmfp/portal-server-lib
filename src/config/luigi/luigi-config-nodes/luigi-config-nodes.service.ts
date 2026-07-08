@@ -1,6 +1,6 @@
 import {
-  SERVICE_PROVIDER_INJECTION_TOKEN,
   LUIGI_DATA_SERVICE_INJECTION_TOKEN,
+  SERVICE_PROVIDER_INJECTION_TOKEN,
 } from '../../../injection-tokens.js';
 import {
   RawServiceProvider,
@@ -64,6 +64,7 @@ export class LuigiConfigNodesService {
           displayName: rawProvider.displayName,
           creationTimestamp: rawProvider.creationTimestamp,
           nodes: value.nodes,
+          nodeContext: rawProvider.nodeContext,
         });
       }
     }
