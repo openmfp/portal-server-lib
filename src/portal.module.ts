@@ -71,6 +71,8 @@ import {
 import { ServeStaticModule } from '@nestjs/serve-static';
 import cookieParser from 'cookie-parser';
 
+import { cacheControlNoStore } from './middleware/cache-control.middleware.js';
+
 export interface PortalModuleOptions {
   /**
    * A set of additional controllers to be registered in the module.
@@ -150,6 +152,7 @@ export interface PortalModuleOptions {
 export class PortalModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(cookieParser()).forRoutes('*');
+    consumer.apply(cacheControlNoStore).forRoutes('*');
   }
 
   static create(options: PortalModuleOptions): DynamicModule {
@@ -246,6 +249,24 @@ export class PortalModule implements NestModule {
         ServeStaticModule.forRoot({
           rootPath: options.frontendDistSources,
           exclude: ['/rest', '/callback'],
+          serveStaticOptions: {
+            // index.html bootstraps auth — a cached copy can pin a broken
+            // session until a hard reload (apeirora/showroom#296). Hashed
+            // bundles are content-addressed and safe to cache forever;
+            // everything else must revalidate.
+            setHeaders: (res, path) => {
+              if (path.endsWith('.html')) {
+                res.setHeader('Cache-Control', 'no-store');
+              } else if (/-[A-Z0-9]{8}\.(js|css)$/.test(path)) {
+                res.setHeader(
+                  'Cache-Control',
+                  'public, max-age=31536000, immutable',
+                );
+              } else {
+                res.setHeader('Cache-Control', 'no-cache');
+              }
+            },
+          },
         }),
       );
     }
