@@ -50,7 +50,7 @@ describe('PortalModule', () => {
 
     const expectedModule = ServeStaticModule.forRoot({
       rootPath: expectedPath,
-      exclude: ['/rest', '/callback'],
+      exclude: ['/rest', '/rest/*path', '/callback'],
       serveStaticOptions: {
         setHeaders: expect.any(Function) as unknown as () => void,
       },

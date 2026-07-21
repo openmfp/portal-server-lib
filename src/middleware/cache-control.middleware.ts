@@ -13,7 +13,11 @@ export function cacheControlNoStore(
   res: Response,
   next: NextFunction,
 ): void {
-  if (req.path === '/callback' || req.path.startsWith('/rest')) {
+  if (
+    req.path === '/callback' ||
+    req.path === '/rest' ||
+    req.path.startsWith('/rest/')
+  ) {
     res.setHeader('Cache-Control', 'no-store');
   }
   next();

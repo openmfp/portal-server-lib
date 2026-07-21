@@ -21,7 +21,14 @@ describe('cacheControlNoStore', () => {
     },
   );
 
-  it.each(['/', '/index.html', '/main-ABCD1234.js', '/ui/marketplace/ui/'])(
+  it.each([
+    '/',
+    '/index.html',
+    '/main-ABCD1234.js',
+    '/ui/marketplace/ui/',
+    '/restart',
+    '/restore.png',
+  ])(
     'does not touch caching for %s',
     (path) => {
       cacheControlNoStore(request(path), res, next);

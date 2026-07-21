@@ -248,7 +248,7 @@ export class PortalModule implements NestModule {
       moduleImports.push(
         ServeStaticModule.forRoot({
           rootPath: options.frontendDistSources,
-          exclude: ['/rest', '/callback'],
+          exclude: ['/rest', '/rest/*path', '/callback'],
           serveStaticOptions: {
             // index.html bootstraps auth — a cached copy can pin a broken
             // session until a hard reload (apeirora/showroom#296). Hashed
