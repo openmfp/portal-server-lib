@@ -251,9 +251,9 @@ export class PortalModule implements NestModule {
           exclude: ['/rest', '/rest/*path', '/callback'],
           serveStaticOptions: {
             // index.html bootstraps auth — a cached copy can pin a broken
-            // session until a hard reload (apeirora/showroom#296). Hashed
-            // bundles are content-addressed and safe to cache forever;
-            // everything else must revalidate.
+            // session until a hard reload. Hashed bundles are
+            // content-addressed and safe to cache forever; everything else
+            // must revalidate.
             setHeaders: (res, path) => {
               if (path.endsWith('.html')) {
                 res.setHeader('Cache-Control', 'no-store');
