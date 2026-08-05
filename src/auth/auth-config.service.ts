@@ -1,7 +1,6 @@
 import { DiscoveryService, EnvService } from '../env/index.js';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
-import _ from 'lodash';
 
 interface BaseDomainsToIdp {
   idpName: string;
@@ -188,7 +187,7 @@ export class EnvAuthConfigService implements AuthConfigService {
   }
 
   private getBaseDomainRegex(baseDomain: string): RegExp {
-    const domain = _.escapeRegExp(baseDomain);
+    const domain = baseDomain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     return new RegExp(`(.*)\\.${domain}`);
   }
 }
