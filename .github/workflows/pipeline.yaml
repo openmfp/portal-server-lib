@@ -13,7 +13,7 @@ jobs:
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: false
-    uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@main
+    uses: openmfp/gha/.github/workflows/pipeline-node-module.yml@dd5d11065486f662a85fcbdd24788afff0ce0a37 # main
     secrets: inherit
     with:
       environment: npmjs:@openmfp/portal-server-lib
