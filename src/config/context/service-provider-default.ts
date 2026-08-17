@@ -31,6 +31,7 @@ export const DEFAULT_SERVICE_PROVIDERS: RawServiceProvider[] = [
                     url: '/assets/openmfp-portal-ui-wc.js#getting-started',
                     webcomponent: {
                       selfRegistered: true,
+                      type: 'module',
                     },
                   },
                 ],
