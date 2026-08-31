@@ -1,6 +1,6 @@
 {
   "name": "@openmfp/portal-server-lib",
-  "version": "0.164.15",
+  "version": "0.164.17",
   "description": "This library helps you to set up an openmfp based micro frontend portal server with ease.",
   "repository": {
     "url": "git+https://github.com/openmfp/portal-server-lib.git"
@@ -30,7 +30,7 @@
     "@nestjs/core": "^11.1.19",
     "@nestjs/platform-express": "^11.1.19",
     "@nestjs/serve-static": "^5.0.5",
-    "axios": "^1.15.0",
+    "axios": "^1.16.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.1.0",
     "rxjs": "^7.8.2"
