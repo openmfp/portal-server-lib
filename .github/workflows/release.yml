@@ -1,0 +1,17 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'The version to release (e.g. 1.2.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    uses: openmfp/gha/.github/workflows/job-release-node.yml@main
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      environment: npmjs:@openmfp/portal-server-lib
