@@ -48,7 +48,7 @@
     "@nestjs/testing": "11.1.28",
     "@openmfp/config-prettier": "0.9.2",
     "@types/jest": "30.0.0",
-    "@types/node": "24.10.13",
+    "@types/node": "24.13.3",
     "@types/supertest": "6.0.3",
     "typescript-eslint": "8.65.0",
     "concurrently": "9.2.4",
