@@ -37,6 +37,21 @@ describe('EnvService', () => {
     delete process.env[envVarName];
   });
 
+  it('should get default empty value for vpnCheckUrl', () => {
+    expect(service.getEnv().vpnCheckUrl).toStrictEqual('');
+  });
+
+  it('should get vpnCheckUrl', () => {
+    const envVarName = 'VPN_CHECK_URL';
+    process.env[envVarName] = 'https://internal.example';
+
+    expect(service.getEnv().vpnCheckUrl).toStrictEqual(
+      'https://internal.example',
+    );
+
+    delete process.env[envVarName];
+  });
+
   [
     {
       envVarName: 'HEALTH_CHECK_INTERVAL',

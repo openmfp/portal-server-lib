@@ -5,6 +5,7 @@ export interface EnvVariables {
   healthCheckInterval?: number;
   isLocal?: boolean;
   userAvatarUrl?: string;
+  vpnCheckUrl?: string;
   developmentInstance?: boolean;
   validWebcomponentUrls?: string[];
   uiOptions?: string[];
@@ -17,6 +18,7 @@ export class EnvService {
   public getEnv(): EnvVariables {
     return {
       userAvatarUrl: process.env.USER_AVATAR_URL || '',
+      vpnCheckUrl: process.env.VPN_CHECK_URL || '',
       logoutRedirectUrl: process.env.LOGOUT_REDIRECT_URL || '/logout',
       isLocal: process.env.ENVIRONMENT === 'local',
       developmentInstance: process.env.DEVELOPMENT_INSTANCE === 'true',
