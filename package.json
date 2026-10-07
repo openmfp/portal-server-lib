@@ -75,6 +75,7 @@
   },
   "type": "module",
   "overrides": {
-    "multer": "2.4.0"
+    "multer": "2.4.0",
+    "shell-quote": "1.11.0"
   }
 }
