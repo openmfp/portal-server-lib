@@ -64,7 +64,7 @@
     "ts-loader": "9.5.4",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.9.3",
-    "wait-on": "9.0.4",
+    "wait-on": "9.5.1",
     "yalc": "1.0.0-pre.53",
     "vitest": "5.1.0",
     "@vitest/coverage-v8": "5.1.0",
