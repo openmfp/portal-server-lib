@@ -1,7 +1,7 @@
 import { DiscoveryService } from './discovery.service.js';
 import { EnvService } from './env.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('EnvService', () => {
   let service: EnvService;

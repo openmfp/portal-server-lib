@@ -13,23 +13,23 @@ import { AuthCallback } from './auth.callback.js';
 import { AuthController } from './auth.controller.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
+import type { Mocked } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  const authCallbackMock: jest.Mocked<AuthCallback> = mock<Response>();
+  const authCallbackMock: Mocked<AuthCallback> = mock<Response>();
   const requestMock: Request = mock<Request>();
   const responseMock: Response = mock<Response>();
-  const authTokenServiceMock: jest.Mocked<AuthTokenService> =
+  const authTokenServiceMock: Mocked<AuthTokenService> =
     mock<AuthTokenService>();
-  const authConfigServicekMock: jest.Mocked<AuthConfigService> =
+  const authConfigServicekMock: Mocked<AuthConfigService> =
     mock<AuthConfigService>();
-  const cookiesServiceMock: jest.Mocked<CookiesService> =
-    mock<CookiesService>();
+  const cookiesServiceMock: Mocked<CookiesService> = mock<CookiesService>();
 
   beforeEach(async () => {
-    jest.resetAllMocks();
-    (responseMock.redirect as any) = jest.fn((href: string) => href);
+    vi.resetAllMocks();
+    (responseMock.redirect as any) = vi.fn((href: string) => href);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [PortalModule.create({})],
@@ -176,13 +176,13 @@ describe('AuthController', () => {
 
     it('should refresh the token', async () => {
       // arrange
-      const exchangeTokenForRefreshToken = jest.spyOn(
+      const exchangeTokenForRefreshToken = vi.spyOn(
         authTokenServiceMock,
         'exchangeTokenForRefreshToken',
       );
-      const getAuthCookie = jest.spyOn(cookiesServiceMock, 'getAuthCookie');
+      const getAuthCookie = vi.spyOn(cookiesServiceMock, 'getAuthCookie');
       getAuthCookie.mockReturnValue('authCookie');
-      const callback = jest.spyOn(authCallbackMock, 'handleSuccess');
+      const callback = vi.spyOn(authCallbackMock, 'handleSuccess');
       const idToken = 'id_token';
       const authTokenResponse = {
         id_token: idToken,

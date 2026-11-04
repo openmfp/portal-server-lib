@@ -24,7 +24,7 @@ describe('RequestCodeParamGuard', () => {
     const ctx = createContext({ state: 'xyz' });
     try {
       guard.canActivate(ctx);
-      fail('should throw');
+      expect.fail('should throw');
     } catch (e) {
       expect(e).toBeInstanceOf(HttpException);
       expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);
@@ -38,7 +38,7 @@ describe('RequestCodeParamGuard', () => {
     const ctx = createContext({ code: 'abc' });
     try {
       guard.canActivate(ctx);
-      fail('should throw');
+      expect.fail('should throw');
     } catch (e) {
       expect(e).toBeInstanceOf(HttpException);
       expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);
@@ -52,7 +52,7 @@ describe('RequestCodeParamGuard', () => {
     const ctx = createContext({});
     try {
       guard.canActivate(ctx);
-      fail('should throw');
+      expect.fail('should throw');
     } catch (e) {
       expect(e).toBeInstanceOf(HttpException);
       expect((e as HttpException).getStatus()).toBe(HttpStatus.BAD_REQUEST);

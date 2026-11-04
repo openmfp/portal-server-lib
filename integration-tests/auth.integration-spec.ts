@@ -14,10 +14,10 @@ describe('AuthController', () => {
     }).compile();
 
     authTokenService = module.get<AuthTokenService>(AuthTokenService);
-    authTokenService.exchangeTokenForRefreshToken = jest
+    authTokenService.exchangeTokenForRefreshToken = vi
       .fn()
       .mockResolvedValue({});
-    authTokenService.exchangeTokenForCode = jest.fn().mockResolvedValue({});
+    authTokenService.exchangeTokenForCode = vi.fn().mockResolvedValue({});
 
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());

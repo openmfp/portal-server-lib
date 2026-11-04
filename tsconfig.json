@@ -14,5 +14,6 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "types": ["vitest/globals", "node"],
   }
 }

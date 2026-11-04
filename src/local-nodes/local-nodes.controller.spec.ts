@@ -14,7 +14,7 @@ import { HttpModule } from '@nestjs/axios';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('LocalNodesController', () => {
   let controller: LocalNodesController;
@@ -25,7 +25,7 @@ describe('LocalNodesController', () => {
   let responseMock: Response;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     module = await Test.createTestingModule({
       controllers: [LocalNodesController],
       providers: [
@@ -57,7 +57,7 @@ describe('LocalNodesController', () => {
   });
 
   afterEach(async () => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     await module.close();
   });
 
@@ -75,23 +75,22 @@ describe('LocalNodesController', () => {
       },
     ];
 
-    jest
-      .spyOn(
-        contentConfigurationValidatorServiceMock,
-        'validateContentConfigurations',
-      )
-      .mockResolvedValue(Promise.resolve(validationResults));
+    vi.spyOn(
+      contentConfigurationValidatorServiceMock,
+      'validateContentConfigurations',
+    ).mockResolvedValue(validationResults);
 
-    jest
-      .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
-      .mockImplementation(() => {
-        throw new Error();
-      });
+    vi.spyOn(
+      contentConfigurationLuigiDataServiceMock,
+      'getLuigiData',
+    ).mockImplementation(() => {
+      throw new Error();
+    });
 
     //Act
     try {
       await controller.getLocalNodes(body, responseMock);
-      fail();
+      expect.fail();
     } catch (error: any) {
       //Assert
       expect(error).toBeInstanceOf(HttpException);
@@ -114,16 +113,15 @@ describe('LocalNodesController', () => {
         },
       ];
 
-      jest
-        .spyOn(
-          contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations',
-        )
-        .mockResolvedValue(Promise.resolve(validationResults));
+      vi.spyOn(
+        contentConfigurationValidatorServiceMock,
+        'validateContentConfigurations',
+      ).mockResolvedValue(validationResults);
 
-      jest
-        .spyOn(contentConfigurationLuigiDataServiceMock, 'getLuigiData')
-        .mockResolvedValue(Promise.resolve(expectedResult));
+      vi.spyOn(
+        contentConfigurationLuigiDataServiceMock,
+        'getLuigiData',
+      ).mockResolvedValue(expectedResult);
 
       //Act
       const result = await controller.getLocalNodes(body, responseMock);
@@ -145,12 +143,10 @@ describe('LocalNodesController', () => {
       };
       const validationResults: ValidationResult[] = [validationResult];
 
-      jest
-        .spyOn(
-          contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations',
-        )
-        .mockResolvedValue(Promise.resolve(validationResults));
+      vi.spyOn(
+        contentConfigurationValidatorServiceMock,
+        'validateContentConfigurations',
+      ).mockResolvedValue(validationResults);
 
       //Act
       const result = await controller.getLocalNodes(body, responseMock);
@@ -169,12 +165,10 @@ describe('LocalNodesController', () => {
         },
       ];
 
-      jest
-        .spyOn(
-          contentConfigurationValidatorServiceMock,
-          'validateContentConfigurations',
-        )
-        .mockResolvedValue(Promise.resolve(validationResults));
+      vi.spyOn(
+        contentConfigurationValidatorServiceMock,
+        'validateContentConfigurations',
+      ).mockResolvedValue(validationResults);
 
       body = {
         language: 'any',

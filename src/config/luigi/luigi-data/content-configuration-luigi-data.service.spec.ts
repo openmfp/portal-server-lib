@@ -5,11 +5,12 @@ import { IntentResolveService } from './intent-resolve.service.js';
 import { NodeExtendedDataService } from './node-extended-data.service.js';
 import { TextsTranslateService } from './texts-translate.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Mocked } from 'vitest';
 
 describe('ContentConfigurationLuigiDataService', () => {
   let service: ContentConfigurationLuigiDataService;
   let configTransferNodeService: ConfigTransferNodeService;
-  let textsTranslateService: jest.Mocked<TextsTranslateService>;
+  let textsTranslateService: Mocked<TextsTranslateService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +22,7 @@ describe('ContentConfigurationLuigiDataService', () => {
         {
           provide: IntentResolveService,
           useValue: {
-            resolve: jest.fn(),
+            resolve: vi.fn(),
           },
         },
       ],

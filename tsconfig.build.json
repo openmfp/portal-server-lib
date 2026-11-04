@@ -5,7 +5,7 @@
     "integration-tests",
     "dist",
     "**/*spec.ts",
-    "jest.config.ts",
-    "base.jest.config.ts"
+    "vitest.config.ts",
+    "vitest.config.integration.ts"
   ]
 }

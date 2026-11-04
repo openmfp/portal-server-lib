@@ -6,7 +6,7 @@ import {
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('EmptyAuthConfigService', () => {
   let service: EmptyAuthConfigService;
@@ -101,7 +101,7 @@ describe('EnvAuthConfigService', () => {
 
         try {
           await service.getAuthConfig(request);
-          fail('Expected HttpException to be thrown');
+          expect.fail('Expected HttpException to be thrown');
         } catch (error) {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
@@ -121,7 +121,7 @@ describe('EnvAuthConfigService', () => {
 
         try {
           await service.getAuthConfig(request);
-          fail('Expected HttpException to be thrown');
+          expect.fail('Expected HttpException to be thrown');
         } catch (error) {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
@@ -137,9 +137,8 @@ describe('EnvAuthConfigService', () => {
         const request = mock<Request>();
         request.hostname = 'app.hyper.space';
 
-        const discoveryServiceMockGetOIDC = jest.spyOn(
-          discoveryServiceMock,
-          'getOIDC',
+        const discoveryServiceMockGetOIDC = vi.mocked(
+          discoveryServiceMock.getOIDC,
         );
         discoveryServiceMockGetOIDC.mockResolvedValue({
           authorization_endpoint: 'example.com/authorization_endpoint',
@@ -161,9 +160,8 @@ describe('EnvAuthConfigService', () => {
         const request = mock<Request>();
         request.hostname = 'app.hyper.space';
 
-        const discoveryServiceMockGetOIDC = jest.spyOn(
-          discoveryServiceMock,
-          'getOIDC',
+        const discoveryServiceMockGetOIDC = vi.mocked(
+          discoveryServiceMock.getOIDC,
         );
         discoveryServiceMockGetOIDC.mockResolvedValue(null);
 

@@ -16,7 +16,8 @@ import { ServiceProvider } from './model/luigi.node.js';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
+import type { Mock } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -26,7 +27,7 @@ const token = 'token';
 describe('ConfigController', () => {
   let controller: ConfigController;
   let luigiConfigNodesService: LuigiConfigNodesService;
-  let getEntityContextMock: jest.Mock;
+  let getEntityContextMock: Mock;
   let requestMock: Request;
   let responseMock: Response;
   let portalContextProvider: PortalContextProvider;
@@ -35,7 +36,7 @@ describe('ConfigController', () => {
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
-    getEntityContextMock = jest.fn().mockResolvedValue(entityContext);
+    getEntityContextMock = vi.fn().mockResolvedValue(entityContext);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -65,13 +66,9 @@ describe('ConfigController', () => {
       PortalContextProviderImpl,
     );
 
-    jest
-      .spyOn(featureTogglesProvider, 'getFeatureToggles')
-      .mockResolvedValue({});
+    vi.spyOn(featureTogglesProvider, 'getFeatureToggles').mockResolvedValue({});
 
-    jest
-      .spyOn(headerParserService, 'extractBearerToken')
-      .mockReturnValue(token);
+    vi.spyOn(headerParserService, 'extractBearerToken').mockReturnValue(token);
 
     requestMock = mock<Request>();
     requestMock.query = { key: 'val' };
@@ -86,7 +83,7 @@ describe('ConfigController', () => {
   describe('getConfig', () => {
     it('should get the config for tenant', async () => {
       const resultingNodes: ServiceProvider[] = [];
-      const getNodesMock = jest
+      const getNodesMock = vi
         .spyOn(luigiConfigNodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
 
@@ -106,17 +103,15 @@ describe('ConfigController', () => {
       // Arrange
       const error = new Error('this is a test error');
 
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
-      jest
-        .spyOn(featureTogglesProvider, 'getFeatureToggles')
-        .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0)),
-        );
+      vi.spyOn(featureTogglesProvider, 'getFeatureToggles').mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 0)),
+      );
 
-      jest
-        .spyOn(portalContextProvider, 'getContextValues')
-        .mockRejectedValue(error);
+      vi.spyOn(portalContextProvider, 'getContextValues').mockRejectedValue(
+        error,
+      );
 
       // Act
       const result = controller.getConfig(
@@ -133,22 +128,18 @@ describe('ConfigController', () => {
       // Arrange
       const error = new Error('this is a test error');
 
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
-      jest
-        .spyOn(featureTogglesProvider, 'getFeatureToggles')
-        .mockImplementation(
-          () =>
-            new Promise((resolve, reject) =>
-              setTimeout(reject.bind(reject, error), 0),
-            ),
-        );
+      vi.spyOn(featureTogglesProvider, 'getFeatureToggles').mockImplementation(
+        () =>
+          new Promise((resolve, reject) =>
+            setTimeout(reject.bind(reject, error), 0),
+          ),
+      );
 
-      jest
-        .spyOn(portalContextProvider, 'getContextValues')
-        .mockImplementation(
-          () => new Promise((resolve) => setTimeout(resolve, 0)),
-        );
+      vi.spyOn(portalContextProvider, 'getContextValues').mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 0)),
+      );
 
       // Act
       const result = controller.getConfig(
@@ -164,7 +155,7 @@ describe('ConfigController', () => {
   describe('getEntityConfig', () => {
     it('should get the config for a not registered entity provider', async () => {
       // Arrange
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
       const result = controller.getEntityConfig(
@@ -185,14 +176,12 @@ describe('ConfigController', () => {
       // Arrange
       const error = new Error('this is a test error');
 
-      jest
-        .spyOn(luigiConfigNodesService, 'getNodes')
-        .mockImplementation(
-          () =>
-            new Promise((resolve, reject) =>
-              setTimeout(reject.bind(reject, error), 0),
-            ),
-        );
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockImplementation(
+        () =>
+          new Promise((resolve, reject) =>
+            setTimeout(reject.bind(reject, error), 0),
+          ),
+      );
 
       // Act
       const result = controller.getEntityConfig(
@@ -212,7 +201,7 @@ describe('ConfigController', () => {
       const entityNotFoundException = new EntityNotFoundException(entity, 'id');
       getEntityContextMock.mockRejectedValue(entityNotFoundException);
 
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
       try {
@@ -236,7 +225,7 @@ describe('ConfigController', () => {
       );
       getEntityContextMock.mockRejectedValue(entityAccessForbiddenException);
 
-      jest.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
+      vi.spyOn(luigiConfigNodesService, 'getNodes').mockResolvedValue([]);
 
       // Act
       try {

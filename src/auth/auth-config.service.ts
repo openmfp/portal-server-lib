@@ -1,4 +1,5 @@
-import { DiscoveryService, EnvService } from '../env/index.js';
+import { DiscoveryService } from '../env/discovery.service.js';
+import { EnvService } from '../env/env.service.js';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 

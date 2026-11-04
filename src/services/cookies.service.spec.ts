@@ -39,7 +39,7 @@ describe('CookiesService', () => {
   describe('setAuthCookie', () => {
     it('should set the auth cookie with correct options', () => {
       const mockResponse = {
-        cookie: jest.fn(),
+        cookie: vi.fn(),
       } as Response;
 
       const mockRequest = {
@@ -72,7 +72,7 @@ describe('CookiesService', () => {
       } as Response;
 
       const mockResponse = {
-        clearCookie: jest.fn(),
+        clearCookie: vi.fn(),
       } as unknown as Response;
 
       service.removeAuthCookie(mockRequest, mockResponse);

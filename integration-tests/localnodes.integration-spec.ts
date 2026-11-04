@@ -104,7 +104,7 @@ describe('LocalnodesController', () => {
       process.env.CONTENT_CONFIGURATION_VALIDATOR_API_URL =
         'http://localhost:8080';
 
-      const validateContentConfiguration = jest
+      const validateContentConfiguration = vi
         .spyOn(
           contentConfigurationValidatorService,
           'validateContentConfigurations',
@@ -116,7 +116,7 @@ describe('LocalnodesController', () => {
           },
         ]);
 
-      const getLuigiData = jest
+      const getLuigiData = vi
         .spyOn(contentConfigurationLuigiDataService, 'getLuigiData')
         .mockReturnValue(Promise.resolve(resultingNodes));
 

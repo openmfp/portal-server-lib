@@ -13,7 +13,7 @@ import { ContentConfiguration } from '../../model/content-configuration.js';
 import { LuigiNode } from '../../model/luigi.node.js';
 import { LuigiDataService } from '../luigi-data/luigi-data.service.js';
 import { LuigiConfigNodesService } from './luigi-config-nodes.service.js';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('LuigiConfigNodesService', () => {
   let service: LuigiConfigNodesService;
@@ -43,9 +43,9 @@ describe('LuigiConfigNodesService', () => {
 
   it('should return a service provider for each request', async () => {
     const nodes: LuigiNode[] = [];
-    jest
-      .spyOn(luigiDataService, 'getLuigiData')
-      .mockReturnValue(Promise.resolve(nodes));
+    vi.spyOn(luigiDataService, 'getLuigiData').mockReturnValue(
+      Promise.resolve(nodes),
+    );
     const rawServiceProviders: RawServiceProvider[] = [
       {
         name: 'name',
@@ -61,8 +61,8 @@ describe('LuigiConfigNodesService', () => {
       },
     ];
     const token = 'token';
-    const getExtensionClassesMock = jest
-      .spyOn(serviceProviderService, 'getServiceProviders')
+    const getExtensionClassesMock = vi
+      .mocked(serviceProviderService.getServiceProviders)
       .mockResolvedValue({
         rawServiceProviders,
       });

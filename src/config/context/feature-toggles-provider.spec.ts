@@ -16,7 +16,7 @@ describe('EnvFeatureTogglesProvider', () => {
         {
           provide: EnvService,
           useValue: {
-            getFeatureToggles: jest
+            getFeatureToggles: vi
               .fn()
               .mockReturnValue({ feature1: true, feature2: false }),
           },
@@ -31,7 +31,7 @@ describe('EnvFeatureTogglesProvider', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should get feature toggles from EnvService', async () => {
