@@ -27,7 +27,7 @@ The build artifacts will be stored in the `dist/` directory.
 
 > **NOTE:** You should always add tests, if you are adding code to our repository.
 
-Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/) in the root directory of the repository.
+Run `npm test` to execute the unit tests via [Vitest](https://vitest.dev/) in the root directory of the repository.
 
 ## Issues
 

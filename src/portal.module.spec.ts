@@ -129,9 +129,9 @@ describe('PortalModule', () => {
 
   describe('configure', () => {
     it('should apply the cookie parser and cache-control middleware to all routes', () => {
-      const forRoutes = jest.fn();
+      const forRoutes = vi.fn();
       const consumer = {
-        apply: jest.fn().mockReturnValue({ forRoutes }),
+        apply: vi.fn().mockReturnValue({ forRoutes }),
       } as unknown as MiddlewareConsumer;
 
       new PortalModule().configure(consumer);
@@ -163,7 +163,7 @@ describe('PortalModule', () => {
           };
         }[];
       };
-      const res = { setHeader: jest.fn() };
+      const res = { setHeader: vi.fn() };
       optionsProvider.useValue[0].serveStaticOptions.setHeaders(res, path);
       return res.setHeader;
     };

@@ -8,12 +8,13 @@ import { EnvController } from './env.controller.js';
 import { EnvService } from './env.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
+import type { Mocked } from 'vitest';
 
 describe('EnvController', () => {
   let controller: EnvController;
-  let authConfigService: jest.Mocked<AuthConfigService>;
-  let envVariablesProvider: jest.Mocked<EnvVariablesService>;
-  let envService: jest.Mocked<EnvService>;
+  let authConfigService: Mocked<AuthConfigService>;
+  let envVariablesProvider: Mocked<EnvVariablesService>;
+  let envService: Mocked<EnvService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,19 +23,19 @@ describe('EnvController', () => {
         {
           provide: AUTH_CONFIG_INJECTION_TOKEN,
           useValue: {
-            getAuthConfig: jest.fn(),
+            getAuthConfig: vi.fn(),
           },
         },
         {
           provide: ENV_VARIABLES_PROVIDER_INJECTION_TOKEN,
           useValue: {
-            getEnv: jest.fn(),
+            getEnv: vi.fn(),
           },
         },
         {
           provide: EnvService,
           useValue: {
-            getEnv: jest.fn(),
+            getEnv: vi.fn(),
           },
         },
       ],

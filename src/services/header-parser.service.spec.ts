@@ -2,7 +2,7 @@ import { PortalModule } from '../portal.module';
 import { HeaderParserService } from './header-parser.service.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('HeaderParserService', () => {
   let service: HeaderParserService;

@@ -7,7 +7,7 @@ import { NoopLogoutService } from './noop-logout.service';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { MockProxy, mock } from 'jest-mock-extended';
+import { MockProxy, mock } from 'vitest-mock-extended';
 
 describe('LogoutController', () => {
   let controller: LogoutController;
@@ -23,7 +23,7 @@ describe('LogoutController', () => {
     cookiesServiceMock = mock<CookiesService>();
     discoveryServiceMock = mock<DiscoveryService>();
     envServiceMock = mock<EnvService>({
-      getEnv: jest.fn().mockReturnValue({
+      getEnv: vi.fn().mockReturnValue({
         logoutRedirectUrl: '\test',
       }),
     });

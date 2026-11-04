@@ -13,8 +13,8 @@ import { AuthTokenData, AuthTokenService } from './auth-token.service.js';
 import { AuthCallback } from './auth.callback.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
 import nock from 'nock';
+import { mock } from 'vitest-mock-extended';
 
 describe('AuthTokenService', () => {
   let service: AuthTokenService;

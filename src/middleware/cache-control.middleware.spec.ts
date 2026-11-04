@@ -6,8 +6,8 @@ describe('cacheControlNoStore', () => {
   let next: NextFunction;
 
   beforeEach(() => {
-    res = { setHeader: jest.fn() } as unknown as Response;
-    next = jest.fn();
+    res = { setHeader: vi.fn() } as unknown as Response;
+    next = vi.fn();
   });
 
   // Plain Express mount (app.use at root): req.path carries the full path.

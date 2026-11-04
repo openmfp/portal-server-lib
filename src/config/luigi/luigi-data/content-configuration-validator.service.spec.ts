@@ -8,8 +8,8 @@ import { HttpService } from '@nestjs/axios';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { mock } from 'jest-mock-extended';
 import { of } from 'rxjs';
+import { mock } from 'vitest-mock-extended';
 
 describe('ContentConfigurationValidatorService', () => {
   let service: ContentConfigurationValidatorService;
@@ -63,9 +63,9 @@ describe('ContentConfigurationValidatorService', () => {
         config: undefined,
       };
 
-      jest
-        .spyOn(service, 'validateContentConfigurationRequest')
-        .mockReturnValue(of(requestResult));
+      vi.spyOn(service, 'validateContentConfigurationRequest').mockReturnValue(
+        of(requestResult),
+      );
 
       const expectedResults: ValidationResult[] = [
         {
@@ -103,7 +103,7 @@ describe('ContentConfigurationValidatorService', () => {
         config: null,
       } as AxiosResponse;
 
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'post');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.post);
       httpServiceMockGet.mockReturnValue(of(response));
 
       const validationInput: ValidationInput = {

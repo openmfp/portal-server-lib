@@ -6,7 +6,7 @@ import { HealthController } from './health.controller.js';
 import { HttpModule } from '@nestjs/axios';
 import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MockProxy, mock } from 'jest-mock-extended';
+import { MockProxy, mock } from 'vitest-mock-extended';
 
 describe('HealthController', () => {
   let controller: HealthController;
@@ -15,7 +15,7 @@ describe('HealthController', () => {
   let module: TestingModule;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     healthChecker = mock<HealthChecker>();
     module = await Test.createTestingModule({
       controllers: [HealthController],
@@ -35,7 +35,7 @@ describe('HealthController', () => {
   });
 
   afterEach(async () => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     await module.close();
   });
 
@@ -45,7 +45,7 @@ describe('HealthController', () => {
 
   describe('getHealth', function () {
     beforeEach(function () {
-      jest.spyOn(envService, 'getEnv').mockReturnValue({
+      vi.spyOn(envService, 'getEnv').mockReturnValue({
         healthCheckInterval: 0,
       });
     });
@@ -68,7 +68,7 @@ describe('HealthController', () => {
 
     it('should be healthy', async () => {
       healthChecker.isHealthy.mockReturnValue(Promise.resolve(true));
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
       // also tick the promises once, so the health check can show the new result
       await Promise.resolve();
 
@@ -85,7 +85,7 @@ describe('HealthController', () => {
 
       // be healthy again
       healthChecker.isHealthy.mockReturnValue(Promise.resolve(true));
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
       // also tick the promises once, so the health check can show the new result
       await Promise.resolve();
 
@@ -93,7 +93,7 @@ describe('HealthController', () => {
 
       // return to unhealthy
       healthChecker.isHealthy.mockReturnValue(Promise.resolve(false));
-      jest.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(2000);
       // also tick the promises once, so the health check can show the new result
       await Promise.resolve();
 

@@ -13,7 +13,7 @@ describe('ConfigTransferNodeService', () => {
 
   beforeEach(() => {
     intentResolveServiceMock = {
-      resolve: jest.fn(),
+      resolve: vi.fn(),
     } as any as IntentResolveService;
     service = new ConfigTransferNodeService(intentResolveServiceMock);
   });

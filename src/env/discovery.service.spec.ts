@@ -2,8 +2,8 @@ import { DiscoveryService } from './discovery.service.js';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosError } from 'axios';
-import { mock } from 'jest-mock-extended';
 import { of, throwError } from 'rxjs';
+import { mock } from 'vitest-mock-extended';
 
 describe('DiscoveryService', () => {
   let service: DiscoveryService;
@@ -31,7 +31,7 @@ describe('DiscoveryService', () => {
     });
 
     it('should get oauthServerUrl and oauthTokenUrl form DISCOVERY_ENDPOINT', async () => {
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.get);
       httpServiceMockGet.mockReturnValue(
         of({
           data: {
@@ -60,7 +60,7 @@ describe('DiscoveryService', () => {
     });
 
     it('should not get oauthServerUrl and oauthTokenUrl and throw error when httpService returns error', async () => {
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.get);
       httpServiceMockGet.mockImplementation(() => {
         return throwError(() => new AxiosError('error'));
       });
@@ -73,7 +73,7 @@ describe('DiscoveryService', () => {
     });
 
     it('should get null when DISCOVERY_ENDPOINT endpoint returns with 101 status', async () => {
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.get);
       httpServiceMockGet.mockReturnValue(
         of({
           data: {
@@ -101,7 +101,7 @@ describe('DiscoveryService', () => {
     });
 
     it('should not get oauthTokenUrl form DISCOVERY_ENDPOINT and return null', async () => {
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.get);
       httpServiceMockGet.mockReturnValue(
         of({
           data: {
@@ -122,7 +122,7 @@ describe('DiscoveryService', () => {
     });
 
     it('should not get oauthServerUrl form DISCOVERY_ENDPOINT and return null', async () => {
-      const httpServiceMockGet = jest.spyOn(httpServiceMock, 'get');
+      const httpServiceMockGet = vi.mocked(httpServiceMock.get);
       httpServiceMockGet.mockReturnValue(
         of({
           data: {

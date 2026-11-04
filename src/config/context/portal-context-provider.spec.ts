@@ -5,7 +5,7 @@ import {
 } from './portal-context-provider.js';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
-import { mock } from 'jest-mock-extended';
+import { mock } from 'vitest-mock-extended';
 
 describe('PortalContextProviderImpl', () => {
   let service: PortalContextProviderImpl;
@@ -37,7 +37,7 @@ describe('PortalContextProviderImpl', () => {
     service = module.get<PortalContextProviderImpl>(PortalContextProviderImpl);
 
     // Reset mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {

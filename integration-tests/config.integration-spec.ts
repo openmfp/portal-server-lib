@@ -18,8 +18,9 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request } from 'express';
-import { mock } from 'jest-mock-extended';
 import request from 'supertest';
+import type { Mock } from 'vitest';
+import { mock } from 'vitest-mock-extended';
 
 const MockEntityProvider = 'MockEntityProvider';
 const entityContext = { abc: 'def' };
@@ -27,13 +28,13 @@ const entityContext = { abc: 'def' };
 const token = 'token';
 
 class ServiceProviderServiceMock implements ServiceProviderService {
-  getServiceProviders = jest.fn();
+  getServiceProviders = vi.fn();
 }
 
 describe('ConfigController', () => {
   let app: INestApplication;
   let nodesService: LuigiConfigNodesService;
-  let getEntityContextMock: jest.Mock;
+  let getEntityContextMock: Mock;
   let requestMock: Request;
   let headerParserService: HeaderParserService;
   let featureTogglesProvider: FeatureTogglesProvider;
@@ -41,7 +42,7 @@ describe('ConfigController', () => {
   const acceptLanguage = 'en';
 
   beforeEach(async () => {
-    getEntityContextMock = jest.fn().mockResolvedValue(entityContext);
+    getEntityContextMock = vi.fn().mockResolvedValue(entityContext);
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -69,13 +70,9 @@ describe('ConfigController', () => {
       FEATURE_TOGGLES_INJECTION_TOKEN,
     );
 
-    jest
-      .spyOn(featureTogglesProvider, 'getFeatureToggles')
-      .mockResolvedValue({});
+    vi.spyOn(featureTogglesProvider, 'getFeatureToggles').mockResolvedValue({});
 
-    jest
-      .spyOn(headerParserService, 'extractBearerToken')
-      .mockReturnValue(token);
+    vi.spyOn(headerParserService, 'extractBearerToken').mockReturnValue(token);
 
     requestMock = mock<Request>();
     requestMock.query = { key: 'val' };
@@ -123,9 +120,9 @@ describe('ConfigController', () => {
 
   describe('GET /rest/config/:entity', () => {
     it('should return 403 forbidden response status', async () => {
-      jest
-        .spyOn(nodesService, 'getNodes')
-        .mockRejectedValue(new EntityAccessForbiddenException('e1', 'id1'));
+      vi.spyOn(nodesService, 'getNodes').mockRejectedValue(
+        new EntityAccessForbiddenException('e1', 'id1'),
+      );
 
       await request(app.getHttpServer())
         .get(`/rest/config/project`)
@@ -134,9 +131,9 @@ describe('ConfigController', () => {
     });
 
     it('should return 404 not found response status', async () => {
-      jest
-        .spyOn(nodesService, 'getNodes')
-        .mockRejectedValue(new EntityNotFoundException('e1', 'id1'));
+      vi.spyOn(nodesService, 'getNodes').mockRejectedValue(
+        new EntityNotFoundException('e1', 'id1'),
+      );
 
       await request(app.getHttpServer())
         .get(`/rest/config/project`)
@@ -145,9 +142,9 @@ describe('ConfigController', () => {
     });
 
     it('should return 500 internal error response status', async () => {
-      jest
-        .spyOn(nodesService, 'getNodes')
-        .mockRejectedValue(new Error('any other error'));
+      vi.spyOn(nodesService, 'getNodes').mockRejectedValue(
+        new Error('any other error'),
+      );
 
       await request(app.getHttpServer())
         .get(`/rest/config/project`)
@@ -166,7 +163,7 @@ describe('ConfigController', () => {
 
     it('should call the getNode & getEntityContext method on valid params', async () => {
       const resultingNodes: ServiceProvider[] = [];
-      const getNodesMock = jest
+      const getNodesMock = vi
         .spyOn(nodesService, 'getNodes')
         .mockReturnValue(Promise.resolve(resultingNodes));
 
